@@ -41,7 +41,7 @@
    <image width="128" height="72" source="../images/tiles/short-wall.png"/>
   </tile>
  </tileset>
- <tileset firstgid="14" name="Rainforest" tilewidth="128" tileheight="90" tilecount="3">
+ <tileset firstgid="14" name="Rainforest" tilewidth="128" tileheight="90" tilecount="12">
   <tile id="0">
    <image width="128" height="48" source="../images/tiles/grass.png"/>
   </tile>
@@ -51,10 +51,37 @@
   <tile id="2">
    <image width="128" height="48" source="../images/tiles/water.png"/>
   </tile>
+  <tile id="3">
+   <image width="128" height="48" source="../images/tiles/pool1.png"/>
+  </tile>
+  <tile id="4">
+   <image width="128" height="48" source="../images/tiles/pool2.png"/>
+  </tile>
+  <tile id="5">
+   <image width="128" height="48" source="../images/tiles/pool3.png"/>
+  </tile>
+  <tile id="6">
+   <image width="128" height="48" source="../images/tiles/pool4.png"/>
+  </tile>
+  <tile id="7">
+   <image width="128" height="48" source="../images/tiles/pool5.png"/>
+  </tile>
+  <tile id="8">
+   <image width="128" height="48" source="../images/tiles/pool6.png"/>
+  </tile>
+  <tile id="9">
+   <image width="128" height="48" source="../images/tiles/pool7.png"/>
+  </tile>
+  <tile id="10">
+   <image width="128" height="48" source="../images/tiles/pool8.png"/>
+  </tile>
+  <tile id="11">
+   <image width="128" height="48" source="../images/tiles/pool9.png"/>
+  </tile>
  </tileset>
  <layer name="Tile Layer 1" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt1+FqwjAUgNHINp1s3Xz/p13DGkhr0hZrOpnnwMX+UJB83hZDGPuaGdqbnvNcD03aWzp/Pfa1psF30GMv9uOxrN0LPfZROmv78XfW9JjuSSh8hvtI5/qZTX7m+XtKc9nzyz6B1ODYz0s/p366cN2l1GE6bHcOvw3SvGfXeZd0z4pKLbpdv/X/dapMl12fhyn16LL3st1rGDdI8xGuG8UmcV+mHfLPum9tk3rE+9TbcH0M5ftXaXfyDp4l26Vn+Nz51+5npQ6abBPPP+5I/ptf6rLUQYvbpd/5IczvQxhe0/NDjzYOYdyithfpf0qiRxtLOzHtkGjRRq1FrUPuUnnldrd0oB0dHosOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAs/kBUesO3A==
+   eJzt2I1O4kAUBtBr2NUFRdkf3fX9X9RO7I3T6bSgUXSTc5IvgwYw3q9DaSOmblfCx2vnvNaHTj7esfnr47xO6eAu9HEu9sfXcuq+0Md59GZtf3yeU/po98nS63pumpV1OdObKvXM6+f08jP6veR7XXXWDHM5t8shm3ie0z7mvfR6KPvm35DfY26r15f1R0zn34a5bUxnVM+w7iU/s4pfQw5DHsc1s495B/tm1ce6pWO3nt92TPZx6KTtoe111/kbzH2L6dwy1zGfX+mk7JdeD/dD/gx5GH++bt5zOz53Fy9dM5d9lFl9Hx9fRv84z7Q93Me0o4cx2cVufP62+t3mHP/cfyjP4Wvz76XXQ52/8XzOyXNKvTfyGGCuzKnMpz3frvWy1kOmPv/Xn4ObsDfW5Jwu4vh307yGONZF2Rv19UjvOwJ9FzHtYmlflB7ymM/rjtf0Ua8sO7Yn6mv2Omt9uM/1dktdLPVQXxseFlZ9vN1reli6l+j+7/tpeyjcZ/88dQ9JF1+PPgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4P08AVN7FTU=
   </data>
  </layer>
 </map>
