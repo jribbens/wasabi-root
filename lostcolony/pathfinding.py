@@ -23,6 +23,10 @@ def heuristic(a, b):
     return abs(x1 - x2) + abs(y1 - y2)
 
 
+class NoPath(Exception):
+    """There is no route to the goal."""
+
+
 class Grid:
     def __init__(self):
         self.cells = {}
@@ -68,17 +72,19 @@ class Grid:
 
         """
         x, y = coords
-        neighbours = self.NEIGHBOURS_ODD if x % 2 else self.NEIGHBOURS_ODD
+        neighbours = self.NEIGHBOURS_ODD if x % 2 else self.NEIGHBOURS_EVEN
         for dx, dy in neighbours:
             c = x + dx, y + dy
             if c in self:
                 yield c
 
-    def cost(self, a, b):
+    def distance(self, a, b):
         """Calculate the distance between two pairs of coordinates."""
-        wa = self.coord_to_world(a)
-        wb = self.coord_to_world(b)
-        return math.sqrt(wa * wa + wb * wb)
+        ax, ay = self.coord_to_world(a)
+        bx, by = self.coord_to_world(b)
+        dx = ax - bx
+        dy = ay - by
+        return math.sqrt(dx * dx + dy * dy)
 
     def find_path(self, start, goal):
         """Find a path from start to goal using A*.
@@ -99,12 +105,19 @@ class Grid:
             if current == goal:
                 break
 
-            for next in self.neighbors(current):
+            for next in self.neighbours(current):
                 new_cost = cost_so_far[current] + self.distance(current, next)
                 if next not in cost_so_far or new_cost < cost_so_far[next]:
                     cost_so_far[next] = new_cost
                     priority = new_cost + heuristic(goal, next)
                     frontier.put(next, priority)
                     came_from[next] = current
+        else:
+            raise NoPath(start, goal)
 
-        return came_from, cost_so_far
+        path = [goal]
+        while current != start:
+            current = came_from[current]
+            path.append(current)
+        return path
+        #return came_from, cost_so_far
