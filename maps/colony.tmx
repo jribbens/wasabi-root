@@ -1,47 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="hexagonal" renderorder="right-up" width="100" height="100" tilewidth="128" tileheight="48" hexsidelength="62" staggeraxis="x" staggerindex="even" backgroundcolor="#000000" nextobjectid="1">
- <tileset firstgid="1" name="Complex" tilewidth="129" tileheight="152" tilecount="13">
+<map version="1.0" orientation="hexagonal" renderorder="right-up" width="100" height="100" tilewidth="128" tileheight="48" hexsidelength="62" staggeraxis="x" staggerindex="even" backgroundcolor="#000000" nextobjectid="8">
+ <tileset firstgid="1" name="Complex" tilewidth="128" tileheight="152" tilecount="8">
   <tile id="0">
-   <image width="129" height="68" source="../images/tiles/bed.png"/>
-  </tile>
-  <tile id="1">
-   <image width="129" height="108" source="../images/tiles/bunk.png"/>
-  </tile>
-  <tile id="2">
-   <image width="128" height="69" source="../images/tiles/crates1.png"/>
-  </tile>
-  <tile id="3">
-   <image width="128" height="85" source="../images/tiles/crates2.png"/>
-  </tile>
-  <tile id="4">
-   <image width="129" height="78" source="../images/tiles/desk1.png"/>
-  </tile>
-  <tile id="5">
-   <image width="128" height="78" source="../images/tiles/desk2.png"/>
-  </tile>
-  <tile id="6">
    <image width="128" height="48" source="../images/tiles/floor1.png"/>
   </tile>
-  <tile id="7">
+  <tile id="1">
    <image width="128" height="48" source="../images/tiles/floor2.png"/>
   </tile>
-  <tile id="8">
+  <tile id="2">
    <image width="128" height="48" source="../images/tiles/grate.png"/>
   </tile>
-  <tile id="9">
-   <image width="129" height="89" source="../images/tiles/medbay-bed.png"/>
-  </tile>
-  <tile id="10">
-   <image width="128" height="69" source="../images/tiles/table.png"/>
-  </tile>
-  <tile id="11">
+  <tile id="3">
    <image width="128" height="152" source="../images/tiles/wall.png"/>
   </tile>
-  <tile id="12">
+  <tile id="4">
    <image width="128" height="72" source="../images/tiles/short-wall.png"/>
   </tile>
+  <tile id="5">
+   <image width="128" height="136" source="../images/tiles/server.png"/>
+  </tile>
+  <tile id="6">
+   <image width="128" height="95" source="../images/tiles/server2.png"/>
+  </tile>
+  <tile id="7">
+   <image width="128" height="48" source="../images/tiles/carpet.png"/>
+  </tile>
  </tileset>
- <tileset firstgid="14" name="Rainforest" tilewidth="128" tileheight="90" tilecount="21">
+ <tileset firstgid="9" name="Rainforest" tilewidth="128" tileheight="160" tilecount="31">
   <terraintypes>
    <terrain name="Path" tile="-1"/>
   </terraintypes>
@@ -108,10 +93,92 @@
   <tile id="20">
    <image width="128" height="48" source="../images/tiles/path9.png"/>
   </tile>
+  <tile id="21">
+   <image width="128" height="160" source="../images/tiles/tree1.png"/>
+  </tile>
+  <tile id="22">
+   <image width="128" height="95" source="../images/tiles/veg2.png"/>
+  </tile>
+  <tile id="23">
+   <image width="128" height="78" source="../images/tiles/veg3.png"/>
+  </tile>
+  <tile id="24">
+   <image width="128" height="48" source="../images/tiles/grass2.png"/>
+  </tile>
+  <tile id="25">
+   <image width="128" height="48" source="../images/tiles/grass3.png"/>
+  </tile>
+  <tile id="26">
+   <image width="128" height="48" source="../images/tiles/grass4.png"/>
+  </tile>
+  <tile id="27">
+   <image width="128" height="48" source="../images/tiles/pool13.png"/>
+  </tile>
+  <tile id="28">
+   <image width="128" height="82" source="../images/tiles/veg4.png"/>
+  </tile>
+  <tile id="29">
+   <image width="128" height="48" source="../images/tiles/lily1.png"/>
+  </tile>
+  <tile id="30">
+   <image width="128" height="48" source="../images/tiles/lily2.png"/>
+  </tile>
+ </tileset>
+ <tileset firstgid="40" name="Objects" tilewidth="129" tileheight="136" tilecount="15">
+  <tile id="0">
+   <image width="128" height="129" source="../images/tiles/uplink-obj.png"/>
+  </tile>
+  <tile id="1">
+   <image width="129" height="68" source="../images/tiles/bed.png"/>
+  </tile>
+  <tile id="2">
+   <image width="129" height="108" source="../images/tiles/bunk.png"/>
+  </tile>
+  <tile id="3">
+   <image width="129" height="108" source="../images/tiles/bunk2.png"/>
+  </tile>
+  <tile id="4">
+   <image width="128" height="69" source="../images/tiles/crates1.png"/>
+  </tile>
+  <tile id="5">
+   <image width="128" height="85" source="../images/tiles/crates2.png"/>
+  </tile>
+  <tile id="6">
+   <image width="128" height="68" source="../images/tiles/crates3.png"/>
+  </tile>
+  <tile id="7">
+   <image width="128" height="71" source="../images/tiles/crates4.png"/>
+  </tile>
+  <tile id="8">
+   <image width="129" height="78" source="../images/tiles/desk1.png"/>
+  </tile>
+  <tile id="9">
+   <image width="128" height="78" source="../images/tiles/desk2.png"/>
+  </tile>
+  <tile id="10">
+   <image width="129" height="89" source="../images/tiles/medbay-bed.png"/>
+  </tile>
+  <tile id="11">
+   <image width="129" height="89" source="../images/tiles/medbay-bed2.png"/>
+  </tile>
+  <tile id="12">
+   <image width="128" height="69" source="../images/tiles/table.png"/>
+  </tile>
+  <tile id="13">
+   <image width="128" height="136" source="../images/tiles/server.png"/>
+  </tile>
+  <tile id="14">
+   <image width="128" height="95" source="../images/tiles/server2.png"/>
+  </tile>
  </tileset>
  <layer name="Tile Layer 1" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt2YFu0zAUBdBMHWPt1lEY20ACJvj/jyQWfpqxnHQrIBs4kY7cVmmb927c1O00/bzd0J084HRvBjgGGI150VdsvY+D9Tx+ZZ5cVyPP71uIbMpxydsjr/e6MYbeNY8o+nYx2+Q+7Ru5tHJI8+bD7Da7KZ6fxsuq/7XetY9oW/Wo7GGZS3xmpe3d7DD7mMewb2Swr0Z5rFs6d8v+bbPI49BQ51DnupPHs5xXfQtXjf6lTK4XcribvZ/d5/tX1Wtu8767IuvetY8o8ki9epVvX0zt8zzUOdxVGd1nkcUu778tHtsMUPuI4hq+1v+WVg6lh+nHNSeuKeXciHOgd+0jusz9qa+3a7ms5RDKNUv5ObiZzI010aezlf4n0/S0hjiWxUP1Hq3vCL3rHtVZlcXSvEg5xDkf646X5FGOLDs2J8o1e2ktj9b7PM6+DFDv6JayWMohiXlyWBjrfb9Nfis+NY+1HE6RsjAvXp7H784hfB2gxr/Jn8qh9GmAOnnyeYBjQB4jqNcYvuf2y6FeTz4OcFz/q8gifle3Fh8jjyCP/vz3BwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8O/4DpbLHmw=
+   eJztmQ1v2jAQho9BpYZ+rF0r7UMbBBj//y8uVu9VLlfboTSd3fAiPTIOwW3uydnnIDJ8NaQ49EHI+awr+B8IKcWuY99xcP31yOdT9FfaX33Q+J+xD/D6SPd7bVfKtWtL35s1kfKRWz/akTFXkTawMB4AfQzjBuDGtilu1Qnw4yHuX0wfXNFH0oOPk/cCEPfgIeTNU8e90prvL9TBIoP1Yf/mJbN0MbIxtDHCnBVedx03Hc8d39TDk57vHVy5NuYJn9FH/t7F+6VyUB83judIjL3XXJ4A+Chd35TsewcAx66dl5Vzgbg/dHzteEyMuTTnpvwwP9JzCFxYcNx7eHCOHhXvdhk5ZikdixrwMUGcUy5AzINnHYm9X0fwP5SOQy3E5pCcB7jIeYCLvRKbB+GCDEGcxvJBpJ/jx1yg5oKPWG6Uvu5a8R5SORE8oObFviPnY6Mujvr9jQznw1rqmdr6ORciwz174FbbnI+tvOTHVs8NLn51/JTT75NLJZUT3sOdEu79WH402loPrZ77R4a5tangumvlVA9+/2fnpsbEeGOAC+TFWh3h3F0F118bKQ9wMbZ27zWuRyV8b6sxD/3f2r/Vdi19/pDXxDw0GuuxNRvnIvZH6fMCa0j4/HvHX+MD5/rfX8gLsfX+lLw4aNtKP0cdpZ+X1nrODx3TzmNwlfr7l9yPkcsL/MaH/QViHFrkBY416gPeWhnmDhlnbK+3U6xP5MXCxdrWufCEtvR1fgZO2Xs30s9V+J5//rVQF6ihbP5shWtHLv6+PcWHr1Xhwj5X9zmAtdwexzh7mf7aPiNj8c/VuDEfAPPWVh2gBm4jnnyuXTLn+MDv5fbets8N8XzK7vv20s9V8Ik5Cz5qqW9K9s/xgXnLxtO3qG0bGe7ZsYZwPZ8uP+z+o5F47dxqi9j7HOF6Pp0P5IZfQ+DF7i+wZsBD6eutnXN92DH8etzK672Gnb/grPS118gUPgL2echO+pzw6wbOZb5M6yPUV7Y+QHuQ/rdaeGhlWE+hxqqhnqmt/576ynrFemLX6Vb6PLBumBfT5kfKh1/jW9NiDmNdNa0P+717N5Z1gfX94D7fyeu6jAzjdoqHt8RwF3mPPTzzY9xHI/1agveNeT/mwu8N7Rg+H5gb42D/gOdKWO9tDFP1gH22eJChl4Mbu4b6pfa+rVVTrsY8Iv4Y18af89PbQOxyMc8dt/HnXPSxxOJrc8rmHPPg//jIredjcx0hc6Cm+oJ9QgghhMyB0vUE+6yvCCGEkLlRup5gn/UVIYQQMjdK1xPss74ihBBC5kbpeoJ91leEEELI3ChdT7DP+ooQQgiZG6XrCfZZXxFCCCFzo3Q9wT7rK0IIIWRulK4n2Gd9RQgh5H38Ayu/32U=
+  </data>
+ </layer>
+ <layer name="Objects" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt2UEKgzAQBdBIwd6kVZC23v9yBhFREJG6GDHvwWBW4cOQkMSUAAAAKNkzV53rER2EuQ9VdBBG+nBPr+gAN9Atxr/p25+Y7z0V12Gd/O8THYBNbXQARvoAAOVyxwDgrCY6QKH23m31hNI5417T3r71Tet/XAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEcNwEQDCA==
   </data>
  </layer>
 </map>
