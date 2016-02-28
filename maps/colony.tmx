@@ -41,7 +41,10 @@
    <image width="128" height="72" source="../images/tiles/short-wall.png"/>
   </tile>
  </tileset>
- <tileset firstgid="14" name="Rainforest" tilewidth="128" tileheight="90" tilecount="12">
+ <tileset firstgid="14" name="Rainforest" tilewidth="128" tileheight="90" tilecount="21">
+  <terraintypes>
+   <terrain name="Path" tile="-1"/>
+  </terraintypes>
   <tile id="0">
    <image width="128" height="48" source="../images/tiles/grass.png"/>
   </tile>
@@ -78,10 +81,37 @@
   <tile id="11">
    <image width="128" height="48" source="../images/tiles/pool9.png"/>
   </tile>
+  <tile id="12">
+   <image width="128" height="48" source="../images/tiles/path1.png"/>
+  </tile>
+  <tile id="13">
+   <image width="128" height="48" source="../images/tiles/path2.png"/>
+  </tile>
+  <tile id="14">
+   <image width="128" height="48" source="../images/tiles/path3.png"/>
+  </tile>
+  <tile id="15">
+   <image width="128" height="48" source="../images/tiles/path4.png"/>
+  </tile>
+  <tile id="16">
+   <image width="128" height="48" source="../images/tiles/path5.png"/>
+  </tile>
+  <tile id="17">
+   <image width="128" height="48" source="../images/tiles/path6.png"/>
+  </tile>
+  <tile id="18">
+   <image width="128" height="48" source="../images/tiles/path7.png"/>
+  </tile>
+  <tile id="19">
+   <image width="128" height="48" source="../images/tiles/path8.png"/>
+  </tile>
+  <tile id="20">
+   <image width="128" height="48" source="../images/tiles/path9.png"/>
+  </tile>
  </tileset>
  <layer name="Tile Layer 1" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt2I1O4kAUBtBr2NUFRdkf3fX9X9RO7I3T6bSgUXSTc5IvgwYw3q9DaSOmblfCx2vnvNaHTj7esfnr47xO6eAu9HEu9sfXcuq+0Md59GZtf3yeU/po98nS63pumpV1OdObKvXM6+f08jP6veR7XXXWDHM5t8shm3ie0z7mvfR6KPvm35DfY26r15f1R0zn34a5bUxnVM+w7iU/s4pfQw5DHsc1s495B/tm1ce6pWO3nt92TPZx6KTtoe111/kbzH2L6dwy1zGfX+mk7JdeD/dD/gx5GH++bt5zOz53Fy9dM5d9lFl9Hx9fRv84z7Q93Me0o4cx2cVufP62+t3mHP/cfyjP4Wvz76XXQ52/8XzOyXNKvTfyGGCuzKnMpz3frvWy1kOmPv/Xn4ObsDfW5Jwu4vh307yGONZF2Rv19UjvOwJ9FzHtYmlflB7ymM/rjtf0Ua8sO7Yn6mv2Omt9uM/1dktdLPVQXxseFlZ9vN1reli6l+j+7/tpeyjcZ/88dQ9JF1+PPgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4P08AVN7FTU=
+   eJzt2YFu0zAUBdBMHWPt1lEY20ACJvj/jyQWfpqxnHQrIBs4kY7cVmmb927c1O00/bzd0J084HRvBjgGGI150VdsvY+D9Tx+ZZ5cVyPP71uIbMpxydsjr/e6MYbeNY8o+nYx2+Q+7Ru5tHJI8+bD7Da7KZ6fxsuq/7XetY9oW/Wo7GGZS3xmpe3d7DD7mMewb2Swr0Z5rFs6d8v+bbPI49BQ51DnupPHs5xXfQtXjf6lTK4XcribvZ/d5/tX1Wtu8767IuvetY8o8ki9epVvX0zt8zzUOdxVGd1nkcUu778tHtsMUPuI4hq+1v+WVg6lh+nHNSeuKeXciHOgd+0jusz9qa+3a7ms5RDKNUv5ObiZzI010aezlf4n0/S0hjiWxUP1Hq3vCL3rHtVZlcXSvEg5xDkf646X5FGOLDs2J8o1e2ktj9b7PM6+DFDv6JayWMohiXlyWBjrfb9Nfis+NY+1HE6RsjAvXp7H784hfB2gxr/Jn8qh9GmAOnnyeYBjQB4jqNcYvuf2y6FeTz4OcFz/q8gifle3Fh8jjyCP/vz3BwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8O/4DpbLHmw=
   </data>
  </layer>
 </map>
