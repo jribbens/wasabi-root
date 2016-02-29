@@ -1,16 +1,17 @@
 import sys
-import os
 sys.path.insert(0, '.')
 
 import random
 from math import cos, sin, radians, sqrt
 from pathfinding import HexGrid, NoPath
+from actor import Actor
 from collections import deque
 
 ON = 255, 255, 255
 OFF = 255, 128, 128
 PATH = 0, 255, 0
 HOVER = 0, 128, 255,
+TOKEN = 255, 255, 0,
 
 size = 36.0
 
@@ -79,6 +80,7 @@ def pixel_to_hex(x, y):
 
 
 g = HexGrid()
+token = Actor()
 hover = (0, 0)
 for x in range(15):
     for y in range(10):
@@ -89,21 +91,26 @@ for x in range(15):
 def draw():
     hn = list(g.neighbours(hover))
     screen.clear()
+    # Show map
     for x in range(15):
         for y in range(10):
             wx, wy = g.coord_to_world((x, y))
             color = ON if g[x, y] else OFF
             draw_hex(wx * size, wy * size, color)
+            # Show hovered squares
             if (x, y) in hn:
                 draw_hex(wx * size, wy * size, HOVER, size=20)
+    # Show actor
+    ax, ay = token.get_coords()
+    draw_hex(ax * size, ay * size, TOKEN, size=10)
 
+    # Show path
     if path:
         p = (g.coord_to_world(h) for h in path)
         p = [(x * size, y * size) for x, y in p]
         for a, b in zip(p, p[1:]):
             screen.draw.line(a, b, PATH)
 
-ps = deque(maxlen=2)
 path = None
 hover = (0, 0)
 
@@ -119,9 +126,15 @@ def on_mouse_down(pos, button):
     if button == mouse.RIGHT:
         g[h] = not g[h]
     else:
-        ps.append(h)
-        if len(ps) == 2:
-            try:
-                path = g.find_path(*ps)
-            except NoPath:
-                path = None
+        try:
+            path = g.find_path(token.position, h)
+        except NoPath:
+            path = None
+
+
+def update():
+    # Move actor along path
+    while token.moving_to is None and path:
+        token.go(path[-1], 1)
+        path.pop()
+    token.update(1/60)
