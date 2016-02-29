@@ -127,7 +127,7 @@ def on_mouse_down(pos, button):
         g[h] = not g[h]
     else:
         try:
-            path = g.find_path(token.position, h)
+            path = g.find_path(token.moving_to or token.position, h)
         except NoPath:
             path = None
 
