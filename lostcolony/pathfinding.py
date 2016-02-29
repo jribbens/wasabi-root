@@ -27,7 +27,7 @@ class NoPath(Exception):
     """There is no route to the goal."""
 
 
-class Grid:
+class HexGrid:
     def __init__(self):
         self.cells = {}
 
@@ -57,7 +57,8 @@ class Grid:
         (-1, -1)
     ]
 
-    def coord_to_world(self, coord):
+    @staticmethod
+    def coord_to_world(coord):
         """Convert a map coordinate to a cartesian world coordinate."""
         cx, cy = coord
         wx = 3/2 * cx
@@ -78,10 +79,11 @@ class Grid:
             if c in self:
                 yield c
 
-    def distance(self, a, b):
+    @staticmethod
+    def distance(a, b):
         """Calculate the distance between two pairs of coordinates."""
-        ax, ay = self.coord_to_world(a)
-        bx, by = self.coord_to_world(b)
+        ax, ay = HexGrid.coord_to_world(a)
+        bx, by = HexGrid.coord_to_world(b)
         dx = ax - bx
         dy = ay - by
         return math.sqrt(dx * dx + dy * dy)

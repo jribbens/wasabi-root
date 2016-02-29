@@ -1,19 +1,13 @@
 import os
 import pyglet
 import pytmx
-
-
-window = pyglet.window.Window()
-label = pyglet.text.Label('Hello, world',
-                          font_name='Times New Roman',
-                          font_size=36,
-                          x=window.width//2, y=window.height//2,
-                          anchor_x='center', anchor_y='center')
+from lostcolony.pathfinding import HexGrid
+from collections import defaultdict
 
 
 class PygletTiledMap:
     def __init__(self, window, mapfile):
-        self.coords = (0, 0)
+        self.camera = (0, 0)
         self.tmx = pytmx.TiledMap(mapfile)
         self.window = window
         self.images = {}
@@ -29,10 +23,26 @@ class PygletTiledMap:
 
     def draw(self):
         self.window.clear()
-        for n, (name, image) in enumerate(self.images.items()):
-            sprite = pyglet.sprite.Sprite(image, (n % 4) * self.tmx.tilewidth * 1.1, 500 - ((n // 4) * self.tmx.tileheight * 1.1))
-            sprite.draw()
+        for n, layer in enumerate(self.tmx.layers):
+            for x, y, image_data in layer.tiles():
+                imgpath, _, _ = image_data
+                image = self.images[imgpath]
 
+                tilewidth = self.tmx.tilewidth
+                tileheight = self.tmx.tileheight
+
+                wx, wy = HexGrid.coord_to_world((x, y))
+                sx = wx * tilewidth / 2
+                sy = wy * tileheight / 2
+
+                cx, cy = self.camera
+
+                if cx - tilewidth < sx < cx + self.window.width + tilewidth * 2 and cy - tileheight < sy < cy + self.window.height + tileheight * 2:
+                    sprite = pyglet.sprite.Sprite(image, sx, self.window.height-sy)
+                    sprite.draw()
+
+
+window = pyglet.window.Window(resizable=True)
 tmxmap = PygletTiledMap(window, "maps/encounter-01.tmx")
 
 
