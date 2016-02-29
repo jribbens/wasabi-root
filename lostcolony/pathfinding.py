@@ -59,14 +59,14 @@ class HexGrid:
 
     @staticmethod
     def coord_to_world(coord):
-        """Convert a map coordinate to a cartesian world coordinate."""
+        """Convert a map coordinate to a Cartesian world coordinate."""
         cx, cy = coord
         wx = 3/2 * cx
         wy = 3 ** 0.5 * (cy - 0.5 * (cx & 1))
         return wx, wy
 
     def neighbours(self, coords):
-        """Iterate over the neigbours of the given coords.
+        """Iterate over the neighbour of the given coords.
 
         Note that we use an "even-q vertical" layout in the terminology of
         http://www.redblobgames.com/grids/hexagons/#coordinates
