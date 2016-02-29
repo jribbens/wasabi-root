@@ -2,6 +2,56 @@ import heapq
 import math
 
 
+def cube_round(h):
+    """Round cubic hexagonal coordinates to an integer cubic tile."""
+    x, y, z = h
+    rx = round(x)
+    ry = round(y)
+    rz = round(z)
+
+    x_diff = abs(rx - x)
+    y_diff = abs(ry - y)
+    z_diff = abs(rz - z)
+
+    if x_diff > y_diff and x_diff > z_diff:
+        rx = -ry - rz
+    elif y_diff > z_diff:
+        ry = -rx - rz
+    else:
+        rz = -rx - ry
+
+    return rx, ry, rz
+
+
+def cube_to_hex(h):
+    """Convert a 3-tuple of cubic coords to 2 "even-q vertical" coords."""
+    x, _, z = h
+    return x, z + (x + (int(x) % 2)) // 2
+
+
+def hex_to_cube(h):
+    """Convert a 2-tuple of "even-q vertical" coords to cubic coords."""
+    c, r = h
+
+    x = c
+    z = r - (c + (int(c) % 2)) // 2
+    return (
+        x,
+        -x - z,
+        z
+    )
+
+
+def hex_round(h):
+    return cube_to_hex(cube_round(hex_to_cube(h)))
+
+
+root3 = 3 ** 0.5
+
+HEX_WIDTH = 128
+HEX_HEIGHT = 48
+
+
 class PriorityQueue:
     def __init__(self):
         self.elements = []
@@ -62,8 +112,27 @@ class HexGrid:
         """Convert a map coordinate to a Cartesian world coordinate."""
         cx, cy = coord
         wx = 3/2 * cx
-        wy = 3 ** 0.5 * (cy - 0.5 * (cx & 1))
+        wy = root3 * (cy - 0.5 * (cx & 1))
         return wx, wy
+
+    @staticmethod
+    def coord_to_screen(coord):
+        """Convert a map coordinate to screen coordinates."""
+        wx, wy = HexGrid.coord_to_world(coord)
+        return (
+            wx * HEX_WIDTH / 2,
+            wy * HEX_HEIGHT / 2
+        )
+
+    @staticmethod
+    def screen_to_coord(coord):
+        """Get the map coordinates for a screen pixel (x, y)."""
+        x, y = coord
+        x /= HEX_WIDTH / 2
+        y /= HEX_HEIGHT / 2
+        q = x * (2 / 3)
+        r = -x / 3 + root3 / 3 * y
+        return cube_to_hex(cube_round((q, -q - r, r)))
 
     def neighbours(self, coords):
         """Iterate over the neighbour of the given coords.
