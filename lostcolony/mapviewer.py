@@ -62,9 +62,10 @@ class Camera:
     def coord_to_viewport(self, coord):
         cx, cy = self.pos
         wx, wy = HexGrid.coord_to_world(coord)
+        sx, sy = HexGrid.coord_to_screen(coord)
         return (
-            wx * self.WSCALE - cx,
-            self.viewport[1] - wy * self.HSCALE + cy
+            sx - cx,
+            self.viewport[1] - sy + cy
         )
 
     def viewport_to_coord(self, coord):
@@ -90,7 +91,7 @@ class Camera:
 
 class PygletTiledMap:
     def __init__(self, window, mapfile):
-        self.camera = Camera((window.width, window.height))
+        self.camera = Camera((window.width, window.height), pos=(2600, 0))
         self.cursor = TileOutline()
         # to be deleted:
         #  self.camera_vector = (0, 0)
@@ -115,18 +116,21 @@ class PygletTiledMap:
         path = os.path.abspath(name)
         im = self.images[name] = pyglet.image.load(path)
         im.anchor_x = im.width // 2
-        im.anchor_y = HEX_HEIGHT // 2
+        im.anchor_y = 24
 
     def draw(self):
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glEnable(gl.GL_ALPHA_TEST)
+        gl.glAlphaFunc(gl.GL_GREATER, 0.0)
         (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
         for n in range(self.nlayers):
-            for y in range(cy2 - 2, cy1 + 2):
-                for x in range(cx1 - 1, cx2 + 2):
+            for y in range(cy2 - 1, cy1 + 4):
+                for x in range(cx1 - 1, cx2 + 3):
                     img = self.grid.get((n, x, y))
                     if img:
                         sx, sy = self.camera.coord_to_viewport((x, y))
-                        sprite = pyglet.sprite.Sprite(img, sx, sy)
-                        sprite.draw()
+                        img.blit(sx, sy, 0)
         self.cursor.draw()
 
     def hover(self, x, y):
@@ -171,6 +175,10 @@ def on_mouse_motion(x, y, dx, dy):
         my = -1
 
     tmxmap.camera_vector = mx, my
+
+@window.event
+def on_resize(*args):
+    tmxmap.camera.viewport = window.width, window.height
 
 def update(_, dt):
     # print(_)

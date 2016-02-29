@@ -49,7 +49,7 @@ def hex_round(h):
 root3 = 3 ** 0.5
 
 HEX_WIDTH = 128
-HEX_HEIGHT = 48
+HEX_HEIGHT = root3 * 0.25 * HEX_WIDTH
 
 
 class PriorityQueue:
@@ -111,17 +111,17 @@ class HexGrid:
     def coord_to_world(coord):
         """Convert a map coordinate to a Cartesian world coordinate."""
         cx, cy = coord
-        wx = 3/2 * cx
+        wx = 1.5 * cx
         wy = root3 * (cy - 0.5 * (cx & 1))
         return wx, wy
 
     @staticmethod
     def coord_to_screen(coord):
         """Convert a map coordinate to screen coordinates."""
-        wx, wy = HexGrid.coord_to_world(coord)
+        cx, cy = coord
         return (
-            wx * HEX_WIDTH / 2,
-            wy * HEX_HEIGHT / 2
+            cx * 95,
+            (2 * cy - (cx & 1)) * 24
         )
 
     @staticmethod
