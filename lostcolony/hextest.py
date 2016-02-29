@@ -4,7 +4,7 @@ sys.path.insert(0, '.')
 
 import random
 from math import cos, sin, radians, sqrt
-from pathfinding import Grid, NoPath
+from pathfinding import HexGrid, NoPath
 from collections import deque
 
 ON = 255, 255, 255
@@ -78,7 +78,7 @@ def pixel_to_hex(x, y):
     return cube_to_hex(cube_round((q, -q - r, r)))
 
 
-g = Grid()
+g = HexGrid()
 hover = (0, 0)
 for x in range(15):
     for y in range(10):
