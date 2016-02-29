@@ -103,6 +103,14 @@ class PygletTiledMap:
                 image, _, _ = image_data
                 self.load_image(image)
 
+        self.nlayers = len(self.tmx.layers)
+        self.grid = {}
+        for n, layer in enumerate(self.tmx.layers):
+            for x, y, image_data in layer.tiles():
+                imgpath, _, _ = image_data
+                image = self.images[imgpath]
+                self.grid[n, x, y] = image
+
     def load_image(self, name):
         path = os.path.abspath(name)
         im = self.images[name] = pyglet.image.load(path)
@@ -111,19 +119,14 @@ class PygletTiledMap:
 
     def draw(self):
         (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
-        cx1 -= 3
-        cx2 += 3
-        cy1 += 3
-        cy2 -= 3
-        for n, layer in enumerate(self.tmx.layers):
-            for x, y, image_data in layer.tiles():
-                imgpath, _, _ = image_data
-                image = self.images[imgpath]
-
-                if cx1 < x < cx2 and cy2 < y < cy1:
-                    sx, sy = self.camera.coord_to_viewport((x, y))
-                    sprite = pyglet.sprite.Sprite(image, sx, sy)
-                    sprite.draw()
+        for n in range(self.nlayers):
+            for y in range(cy2 - 2, cy1 + 2):
+                for x in range(cx1 - 1, cx2 + 2):
+                    img = self.grid.get((n, x, y))
+                    if img:
+                        sx, sy = self.camera.coord_to_viewport((x, y))
+                        sprite = pyglet.sprite.Sprite(img, sx, sy)
+                        sprite.draw()
         self.cursor.draw()
 
     def hover(self, x, y):
