@@ -125,11 +125,9 @@ class HexGrid:
         )
 
     @staticmethod
-    def screen_to_coord(coord):
+    def world_to_coord(coord):
         """Get the map coordinates for a screen pixel (x, y)."""
         x, y = coord
-        x /= HEX_WIDTH / 2
-        y /= HEX_HEIGHT / 2
         q = x * (2 / 3)
         r = -x / 3 + root3 / 3 * y
         return cube_to_hex(cube_round((q, -q - r, r)))

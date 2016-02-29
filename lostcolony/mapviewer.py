@@ -47,9 +47,50 @@ class TileOutline:
         gl.glColor4f(1, 1, 1, 1)
 
 
+class Camera:
+    WSCALE = HEX_WIDTH / 2
+    HSCALE = HEX_HEIGHT / 2
+
+    def __init__(self, viewport, pos=(0, 0)):
+        self.viewport = viewport
+        self.pos = pos
+
+    def pan(self, dx, dy):
+        x, y = self.pos
+        self.pos = x - dx, y + dy
+
+    def coord_to_viewport(self, coord):
+        cx, cy = self.pos
+        wx, wy = HexGrid.coord_to_world(coord)
+        return (
+            wx * self.WSCALE - cx,
+            self.viewport[1] - wy * self.HSCALE + cy
+        )
+
+    def viewport_to_coord(self, coord):
+        x, y = coord
+        cx, cy = self.pos
+        wx = (x + cx) / self.WSCALE
+        wy = (self.viewport[1] - y + cy) / self.HSCALE
+        return HexGrid.world_to_coord((wx, wy))
+
+    def viewport_to_world(self, coord):
+        return HexGrid.coord_to_world(self.viewport_to_coord(coord))
+
+    def viewport_bounds(self):
+        """Return the p1, p2 bounds of the viewport in screen space."""
+        x, y = self.pos
+        w, h = self.viewport
+        return self.pos, (x + w, y + h)
+
+    def coord_bounds(self):
+        """Return the x1, y1, x2, y2 bounds of the viewport in map coords."""
+        return self.viewport_to_coord((0, 0)), self.viewport_to_coord(self.viewport)
+
+
 class PygletTiledMap:
     def __init__(self, window, mapfile):
-        self.camera = (0, 0)   # The top-left of the viewport
+        self.camera = Camera((window.width, window.height))
         self.cursor = TileOutline()
         # to be deleted:
         #  self.camera_vector = (0, 0)
@@ -66,30 +107,29 @@ class PygletTiledMap:
         path = os.path.abspath(name)
         im = self.images[name] = pyglet.image.load(path)
         im.anchor_x = im.width // 2
-        im.anchor_y = im.height - HEX_HEIGHT // 2
+        im.anchor_y = HEX_HEIGHT // 2
 
     def draw(self):
+        (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
+        cx1 -= 3
+        cx2 += 3
+        cy1 += 3
+        cy2 -= 3
         for n, layer in enumerate(self.tmx.layers):
             for x, y, image_data in layer.tiles():
                 imgpath, _, _ = image_data
                 image = self.images[imgpath]
 
-                sx, sy = HexGrid.coord_to_screen((x, y))
-
-                cx, cy = self.camera
-
-                if (cx - HEX_WIDTH < sx < cx + self.window.width + HEX_HEIGHT * 2 and
-                        cy - HEX_HEIGHT < sy < cy + self.window.height + HEX_HEIGHT * 2):
-                    sprite = pyglet.sprite.Sprite(image, sx-cx, self.window.height-sy+cy)
+                if cx1 < x < cx2 and cy2 < y < cy1:
+                    sx, sy = self.camera.coord_to_viewport((x, y))
+                    sprite = pyglet.sprite.Sprite(image, sx, sy)
                     sprite.draw()
         self.cursor.draw()
 
     def hover(self, x, y):
         """Set the position of the mouse cursor."""
-        cx, cy = self.camera
-        c = HexGrid.screen_to_coord((x + cx, self.window.height - y + cy))
-        sx, sy = HexGrid.coord_to_screen(c)
-        self.cursor.pos = sx - cx, self.window.height - sy + cy
+        c = self.camera.viewport_to_coord((x, y))
+        self.cursor.pos = self.camera.coord_to_viewport(c)
 
 
 window = pyglet.window.Window(resizable=True)
@@ -107,11 +147,7 @@ def on_draw():
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     if pyglet.window.mouse.LEFT:
         # Drag screen
-        cam_x, cam_y = tmxmap.camera
-        cam_x -= dx
-        cam_y += dy
-        tmxmap.camera = cam_x,cam_y
-        print("drag", x, y, dx, dy, buttons)
+        tmxmap.camera.pan(dx, dy)
     elif pyglet.window.mouse.RIGHT:
         # Select by area
         pass
