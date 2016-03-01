@@ -153,7 +153,7 @@ class HexGrid:
             if c in self:
                 yield c
 
-    def front_hex(self, coords, facing):
+    def hex_in_front(self, coords, facing):
         """
         Adjacent hex in the facing direction, only if on-map
 

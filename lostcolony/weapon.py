@@ -8,13 +8,12 @@ It also indirectly manages their effects.
 """
 
 import time
-from world import World
 
 
 class Weapon():
     def __init__(self, actor):
         self.actor = actor
-        self.attack_time = time.perf_counter()
+        self.attack_time = 0 # based on time.perf_counter(), you start ready to rumble
         self.setup_time = 0 # Seconds between stopping and attacking.
         self.seconds_per_attack = 1.0
         self.field_of_fire = [] # coordiates. Earlier in the list = higher priority.
@@ -41,7 +40,8 @@ class Weapon():
         """
         adjacent = self.actor.world.hex_grid.neighbours(self.actor.position)
         facing = self.actor.facing
-        field_of_fire = ( adjacent[facing], adjacent[(facing + 1) % 6], adjacent[facing + 7 % 6], )
+        self.field_of_fire = ( adjacent[facing], adjacent[(facing + 1) % 6], adjacent[(facing + 5) % 6], )
+
 
     def update(self, t):
         if self.attack_time < t:
@@ -69,8 +69,8 @@ class Weapon():
 
     def select_targets(self):
         ret = []
-        for hex in self.field_of_fire:
-            target = self.actor.world.get_actor(hex)
+        for target_hex in self.field_of_fire:
+            target = self.actor.world.get_actor(target_hex)
             if target and self.valid_target(target):
                 ret.append(target)
                 if self.single_target:
@@ -87,16 +87,11 @@ class Rifle(Weapon):
         self.single_target = True
         self.field_of_fire = [] # coordiates. Earlier in the list = higher priority.
 
-    def reset_field_of_fire(self):
-        """
-        Reset self.field_of_fire: prioritised list of possible target hexes
-        :return: None
 
-        This default implementation reflects melee fighters
-        """
-        adjacent = self.actor.world.hex_grid.neighbours(self.actor.position)
-        facing = self.actor.facing
-        field_of_fire = ( adjacent[facing], adjacent[(facing + 1) % 6], adjacent[facing + 7 % 6], )
+    def reset_field_of_fire(self):
+        min_range = 1
+        max_range = 9
+        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, self.actor)
 
 
 class Grenade(Weapon):
@@ -108,6 +103,12 @@ class Grenade(Weapon):
         self.single_target = True
 
 
+    def reset_field_of_fire(self):
+        min_range = 4
+        max_range = 6
+        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, self.actor)
+
+
 class SniperRifle(Weapon):
     def __init__(self, actor):
         super().__init__(actor)
@@ -115,6 +116,12 @@ class SniperRifle(Weapon):
         self.seconds_per_attack = 5.0
         self.damage = 7 # do to: range-based
         self.single_target = True
+
+
+    def reset_field_of_fire(self):
+        min_range = 1
+        max_range = 12
+        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, self.actor)
 
 
 class AutoCannon(Weapon):
@@ -139,5 +146,35 @@ class AutoCannon(Weapon):
         assert len(self.field_of_fire > 0) # to do: debug only, remove for release. If this fails, fix the bug.
 
         coord = self.actor.world.hex_grid.frot_hex()
-        if coord:
+        if coord and self.actor.world.hex_grid.visible(self.actor.position, coord, None):
             self.field_of_fire.append( (x,y) )
+
+
+def _field_of_fire_front_arc(min_range, max_range, actor):
+    coords = []
+    hex_in_front = actor.world.hex_grid.hex_in_front
+    frontal_hex = actor.position
+    facing = actor.facing
+
+    for distance in range(min_range - 1):
+        frontal_hex = hex_in_front(frontal_hex, facing)
+
+    for distance in range(min_range, max_range):
+        left_hex = right_hex = frontal_hex = hex_in_front(frontal_hex, facing)
+        coords.append(frontal_hex)
+
+        left_facing = (facing + 4) % 6
+        for i in range(distance):
+            left_hex = hex_in_front(left_hex, left_facing)
+            coords.append(left_hex)
+
+        right_facing = (facing + 2) % 6
+        for i in range(distance):
+            right_hex = hex_in_front(right_hex, right_facing)
+            coords.append(right_hex)
+
+    return [
+        c
+        for c in coords
+        if actor.world.hex_grid.visible(actor.position, coords, None)
+    ]
