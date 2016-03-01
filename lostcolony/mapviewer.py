@@ -5,6 +5,7 @@ from lostcolony.pathfinding import (
     HexGrid, HEX_WIDTH, HEX_HEIGHT
 )
 from pyglet import gl
+from pyglet.window import key
 from collections import defaultdict
 
 
@@ -198,6 +199,8 @@ class PygletTiledMap:
 
 
 window = pyglet.window.Window(resizable=True)
+keys = key.KeyStateHandler()
+window.push_handlers(keys)
 tmxmap = PygletTiledMap(window, "maps/encounter-01.tmx")
 
 
@@ -263,28 +266,16 @@ def on_resize(*args):
     tmxmap.camera.viewport = window.width, window.height
 
 
-@window.event
-def on_text(key):
-    """
-    Pan the screen in a North, West, South or Easterly direction depending on a key press.
-
-    Using on_text as it takes into consideration key holds - on_key_press does not.
-
-    :param key: str, key being pressed.
-    """
-    if key == 'w':
-        tmxmap.camera.pan(0, -20)
-    elif key == 's':
-        tmxmap.camera.pan(0, 20)
-    elif key == 'a':
-        tmxmap.camera.pan(20, 0)
-    elif key == 'd':
-        tmxmap.camera.pan(-20, 0)
-
-
 def update(_, dt):
     # print(_)
-    pass
+    if keys[key.W]:
+        tmxmap.camera.pan(0, -20)
+    if keys[key.S]:
+        tmxmap.camera.pan(0, 20)
+    if keys[key.A]:
+        tmxmap.camera.pan(20, 0)
+    if keys[key.D]:
+        tmxmap.camera.pan(-20, 0)
 # to be deleted:
 #    ox, oy = tmxmap.camera
 #    dx, dy = tmxmap.camera_vector
