@@ -30,10 +30,9 @@ class TileOutline:
         return pts
     pts = pts()
 
-    def __init__(self, pos=(0, 0)):
-        self.list = pyglet.graphics.vertex_list(7, 'v2f')
+    def __init__(self, color, pos=(0, 0)):
+        self.list = pyglet.graphics.vertex_list(7, 'v2f', ('c3B', color * 7))
         self.pos = pos
-        self.color = (1, 0, 0, 1)
 
     @property
     def pos(self):
@@ -49,9 +48,7 @@ class TileOutline:
         self.list.vertices = pts
 
     def draw(self):
-        gl.glColor4f(*self.color)
         self.list.draw(gl.GL_LINE_STRIP)
-        gl.glColor4f(1, 1, 1, 1)
 
 
 class Camera:
@@ -103,7 +100,8 @@ class Camera:
 class PygletTiledMap:
     def __init__(self, window, mapfile):
         self.camera = Camera((window.width, window.height), pos=(0, 0))
-        self.cursor = TileOutline()
+        self.clicked = TileOutline((255, 255, 0))
+        self.cursor = TileOutline((255, 0, 0))
         self.window = window
         self.images = {}
         self.floor = {}  # A list of floor graphics in draw order, keyed by coord
@@ -181,6 +179,23 @@ class PygletTiledMap:
         c = self.camera.viewport_to_coord((x, y))
         self.cursor.pos = self.camera.coord_to_viewport(c)
 
+    def click(self, x, y):
+        """
+        Set the clicked square on the tmxmap.
+
+        If we are clicking on the current clicked square, unclick it.
+
+        :param x: x position
+        :param y:  y position
+        """
+        c = self.camera.viewport_to_coord((x, y))
+        new_clicked_pos = self.camera.coord_to_viewport(c)
+
+        if self.clicked.pos == new_clicked_pos:
+            self.clicked.pos = (0, 0)
+        else:
+            self.clicked.pos = new_clicked_pos
+
 
 window = pyglet.window.Window(resizable=True)
 tmxmap = PygletTiledMap(window, "maps/encounter-01.tmx")
@@ -230,8 +245,42 @@ def on_mouse_release(*args):
 
 
 @window.event
+def on_mouse_press(x, y, *args):
+    """
+    Placeholder for a click event.
+
+    Currently sets a clicked square on the tmxmap.
+
+    :param x: x position
+    :param y: y position
+    """
+    if pyglet.window.mouse.LEFT:
+        tmxmap.click(x, y)
+
+
+@window.event
 def on_resize(*args):
     tmxmap.camera.viewport = window.width, window.height
+
+
+@window.event
+def on_text(key):
+    """
+    Pan the screen in a North, West, South or Easterly direction depending on a key press.
+
+    Using on_text as it takes into consideration key holds - on_key_press does not.
+
+    :param key: str, key being pressed.
+    """
+    if key == 'w':
+        tmxmap.camera.pan(0, -20)
+    elif key == 's':
+        tmxmap.camera.pan(0, 20)
+    elif key == 'a':
+        tmxmap.camera.pan(20, 0)
+    elif key == 'd':
+        tmxmap.camera.pan(-20, 0)
+
 
 def update(_, dt):
     # print(_)
