@@ -48,7 +48,13 @@ def hex_round(h):
 
 root3 = 3 ** 0.5
 
-# These need to be exact or the errors add up!
+# The calculated dimensions of a tile in pixels.
+#
+# They aren't round numbers due to the way we have to align tile graphics to
+# pixel boundaries. See the implementation of coord_to_screen for the integer
+# version; it is from those numbers that these are derived.
+#
+# These need to be exact or the errors add up!!!
 HEX_WIDTH = 95 * 4 / 3
 HEX_HEIGHT = root3 * 0.25 * 128
 
@@ -118,7 +124,7 @@ class HexGrid:
 
     @staticmethod
     def coord_to_screen(coord):
-        """Convert a map coordinate to screen coordinates."""
+        """Convert a map coordinate to screenspace coordinates."""
         cx, cy = coord
         return (
             cx * 95,
@@ -127,7 +133,7 @@ class HexGrid:
 
     @staticmethod
     def world_to_coord(coord):
-        """Get the map coordinates for a screen pixel (x, y)."""
+        """Get the map coordinates for a screenspace pixel (x, y)."""
         x, y = coord
         q = x / 1.5
         r = -x / 3 + root3 / 3 * y

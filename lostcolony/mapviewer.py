@@ -9,6 +9,13 @@ from collections import defaultdict
 
 
 class TileOutline:
+    """This class draws a hexagonal tile outline.
+
+    The attribute pos can be used to move the outline around: this is
+    currently a viewport coordinate (but a tile coordinate would naturally be
+    a better fit).
+
+    """
     def pts():
         """Calculate the points for a hexagon."""
         from math import radians, cos, sin
@@ -56,10 +63,12 @@ class Camera:
         self.pos = pos
 
     def pan(self, dx, dy):
+        """Move the camera by a relative offset."""
         x, y = self.pos
         self.pos = x - dx, y + dy
 
     def coord_to_viewport(self, coord):
+        """Given a tile coordinate, get its viewport position."""
         cx, cy = self.pos
         wx, wy = HexGrid.coord_to_world(coord)
         sx, sy = HexGrid.coord_to_screen(coord)
@@ -69,6 +78,7 @@ class Camera:
         )
 
     def viewport_to_coord(self, coord):
+        """Given a viewport coordinate, get the tile coordinate."""
         x, y = coord
         cx, cy = self.pos
         wx = (x + cx) / self.WSCALE
@@ -76,6 +86,7 @@ class Camera:
         return HexGrid.world_to_coord((wx, wy))
 
     def viewport_to_world(self, coord):
+        """Get the world coordinate of the tile for a viewport coordinate."""
         return HexGrid.coord_to_world(self.viewport_to_coord(coord))
 
     def viewport_bounds(self):
@@ -93,15 +104,15 @@ class PygletTiledMap:
     def __init__(self, window, mapfile):
         self.camera = Camera((window.width, window.height), pos=(0, 0))
         self.cursor = TileOutline()
-        self.navgrid = HexGrid()
         self.window = window
         self.images = {}
-        self.floor = {}
-        self.objects = {}
+        self.floor = {}  # A list of floor graphics in draw order, keyed by coord
+        self.objects = {}  # Static images occupying a tile, keyed by coord
 
         self.load_file(mapfile)
 
     def load_file(self, mapfile):
+        """Load a TMX file."""
         tmx = pytmx.TiledMap(mapfile)
         for image_data in tmx.images:
             if image_data:
@@ -129,6 +140,7 @@ class PygletTiledMap:
         im.anchor_y = 24
 
     def draw(self):
+        """Draw the floor and any decals."""
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         gl.glEnable(gl.GL_ALPHA_TEST)
@@ -142,13 +154,27 @@ class PygletTiledMap:
                     sx, sy = self.camera.coord_to_viewport((x, y))
                     for img in imgs:
                         img.blit(sx, sy, 0)
+        self.cursor.draw()
+
+    def get_drawables(self):
+        """Get a list of drawable objects.
+
+        These objects need to be depth-sorted along with any game objects
+        within the camera bounds, and drawn using painter's algorithm,
+
+        TODO: Refactor this all into a scenegraph class that can manage both
+        static graphics and game objects.
+
+        """
+        (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
+        objects = []
+        for y in range(cy2 - 1, cy1 + 4):
+            for x in range(cx1 - 1, cx2 + 3):
                 obj = self.objects.get((x, y))
                 if obj:
                     sx, sy = self.camera.coord_to_viewport((x, y))
-                    objects.append((sx, sy, obj))
-        for x, y, img in objects:
-            img.blit(x, y, 0)
-        self.cursor.draw()
+                    objects.append((sy, sx, obj))
+        return objects
 
     def hover(self, x, y):
         """Set the position of the mouse cursor."""
@@ -164,6 +190,11 @@ tmxmap = PygletTiledMap(window, "maps/encounter-01.tmx")
 def on_draw():
     window.clear()
     tmxmap.draw()
+
+    drawables = tmxmap.get_drawables()
+    drawables.sort(reverse=True)
+    for y, x, img in drawables:
+        img.blit(x, y, 0)
 
 
 @window.event
