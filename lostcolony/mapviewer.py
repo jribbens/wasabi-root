@@ -91,26 +91,36 @@ class Camera:
 
 class PygletTiledMap:
     def __init__(self, window, mapfile):
-        self.camera = Camera((window.width, window.height), pos=(2600, 0))
+        self.camera = Camera((window.width, window.height), pos=(0, 0))
         self.cursor = TileOutline()
-        # to be deleted:
-        #  self.camera_vector = (0, 0)
-        self.tmx = pytmx.TiledMap(mapfile)
+        self.navgrid = HexGrid()
         self.window = window
         self.images = {}
+        self.floor = {}
+        self.objects = {}
 
-        for image_data in self.tmx.images:
+        self.load_file(mapfile)
+
+    def load_file(self, mapfile):
+        tmx = pytmx.TiledMap(mapfile)
+        for image_data in tmx.images:
             if image_data:
                 image, _, _ = image_data
                 self.load_image(image)
 
-        self.nlayers = len(self.tmx.layers)
-        self.grid = {}
-        for n, layer in enumerate(self.tmx.layers):
-            for x, y, image_data in layer.tiles():
-                imgpath, _, _ = image_data
+        self.nlayers = len(tmx.layers)
+        floor = defaultdict(list)
+        for n, layer in enumerate(tmx.layers[:-1]):
+            for x, y, (imgpath, *_) in layer.tiles():
                 image = self.images[imgpath]
-                self.grid[n, x, y] = image
+                floor[x, y].append(image)
+
+        self.floor = dict(floor)
+
+        self.objects = {}
+        # Top layer contains object data
+        for x, y, (imgpath, *_) in tmx.layers[-1].tiles():
+            self.objects[x, y] = self.images[imgpath]
 
     def load_image(self, name):
         path = os.path.abspath(name)
@@ -124,13 +134,20 @@ class PygletTiledMap:
         gl.glEnable(gl.GL_ALPHA_TEST)
         gl.glAlphaFunc(gl.GL_GREATER, 0.0)
         (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
-        for n in range(self.nlayers):
-            for y in range(cy2 - 1, cy1 + 4):
-                for x in range(cx1 - 1, cx2 + 3):
-                    img = self.grid.get((n, x, y))
-                    if img:
-                        sx, sy = self.camera.coord_to_viewport((x, y))
+        objects = []
+        for y in range(cy2 - 1, cy1 + 4):
+            for x in range(cx1 - 1, cx2 + 3):
+                imgs = self.floor.get((x, y))
+                if imgs:
+                    sx, sy = self.camera.coord_to_viewport((x, y))
+                    for img in imgs:
                         img.blit(sx, sy, 0)
+                obj = self.objects.get((x, y))
+                if obj:
+                    sx, sy = self.camera.coord_to_viewport((x, y))
+                    objects.append((sx, sy, obj))
+        for x, y, img in objects:
+            img.blit(x, y, 0)
         self.cursor.draw()
 
     def hover(self, x, y):
@@ -140,7 +157,6 @@ class PygletTiledMap:
 
 
 window = pyglet.window.Window(resizable=True)
-window.push_handlers(pyglet.window.event.WindowEventLogger())
 tmxmap = PygletTiledMap(window, "maps/encounter-01.tmx")
 
 
@@ -175,6 +191,12 @@ def on_mouse_motion(x, y, dx, dy):
         my = -1
 
     tmxmap.camera_vector = mx, my
+
+
+@window.event
+def on_mouse_release(*args):
+    print(tmxmap.camera.pos)
+
 
 @window.event
 def on_resize(*args):

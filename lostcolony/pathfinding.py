@@ -48,8 +48,9 @@ def hex_round(h):
 
 root3 = 3 ** 0.5
 
-HEX_WIDTH = 128
-HEX_HEIGHT = root3 * 0.25 * HEX_WIDTH
+# These need to be exact or the errors add up!
+HEX_WIDTH = 95 * 4 / 3
+HEX_HEIGHT = root3 * 0.25 * 128
 
 
 class PriorityQueue:
@@ -128,7 +129,7 @@ class HexGrid:
     def world_to_coord(coord):
         """Get the map coordinates for a screen pixel (x, y)."""
         x, y = coord
-        q = x * (2 / 3)
+        q = x / 1.5
         r = -x / 3 + root3 / 3 * y
         return cube_to_hex(cube_round((q, -q - r, r)))
 
