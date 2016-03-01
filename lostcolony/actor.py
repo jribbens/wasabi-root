@@ -3,7 +3,7 @@
 # Note: coordinates are in the "even-q vertical" layout in the terminology of
 # http://www.redblobgames.com/grids/hexagons/#coordinates
 
-
+# to do: too many versions of this code
 def _coord_to_world(coord):
     """Convert a map coordinate to a Cartesian world coordinate."""
     cx, cy = coord
@@ -15,7 +15,12 @@ def _coord_to_world(coord):
 class Actor(object):
     """Some movable element in the map"""
 
-    def __init__(self):
+    def __init__(self, world):
+        """
+
+        :param tmx: Used to obey terrain restrictions
+        :return:
+        """
         # Integer coordinates of the actor
         self.position = (0, 0)
         # This attribute can be
@@ -26,19 +31,33 @@ class Actor(object):
         self.progress = 0
         # Linear speed in tiles per second. non-negative
         self.speed = 0
+        self.weapon = None
+        self.world = world
+        self.facing = 1 # Hex side: 0 - irrelevant, 1 = top, 2 = top right ..
 
-    def update(self, dt):
+    def update(self, t, dt):
         """Update, essentially moving"""
         if self.moving_to is not None:
+            if self.weapon is not None:
+                self.weapon.update(t)
             self.progress += self.speed * dt
             if self.progress >= 1.0:
                 # Got there
+                if self.weapon:
+                    self.weapon.got_there(t)
                 self.position = self.moving_to
                 self.moving_to = None
                 self.speed = 0
                 self.progress = 0
 
     def go(self, destination, speed):
+        """
+        Jump to another hex after a time delay. Normally adjacent.
+
+        :param destination:
+        :param speed: hexes per second
+        :return:
+        """
         assert self.progress == 0
         assert self.moving_to is None
         if self.position == destination:
@@ -55,3 +74,12 @@ class Actor(object):
             dest = _coord_to_world(self.moving_to)
             delta = (dest[0] - source[0], dest[1] - source[1])
             return (source[0] + delta[0] * self.progress, source[1] + delta[1] * self.progress)
+
+    def hit(self, damage):
+        """
+        Receive some damage, manage the consequences
+
+        :param damage: int
+        :return:
+        """
+        pass

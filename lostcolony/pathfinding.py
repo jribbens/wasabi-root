@@ -197,3 +197,18 @@ class HexGrid:
             path.append(current)
         return path
         #return came_from, cost_so_far
+
+
+    def visible(self, start, target_coord, blocking_terrain_types):
+        """
+        Can you see the target from the starting position?
+
+        The first blocking terrain type is considered visible: you can see ito the bush, but not through it.
+        This is used for line-of-sight attacks, e.g. you can throw a grenade over some things you can't shoot through
+
+        :param start: Observer coordinates
+        :param target_coord:
+        :param blocking_terrain: Tuple of blocking terrain types
+        :return:
+        """
+        pass

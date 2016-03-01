@@ -1,4 +1,5 @@
 import sys
+import time
 sys.path.insert(0, '.')
 
 import random
@@ -137,4 +138,6 @@ def update():
     while token.moving_to is None and path:
         token.go(path[-1], 1)
         path.pop()
-    token.update(1/60)
+    t = time.perf_counter()
+    dt = 1/60
+    token.update(t, dt)
