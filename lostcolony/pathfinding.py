@@ -153,6 +153,23 @@ class HexGrid:
             if c in self:
                 yield c
 
+    def front_hex(self, coords, facing):
+        """
+        Adjacent hex in the facing direction, only if on-map
+
+        :param coords:
+        :param facing:
+        :return: Tuple: empty if the front hex is off-map
+        """
+        x, y = coords
+        neighbours = HexGrid.NEIGHBOURS_ODD if x % 2 else HexGrid.NEIGHBOURS_EVEN
+        dx, dy = neighbours[facing]
+        ret = x + dx, y + dy,
+        if ret in self:
+            return ret
+        return None
+
+
     @staticmethod
     def distance(a, b):
         """Calculate the distance between two pairs of coordinates."""

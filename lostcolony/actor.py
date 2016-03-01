@@ -33,7 +33,8 @@ class Actor(object):
         self.speed = 0
         self.weapon = None
         self.world = world
-        self.facing = 1 # Hex side: 0 - irrelevant, 1 = top, 2 = top right ..
+        self.facing = 1 # Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
+        self.faction = None # Faction object it belongs to
 
     def update(self, t, dt):
         """Update, essentially moving"""
@@ -64,6 +65,8 @@ class Actor(object):
             return
         self.moving_to = destination
         self.speed = speed
+        if self.weapon:
+            self.weapin.moving()
 
     def get_coords(self):
         """Cartesian (x, y) coords for this actor"""
