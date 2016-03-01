@@ -169,7 +169,6 @@ class HexGrid:
             return ret
         return None
 
-
     @staticmethod
     def distance(a, b):
         """Calculate the distance between two pairs of coordinates."""
@@ -213,19 +212,37 @@ class HexGrid:
             current = came_from[current]
             path.append(current)
         return path
-        #return came_from, cost_so_far
 
-
-    def visible(self, start, target_coord, blocking_terrain_types):
+    def visible(self, start, target, blocking_terrain_types):
         """
         Can you see the target from the starting position?
 
-        The first blocking terrain type is considered visible: you can see ito the bush, but not through it.
-        This is used for line-of-sight attacks, e.g. you can throw a grenade over some things you can't shoot through
+        The first blocking terrain type is considered visible: you can see ito the bush, but not
+        through it.
+        This is used for line-of-sight attacks, e.g. you can throw a grenade over some things you
+        can't shoot through
 
         :param start: Observer coordinates
-        :param target_coord:
+        :param target: Target coordinates
         :param blocking_terrain: Tuple of blocking terrain types
-        :return:
+        :return: set of obstacle coordinates (empty if full line of sight)
         """
-        pass
+        if start == target:
+            # Simplest case, avoids division by 0 in the code below
+            return []
+        c_start = self.coord_to_world(start)
+        c_target = self.coord_to_world(target)
+        # Delta
+        delta = (c_target[0] - c_start[0], c_target[1] - c_start[1])
+        d_len = (delta[0] ** 2 + delta[1] ** 2) ** 0.5
+        # Normalize to unit
+        d_1 = (delta[0] / d_len, delta[1] / d_len)
+        # Look for obstacles
+        obstacles = set()
+        for i in range(int(math.ceil(d_len))):
+            checked = (c_start[0] + d_1[0]*i, c_start[1] + d_1[1]*i, )
+            for fuzzy_x, fuzzy_y in (-1e-6, -1e-6), (-1e-6, 1e-6), (1e-6, -1e-6), (1e-6, 1e-6):
+                checked_coord = self.world_to_coord((checked[0]+fuzzy_x, checked[1]+fuzzy_y))
+                if self[checked_coord] in blocking_terrain_types:
+                    obstacles.add(checked_coord)
+        return obstacles
