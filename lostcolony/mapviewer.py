@@ -105,6 +105,7 @@ class PygletTiledMap:
         self.cursor = TileOutline((255, 0, 0))
         self.window = window
         self.images = {}
+        self.mouse_coords = (0, 0)
         self.floor = {}  # A list of floor graphics in draw order, keyed by coord
         self.objects = {}  # Static images occupying a tile, keyed by coord
 
@@ -177,7 +178,12 @@ class PygletTiledMap:
 
     def hover(self, x, y):
         """Set the position of the mouse cursor."""
-        c = self.camera.viewport_to_coord((x, y))
+        self.mouse_coords = x, y
+        self.update_cursor()
+
+    def update_cursor(self):
+        """Recalculate the cursor position from the mouse coords."""
+        c = self.camera.viewport_to_coord(self.mouse_coords)
         self.cursor.pos = self.camera.coord_to_viewport(c)
 
     def click(self, x, y):
@@ -220,6 +226,7 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     if pyglet.window.mouse.LEFT:
         # Drag screen
         tmxmap.camera.pan(dx, dy)
+        tmxmap.hover(x, y)
     elif pyglet.window.mouse.RIGHT:
         # Select by area
         pass
@@ -270,12 +277,16 @@ def update(_, dt):
     # print(_)
     if keys[key.W]:
         tmxmap.camera.pan(0, -20)
+        tmxmap.update_cursor()
     if keys[key.S]:
         tmxmap.camera.pan(0, 20)
+        tmxmap.update_cursor()
     if keys[key.A]:
         tmxmap.camera.pan(20, 0)
+        tmxmap.update_cursor()
     if keys[key.D]:
         tmxmap.camera.pan(-20, 0)
+        tmxmap.update_cursor()
 # to be deleted:
 #    ox, oy = tmxmap.camera
 #    dx, dy = tmxmap.camera_vector
