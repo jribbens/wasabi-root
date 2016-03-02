@@ -6,10 +6,11 @@ class World:
     Top-level container for the map, factions, actors etc
     """
 
-    def __init__(self):
+    def __init__(self, grid):
         # TODO: un-hardcode this. can we set this in tiled?
         rex = Character(self, "rex")
         rex.position = (5, 5)
+        self.grid = grid
 
         self.heroes = [rex]
 
@@ -21,3 +22,7 @@ class World:
         for h in self.heroes:
             if h.position == hex:
                 return h
+
+    def update(self, dt):
+        for h in self.heroes:
+            h.update(dt)

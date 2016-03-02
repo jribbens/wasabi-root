@@ -111,7 +111,8 @@ class PygletTiledMap:
         self.mouse_coords = (0, 0)
         self.floor = {}  # A list of floor graphics in draw order, keyed by coord
         self.objects = {}  # Static images occupying a tile, keyed by coord
-        self.world = World()
+        self.grid = HexGrid()
+        self.world = World(self.grid)
 
         self.load_file(mapfile)
 
@@ -129,6 +130,8 @@ class PygletTiledMap:
             for x, y, (imgpath, *_) in layer.tiles():
                 image = self.images[imgpath]
                 floor[x, y].append(image)
+                # FIXME: use actual data instead of empty grid
+                self.grid[x, y] = True
 
         self.floor = dict(floor)
 
@@ -213,6 +216,9 @@ class PygletTiledMap:
         c = self.camera.viewport_to_coord((x, y))
         new_clicked_pos = self.camera.coord_to_viewport(c)
 
+        # FIXME: use the ui class to handle this instead fo hardcoded "move hero 0"
+        self.world.heroes[0].walk_to(c)
+
         if self.clicked.pos == new_clicked_pos:
             self.clicked.pos = (0, 0)
         else:
@@ -231,7 +237,7 @@ def on_draw():
     tmxmap.draw()
 
     drawables = tmxmap.get_drawables()
-    drawables.sort(reverse=True)
+    drawables.sort(reverse=True, key=lambda t: (t[0], t[1]))
     for y, x, img in drawables:
         img.blit(x, y, 0)
 
@@ -289,6 +295,9 @@ def on_resize(*args):
 
 
 def update(_, dt):
+
+    tmxmap.world.update(dt)
+
     # print(_)
     if keys[key.W]:
         tmxmap.camera.pan(0, -20)
