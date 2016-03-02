@@ -127,11 +127,14 @@ class PygletTiledMap:
         self.nlayers = len(tmx.layers)
         floor = defaultdict(list)
         for n, layer in enumerate(tmx.layers[:-1]):
-            for x, y, (imgpath, *_) in layer.tiles():
+            for x, y, (imgpath, *stuff) in layer.tiles():
                 image = self.images[imgpath]
                 floor[x, y].append(image)
-                # FIXME: use actual data instead of empty grid
-                self.grid[x, y] = True
+
+                try:
+                    self.grid[x, y].append(os.path.splitext(os.path.basename(imgpath))[0])
+                except AttributeError:
+                    self.grid[x, y] = [os.path.splitext(os.path.basename(imgpath))[0]]
 
         self.floor = dict(floor)
 
@@ -139,15 +142,21 @@ class PygletTiledMap:
         # Top layer contains object data
         for x, y, (imgpath, *_) in tmx.layers[-1].tiles():
             self.objects[x, y] = self.images[imgpath]
+
+            try:
+                self.grid[x, y].append(os.path.splitext(os.path.basename(imgpath))[0])
+            except AttributeError:
+                self.grid[x, y] = [os.path.splitext(os.path.basename(imgpath))[0]]
+
         # FIXME: Who should know the list of PC sprites?
         for character_name in ["rex"]:
             for heading in "ne n nw se s sw".split():
                 for action in ["shoot", "stand"]:
                     self.load_image(os.path.join("images",
-                                             "pc",
-                                             "{name}-{heading}-{action}.png".format(name=character_name,
-                                                                                                    heading=heading,
-                                                                                                    action=action)))
+                                                 "pc",
+                                                 "{name}-{heading}-{action}.png".format(name=character_name,
+                                                                                        heading=heading,
+                                                                                        action=action)))
                 for step in "1234":
                     fname = "%s-%s-walk%s.png" % (character_name, heading, step)
                     self.load_image(os.path.join("images", "pc", fname))
