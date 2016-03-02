@@ -11,6 +11,7 @@ from lostcolony.pathfinding import (
     HexGrid, HEX_WIDTH, HEX_HEIGHT
 )
 from lostcolony.tile_outline import TileOutline
+from lostcolony.ui import UI
 from lostcolony.world import World
 
 
@@ -63,7 +64,6 @@ class Camera:
 class PygletTiledMap:
     def __init__(self, window, mapfile):
         self.camera = Camera((window.width, window.height), pos=(0, 0))
-        self.clicked = TileOutline((255, 255, 0))
         self.cursor = TileOutline((255, 0, 0))
         self.window = window
         self.images = {}
@@ -184,36 +184,18 @@ class PygletTiledMap:
         c = self.camera.viewport_to_coord(self.mouse_coords)
         self.cursor.pos = self.camera.coord_to_viewport(c)
 
-    def click(self, x, y):
-        """
-        Set the clicked square on the tmxmap.
-
-        If we are clicking on the current clicked square, unclick it.
-
-        :param x: x position
-        :param y:  y position
-        """
-        c = self.camera.viewport_to_coord((x, y))
-        new_clicked_pos = self.camera.coord_to_viewport(c)
-
-        self.world.active_actor.walk_to(c)
-
-        if self.clicked.pos == new_clicked_pos:
-            self.clicked.pos = (0, 0)
-        else:
-            self.clicked.pos = new_clicked_pos
-
-
 window = pyglet.window.Window(resizable=True)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 tmxmap = PygletTiledMap(window, "maps/encounter-01.tmx")
+ui = UI(tmxmap.world, tmxmap.camera)
 
 
 @window.event
 def on_draw():
     window.clear()
     tmxmap.draw()
+    ui.draw()
 
     drawables = tmxmap.get_drawables()
     drawables.sort(reverse=True, key=lambda t: (t[0], t[1]))
@@ -250,22 +232,17 @@ def on_mouse_motion(x, y, dx, dy):
 
 
 @window.event
-def on_mouse_release(*args):
-    print(tmxmap.camera.pos)
-
-
-@window.event
-def on_mouse_press(x, y, *args):
+def on_mouse_release(x, y, button, mods):
     """
     Placeholder for a click event.
 
-    Currently sets a clicked square on the tmxmap.
+    Currently tells the UI to send a guy walking
 
     :param x: x position
     :param y: y position
     """
-    if pyglet.window.mouse.LEFT:
-        tmxmap.click(x, y)
+    if pyglet.window.mouse.LEFT == button:
+        ui.go((x, y))
 
 
 @window.event
@@ -273,11 +250,25 @@ def on_resize(*args):
     tmxmap.camera.viewport = window.width, window.height
 
 
+def on_key_press(symbol, mods):
+    if symbol == pyglet.window.key._1:
+        print("one!")
+        ui.select_by_name("rex")
+    if symbol == pyglet.window.key._2:
+        ui.select_by_name("max")
+    if symbol == pyglet.window.key._3:
+        ui.select_by_name("ping")
+    if symbol == pyglet.window.key._4:
+        ui.select_by_name("tom")
+    if symbol == pyglet.window.key.TAB:
+        ui.select_next_hero()
+# Using push_handlers to avoid breaking the other handler
+window.push_handlers(on_key_press)
+
 def update(_, dt):
 
     tmxmap.world.update(dt)
 
-    # print(_)
     if keys[key.W]:
         tmxmap.camera.pan(0, -20)
         tmxmap.update_cursor()
