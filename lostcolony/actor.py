@@ -21,6 +21,8 @@ def _coord_to_world(coord):
 class Actor(object):
     """Some movable element in the map"""
 
+    facing_to_dir = {1: 'n', 2: 'ne', 3: 'se', 4: 's', 5: 'sw', 6: 'nw'}
+
     def __init__(self, world):
         """
 
@@ -42,6 +44,8 @@ class Actor(object):
         self.world = world
         self.facing = 1  # Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
         self.faction = None  # Faction object it belongs to
+        self.action='stand'
+        self.phase = ''
 
     def update(self, dt):
         """Update, essentially moving"""
@@ -111,7 +115,12 @@ class Character(Actor):
         base_x, base_y = _coord_to_world(self.position)
         new_x = sx + (off_x - base_x) * HEX_WIDTH / 2
         new_y = sy - (off_y - base_y) * HEX_HEIGHT / 2
-        return new_x, new_y, os.path.join("images", "pc", "%s-se-walk1.png" % (self.name))
+        return new_x, new_y, os.path.join("images",
+                                          "pc",
+                                          "{name}-{dir}-{action}{phase}.png".format(name=self.name,
+                                                                                    dir=self.facing_to_dir[self.facing],
+                                                                                    action=self.action,
+                                                                                    phase=self.phase))
 
     def walk_to(self, target):
         self.walking_to = target

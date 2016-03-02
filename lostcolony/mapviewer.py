@@ -142,6 +142,12 @@ class PygletTiledMap:
         # FIXME: Who should know the list of PC sprites?
         for character_name in ["rex"]:
             for heading in "ne n nw se s sw".split():
+                for action in ["shoot", "stand"]:
+                    self.load_image(os.path.join("images",
+                                             "pc",
+                                             "{name}-{heading}-{action}.png".format(name=character_name,
+                                                                                                    heading=heading,
+                                                                                                    action=action)))
                 for step in "1234":
                     fname = "%s-%s-walk%s.png" % (character_name, heading, step)
                     self.load_image(os.path.join("images", "pc", fname))
