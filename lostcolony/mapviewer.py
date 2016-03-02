@@ -81,6 +81,11 @@ class Scene:
         self.objects = map.objects
         self.grid = map.grid
         self.world = World(self.grid)
+        self.fof_effect = {
+            character : TileOutline(colour)
+            for character, colour
+            in self.world.field_of_fire_colours()
+        }
 
     def draw(self):
         """Draw the floor and any decals."""
@@ -96,6 +101,14 @@ class Scene:
                     sx, sy = self.camera.coord_to_viewport((x, y))
                     for img in imgs:
                         img.blit(sx, sy, 0)
+
+        for character in self.world.get_characters():
+            if character.weapon and character.weapon.field_of_fire:
+                fof_effect = self.fof_effect[character]
+                for fof_hex in character.weapon.field_of_fire:
+                    fof_effect.coord = fof_hex
+                    fof_effect.draw()
+
         self.cursor.draw()
 
     def get_drawables(self):
