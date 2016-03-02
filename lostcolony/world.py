@@ -1,39 +1,9 @@
+from collections import defaultdict
 from lostcolony.actor import Character, Actor
 from lostcolony.animation import rex, raptor
 from lostcolony.faction import Faction
 from itertools import chain
 
-
-OBSTRUCTIONS = {"bed",
-                "bunk",
-                "bunk2",
-                "column",
-                "crates1",
-                "crates2",
-                "crates3",
-                "crates4",
-                "desk1",
-                "desk2",
-                "lily1",
-                "lily2",
-                "medbay-bed",
-                "medbay-bed2",
-                "server",
-                "server2",
-                "short-wall",
-                "shuttle-l",
-                "shuttle-m",
-                "shuttle-r",
-                "table",
-                "tree1",
-                "uplink",
-                "uplink-obj",
-                "veg1",
-                "veg2",
-                "veg3",
-                "veg4",
-                "wall",
-                }
 
 class World:
     """
@@ -43,6 +13,8 @@ class World:
     def __init__(self, grid):
         # TODO: un-hardcode this. can we set this in tiled?
         self.grid = grid
+        self.actors_by_pos = defaultdict(set)
+        self.grid.layers.insert(0, self.actors_by_pos)
 
         self.factions = [self.init_player()]  # first faction is the player
         self.factions += self.init_npcs()
@@ -63,11 +35,11 @@ class World:
 
     @property
     def actors(self):
-        return chain(*[faction.actors for faction in self.factions])
+        return chain.from_iterable(faction.actors for faction in self.factions)
 
     def get_actors(self, hex):
         """Get a list of actors "in" the given tile."""
-        return [a for a in self.actors if a.position == hex]
+        return self.actors_by_pos.get(hex) or []
 
     def update(self, dt):
         for a in self.actors:

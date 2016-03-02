@@ -1,5 +1,6 @@
 import heapq
 import math
+from collections import ChainMap, defaultdict
 
 
 def cube_round(h):
@@ -86,16 +87,18 @@ class NoPath(Exception):
 
 class HexGrid:
     def __init__(self):
-        self.cells = {}
+        self.cells = ChainMap(defaultdict(lambda: 1))
+
+    @property
+    def layers(self):
+        return self.cells.maps
 
     def __setitem__(self, coords, value):
         self.cells[coords] = bool(value)
 
-    def __getitem__(self, coords):
-        return self.cells.get(coords)
-
-    def __contains__(self, coords):
-        return self.cells.get(coords)
+    def blocked(self, coords):
+        """Return True if the given coordinates are blocked."""
+        return bool(self.cells.get(coords))
 
     NEIGHBOURS_EVEN = [
         (0, -1),
@@ -150,7 +153,7 @@ class HexGrid:
         neighbours = self.NEIGHBOURS_ODD if x % 2 else self.NEIGHBOURS_EVEN
         for dx, dy in neighbours:
             c = x + dx, y + dy
-            if self[c]:
+            if not self.blocked(c):
                 yield c
 
     def hex_in_front(self, coords, facing):
@@ -242,6 +245,6 @@ class HexGrid:
             checked = (c_start[0] + d_1[0] * i, c_start[1] + d_1[1] * i,)
             for fuzzy_x, fuzzy_y in (-1e-6, -1e-6), (-1e-6, 1e-6), (1e-6, -1e-6), (1e-6, 1e-6):
                 checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
-                if not self[checked_coord]:
+                if self.blocked(checked_coord):
                     obstacles.add(checked_coord)
         return obstacles

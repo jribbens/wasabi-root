@@ -61,6 +61,8 @@ class Actor(object):
         self.action = 'stand'
         self.phase = ''
 
+        self.world.actors_by_pos[self.position].add(self)
+
     def update(self, dt):
         """Update, essentially moving"""
         if self.moving_to is not None:
@@ -71,6 +73,8 @@ class Actor(object):
                 # Got there
                 if self.weapon:
                     self.weapon.got_there()
+                self.world.actors_by_pos[self.position].discard(self)
+                self.world.actors_by_pos[self.moving_to].add(self)
                 self.position = self.moving_to
                 self.moving_to = None
                 self.speed = 0
@@ -88,6 +92,7 @@ class Actor(object):
         assert self.moving_to is None
         if self.position == destination:
             return
+        self.world.actors_by_pos[self.moving_to].add(self)
         self.moving_to = destination
         self.speed = speed
         if self.weapon:
