@@ -2,6 +2,7 @@ from lostcolony.actor import Character, Actor
 from lostcolony.faction import Faction
 from itertools import chain
 
+
 class World:
     """
     Top-level container for the map, factions, actors etc
@@ -11,17 +12,14 @@ class World:
         # TODO: un-hardcode this. can we set this in tiled?
         self.grid = grid
 
-        self.factions = [self.init_player()] # first faction is the player
+        self.factions = [self.init_player()]  # first faction is the player
         self.factions += self.init_npcs()
-
-        # The actor controls apply to (e.g. the one you're moving)
-        self.active_actor = self.factions[0].actors[0]
 
     def init_player(self):
         # Stub code - this should come from scenario set-up
         faction = Faction("Player")
-        rex = Character(self, "rex", faction=faction, position = (5,5), facing=4)
-        pet = Actor(self, "raptor", faction=faction, position = (7,5), facing=3) # pet dino
+        rex = Character(self, "rex", faction=faction, position=(5, 5), facing=4)
+        pet = Actor(self, "raptor", faction=faction, position=(7, 5), facing=3)  # pet dino
         return faction
 
     def init_npcs(self):
@@ -32,7 +30,7 @@ class World:
 
     @property
     def actors(self):
-        return chain( *[ faction.actors for faction in self.factions] )
+        return chain(*[faction.actors for faction in self.factions])
 
     def drawables(self):
         # to do: May need to sort them to set the drawing order? But is this the right place?
