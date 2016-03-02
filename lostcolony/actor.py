@@ -22,7 +22,8 @@ def _coord_to_world(coord):
 class Actor(object):
     """Some movable element in the map"""
 
-    facing_to_dir = {1: 'n', 2: 'ne', 3: 'se', 4: 's', 5: 'sw', 6: 'nw'}
+    FACING_TO_DIR = {1: 'n', 2: 'ne', 3: 'se', 4: 's', 5: 'sw', 6: 'nw'}
+    DIR_TO_FACING = {'n': 1, 'ne': 2, 'se': 3, 's': 4, 'sw': 5, 'nw': 6}
 
     def __init__(self, world):
         """
@@ -45,7 +46,7 @@ class Actor(object):
         self.world = world
         self.facing = 3  # Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
         self.faction = None  # Faction object it belongs to
-        self.action='stand'
+        self.action = 'stand'
         self.phase = ''
 
     def update(self, dt):
@@ -78,7 +79,7 @@ class Actor(object):
         self.moving_to = destination
         self.speed = speed
         if self.weapon:
-            self.weapin.moving()
+            self.weapon.moving()
 
     def get_coords(self):
         """Cartesian (x, y) coords for this actor"""
@@ -88,7 +89,33 @@ class Actor(object):
         else:
             dest = _coord_to_world(self.moving_to)
             delta = (dest[0] - source[0], dest[1] - source[1])
-            return (source[0] + delta[0] * self.progress, source[1] + delta[1] * self.progress)
+
+            self.get_dir(delta)
+
+            return source[0] + delta[0] * self.progress, source[1] + delta[1] * self.progress
+
+    def get_dir(self, delta):
+        """
+        Use the delta difference to figure out the direction a character should face.
+
+        :param delta: tuple, co-ordinate difference between current position and next position.
+        """
+
+        direction = ''
+
+        if delta[1] < 0:
+            direction += 'n'
+        elif delta[1] > 0:
+            direction += 's'
+        else:
+            direction += self.FACING_TO_DIR[self.facing][0]
+
+        if delta[0] > 0:
+            direction += 'e'
+        elif delta[0] < 0:
+            direction += 'w'
+
+        self.facing = self.DIR_TO_FACING[direction]
 
     def hit(self, damage):
         """
@@ -108,8 +135,8 @@ class Character(Actor):
         # Note: name should match the sprite filenames
         self.name = name
         self.walking_to = None
-        self.anim = animated_character.create_instance(self.name)
         super().__init__(world)
+        self.anim = animated_character.create_instance(self.name, direction=self.FACING_TO_DIR[self.facing])
 
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
@@ -135,3 +162,4 @@ class Character(Actor):
             # Go to next place in path
             self.go(next_tile, self.DEFAULT_SPEED)
         self.anim.pos = self.position
+        self.anim.direction = self.FACING_TO_DIR[self.facing]
