@@ -32,9 +32,10 @@ class Actor(object):
         # Linear speed in tiles per second. non-negative
         self.speed = 0
         self.weapon = None
+        # FIXME: why does this need a world??
         self.world = world
-        self.facing = 1 # Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
-        self.faction = None # Faction object it belongs to
+        self.facing = 1  # Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
+        self.faction = None  # Faction object it belongs to
 
     def update(self, t, dt):
         """Update, essentially moving"""
