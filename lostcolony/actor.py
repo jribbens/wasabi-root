@@ -1,7 +1,9 @@
 # encoding: utf-8
 
+import os
 # Note: coordinates are in the "even-q vertical" layout in the terminology of
 # http://www.redblobgames.com/grids/hexagons/#coordinates
+
 
 # to do: too many versions of this code
 def _coord_to_world(coord):
@@ -87,3 +89,15 @@ class Actor(object):
         :return:
         """
         pass
+
+
+class Character(Actor):
+
+    def __init__(self, world, name):
+        # Note: name should match the sprite filenames
+        self.name = name
+        super().__init__(world)
+
+    def drawable(self, sx, sy):
+        # TODO: Add animation, use heading
+        return sy, sx, os.path.join("images", "pc", "%s-se-walk1.png" % (self.name))

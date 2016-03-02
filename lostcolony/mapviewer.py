@@ -111,6 +111,7 @@ class PygletTiledMap:
         self.mouse_coords = (0, 0)
         self.floor = {}  # A list of floor graphics in draw order, keyed by coord
         self.objects = {}  # Static images occupying a tile, keyed by coord
+        self.world = World()
 
         self.load_file(mapfile)
 
@@ -135,6 +136,12 @@ class PygletTiledMap:
         # Top layer contains object data
         for x, y, (imgpath, *_) in tmx.layers[-1].tiles():
             self.objects[x, y] = self.images[imgpath]
+        # FIXME: Who should know the list of PC sprites?
+        for character_name in ["rex"]:
+            for heading in "ne n nw se s sw".split():
+                for step in "1234":
+                    fname = "%s-%s-walk%s.png" % (character_name, heading, step)
+                    self.load_image(os.path.join("images", "pc", fname))
 
     def load_image(self, name):
         path = os.path.abspath(name)
@@ -174,7 +181,13 @@ class PygletTiledMap:
         for y in range(cy2 - 1, cy1 + 4):
             for x in range(cx1 - 1, cx2 + 3):
                 obj = self.objects.get((x, y))
-                if obj:
+                if obj is None:
+                    actor = self.world.get_actor((x, y))
+                    if actor:
+                        sx, sy = self.camera.coord_to_viewport((x, y))
+                        sx, sy, pic = actor.drawable(sx, sy)
+                        objects.append((sx, sy, self.images[pic]))
+                else:
                     sx, sy = self.camera.coord_to_viewport((x, y))
                     objects.append((sy, sx, obj))
         return objects
