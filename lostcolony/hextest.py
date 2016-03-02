@@ -13,6 +13,7 @@ OFF = 255, 128, 128
 PATH = 0, 255, 0
 HOVER = 0, 128, 255,
 TOKEN = 255, 255, 0,
+LOS = 255, 0, 255,
 
 size = 36.0
 
@@ -81,7 +82,7 @@ def pixel_to_hex(x, y):
 
 
 g = HexGrid()
-token = Actor()
+token = Actor(None)
 hover = (0, 0)
 for x in range(15):
     for y in range(10):
@@ -92,6 +93,14 @@ for x in range(15):
 def draw():
     hn = list(g.neighbours(hover))
     screen.clear()
+    # Show actor
+    ax, ay = token.get_coords()
+    draw_hex(ax * size, ay * size, TOKEN, size=10)
+    # Line of sight
+    los_x, los_y = g.coord_to_world(hover)
+    screen.draw.line((ax* size, ay*size), (los_x * size, los_y * size), LOS)
+    obstacles = g.visible(token.position, hover, [None])
+
     # Show map
     for x in range(15):
         for y in range(10):
@@ -101,9 +110,8 @@ def draw():
             # Show hovered squares
             if (x, y) in hn:
                 draw_hex(wx * size, wy * size, HOVER, size=20)
-    # Show actor
-    ax, ay = token.get_coords()
-    draw_hex(ax * size, ay * size, TOKEN, size=10)
+            if (x, y) in obstacles:
+                draw_hex(wx * size, wy * size, LOS, size=30)
 
     # Show path
     if path:
@@ -111,6 +119,7 @@ def draw():
         p = [(x * size, y * size) for x, y in p]
         for a, b in zip(p, p[1:]):
             screen.draw.line(a, b, PATH)
+
 
 path = None
 hover = (0, 0)
