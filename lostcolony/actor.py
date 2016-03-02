@@ -2,6 +2,7 @@
 
 import os
 
+from lostcolony.animation import animated_character
 from lostcolony.pathfinding import (
     HexGrid, HEX_WIDTH, HEX_HEIGHT
 )
@@ -42,7 +43,7 @@ class Actor(object):
         self.weapon = None
         # FIXME: why does this need a world??
         self.world = world
-        self.facing = 1  # Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
+        self.facing = 3  # Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
         self.faction = None  # Faction object it belongs to
         self.action='stand'
         self.phase = ''
@@ -107,6 +108,7 @@ class Character(Actor):
         # Note: name should match the sprite filenames
         self.name = name
         self.walking_to = None
+        self.anim = animated_character.create_instance(self.name)
         super().__init__(world)
 
     def drawable(self, sx, sy):
@@ -115,23 +117,21 @@ class Character(Actor):
         base_x, base_y = _coord_to_world(self.position)
         new_x = sx + (off_x - base_x) * HEX_WIDTH / 2
         new_y = sy - (off_y - base_y) * HEX_HEIGHT / 2
-        return new_x, new_y, os.path.join("images",
-                                          "pc",
-                                          "{name}-{dir}-{action}{phase}.png".format(name=self.name,
-                                                                                    dir=self.facing_to_dir[self.facing],
-                                                                                    action=self.action,
-                                                                                    phase=self.phase))
+        return new_x, new_y, self.anim.draw()
 
     def walk_to(self, target):
         self.walking_to = target
+        self.anim.play('walk')
 
     def update(self, dt):
         super().update(dt)
         if self.position == self.walking_to:
             self.walking_to = None
+            self.anim.play('stand')
         if self.moving_to is None and self.walking_to is not None:
             # Plan path
             path = self.world.grid.find_path(self.position, self.walking_to)
             next_tile = path[-2]
             # Go to next place in path
             self.go(next_tile, self.DEFAULT_SPEED)
+        self.anim.pos = self.position
