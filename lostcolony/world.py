@@ -19,6 +19,7 @@ class World:
         # Stub code - this should come from scenario set-up
         faction = Faction("Player")
         rex = Character(self, "rex", faction=faction, position=(5, 5), facing=4)
+        rex_twin = Character(self, "rex", faction=faction, position=(6, 5), facing=4)
         pet = Actor(self, "raptor", faction=faction, position=(7, 5), facing=3)  # pet dino
         return faction
 

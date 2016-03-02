@@ -135,6 +135,9 @@ class Actor(object):
         """
         pass
 
+    def walk_to(self, target):
+        print("I can't walk! you put a non-Character() in the player faction! ,%s" % repr(self))
+
 
     def get_pic(self):
         # Placeholder - I need a dino to shoot at quickly!

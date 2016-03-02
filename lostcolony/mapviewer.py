@@ -252,7 +252,6 @@ def on_resize(*args):
 
 def on_key_press(symbol, mods):
     if symbol == pyglet.window.key._1:
-        print("one!")
         ui.select_by_name("rex")
     if symbol == pyglet.window.key._2:
         ui.select_by_name("max")
