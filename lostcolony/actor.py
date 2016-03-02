@@ -6,6 +6,7 @@ import logging
 from lostcolony.pathfinding import (
     HEX_WIDTH, HEX_HEIGHT, NoPath
 )
+
 # Note: coordinates are in the "even-q vertical" layout in the terminology of
 # http://www.redblobgames.com/grids/hexagons/#coordinates
 
@@ -25,17 +26,16 @@ def _coord_to_world(coord):
 class Actor(object):
     """Some movable element in the map"""
 
-    FACING_TO_DIR = {1: 'n', 2: 'ne', 3: 'se', 4: 's', 5: 'sw', 6: 'nw'}
-    DIR_TO_FACING = {'n': 1, 'ne': 2, 'se': 3, 's': 4, 'sw': 5, 'nw': 6}
+    FACING_TO_DIR = {0: 'n', 1: 'ne', 2: 'se', 3: 's', 4: 'sw', 5: 'nw'}
+    DIR_TO_FACING = {'n': 0, 'ne': 1, 'se': 2, 's': 3, 'sw': 4, 'nw': 5}
 
-    def __init__(self, world, anim, position, faction, facing):
+    def __init__(self, world, anim, position, faction, facing, colour = (0,0,0)):
         """
-
         :param world:
-        :param anim:
-        :param position:
-        :param faction:
+        :param position: hex coordinates
+        :param faction: the int used for FACING_TO_DIR etc
         :param facing: Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
+        :param colour: colour used for fields of fire, only used for the player faction. Think of it as a brand value...
         :return:
         """
         # Integer coordinates of the actor
@@ -47,7 +47,9 @@ class Actor(object):
         self.position = position
         self.faction = faction
         faction.add(self)
+        assert 0 <= facing < 6
         self.facing = facing
+        self.colour = colour
 
         self.moving_to = None
         # Non-integer progress of movement: 0.0 == just started, 1.0 == arrived
@@ -55,7 +57,7 @@ class Actor(object):
         # Linear speed in tiles per second. non-negative
         self.speed = 0
         self.weapon = None
-        # FIXME: why does this need a world??
+        # FIXME: why does this need a world?? Because weapons want to use it.
 
         self.faction = None  # Faction object it belongs to
         self.action = 'stand'
@@ -63,16 +65,16 @@ class Actor(object):
 
         self.world.actors_by_pos[self.position].add(self)
 
-    def update(self, dt):
+    def update(self, t, dt):
         """Update, essentially moving"""
         if self.moving_to is not None:
             if self.weapon is not None:
-                self.weapon.update(dt)
+                self.weapon.update(t)
             self.progress += self.speed * dt
             if self.progress >= 1.0:
                 # Got there
                 if self.weapon:
-                    self.weapon.got_there()
+                    self.weapon.got_there(t)
                 self.world.actors_by_pos[self.position].discard(self)
                 self.world.actors_by_pos[self.moving_to].add(self)
                 self.position = self.moving_to
@@ -160,8 +162,12 @@ class Character(Actor):
 
     DEFAULT_SPEED = 1.2
 
-    def __init__(self, world, anim, position, faction, facing):
-        super().__init__(world, anim, position, faction, facing)
+    def __init__(self, world, anim, position, faction, facing, colour):
+        """
+        :param colour: rgb tuple used for field of fire display
+        :return:
+        """
+        super().__init__(world, anim, position, faction, facing, colour)
         self.walking_to = None
 
     def get_pic(self):
@@ -171,8 +177,8 @@ class Character(Actor):
         self.walking_to = target
         self.anim.play('walk')
 
-    def update(self, dt):
-        super().update(dt)
+    def update(self, t, dt):
+        super().update(t, dt)
         if self.position == self.walking_to:
             self.walking_to = None
             self.anim.play('stand')

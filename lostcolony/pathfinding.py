@@ -158,7 +158,7 @@ class HexGrid:
 
     def hex_in_front(self, coords, facing):
         """
-        Adjacent hex in the facing direction, only if on-map
+        Adjacent hex in the facing direction. May be off-map.
 
         :param coords:
         :param facing:
@@ -168,9 +168,7 @@ class HexGrid:
         neighbours = HexGrid.NEIGHBOURS_ODD if x % 2 else HexGrid.NEIGHBOURS_EVEN
         dx, dy = neighbours[facing]
         ret = x + dx, y + dy,
-        if ret in self:
-            return ret
-        return None
+        return ret
 
     @staticmethod
     def distance(a, b):
@@ -226,7 +224,6 @@ class HexGrid:
 
         :param start: Observer coordinates
         :param target: Target coordinates
-        :param blocking_terrain_types: Set of blocking terrain types
         :return: set of obstacle coordinates (empty if full line of sight)
         """
         if start == target:
@@ -240,11 +237,10 @@ class HexGrid:
         # Normalize to unit
         d_1 = (delta[0] / d_len, delta[1] / d_len)
         # Look for obstacles
-        obstacles = set()
         for i in range(int(math.ceil(d_len))):
             checked = (c_start[0] + d_1[0] * i, c_start[1] + d_1[1] * i,)
             for fuzzy_x, fuzzy_y in (-1e-6, -1e-6), (-1e-6, 1e-6), (1e-6, -1e-6), (1e-6, 1e-6):
                 checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
                 if self.blocked(checked_coord):
-                    obstacles.add(checked_coord)
+                    return False
         return obstacles

@@ -29,7 +29,7 @@ class Weapon():
         The instant it becomes stationary after a move.
         """
         self.attack_time = self.setup_time + t
-        self.field_of_fire = self.reset_field_of_fire()
+        self.reset_field_of_fire()
 
     def reset_field_of_fire(self):
         """
@@ -69,6 +69,10 @@ class Weapon():
 
     def select_targets(self):
         ret = []
+
+        if self.field_of_fire is None:
+            return ret
+
         for target_hex in self.field_of_fire:
             target = self.actor.world.get_actor(target_hex)
             if target and self.valid_target(target):
@@ -85,8 +89,6 @@ class Rifle(Weapon):
         self.seconds_per_attack = 1.0
         self.damage = 1
         self.single_target = True
-        self.field_of_fire = [] # coordiates. Earlier in the list = higher priority.
-
 
     def reset_field_of_fire(self):
         min_range = 1
@@ -151,6 +153,20 @@ class AutoCannon(Weapon):
 
 
 def _field_of_fire_front_arc(min_range, max_range, actor):
+    """
+    Create a 120 degree arc of file. Hexes are in target priority order.
+
+    :param min_range:
+    :param max_range:
+    :param actor:
+    :return:
+    """
+    """
+    :param min_range:
+    :param max_range:
+    :param actor:
+    :return:
+    """
     coords = []
     hex_in_front = actor.world.hex_grid.hex_in_front
     frontal_hex = actor.position
@@ -176,5 +192,6 @@ def _field_of_fire_front_arc(min_range, max_range, actor):
     return [
         c
         for c in coords
-        if actor.world.hex_grid.visible(actor.position, coords, None)
+        if c in actor.world.hex_grid # on-map
+        and actor.world.hex_grid.visible(actor.position, c)
     ]
