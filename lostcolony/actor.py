@@ -100,4 +100,4 @@ class Character(Actor):
 
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
-        return sy, sx, os.path.join("images", "pc", "%s-se-walk1.png" % (self.name))
+        return sx, sy, os.path.join("images", "pc", "%s-se-walk1.png" % (self.name))

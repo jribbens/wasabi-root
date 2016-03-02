@@ -185,7 +185,7 @@ class PygletTiledMap:
                     if actor:
                         sx, sy = self.camera.coord_to_viewport((x, y))
                         sx, sy, pic = actor.drawable(sx, sy)
-                        objects.append((sx, sy, self.images[pic]))
+                        objects.append((sy, sx, self.images[pic]))
                 else:
                     sx, sy = self.camera.coord_to_viewport((x, y))
                     objects.append((sy, sx, obj))
