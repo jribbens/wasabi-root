@@ -156,7 +156,6 @@ class PygletTiledMap:
         gl.glEnable(gl.GL_ALPHA_TEST)
         gl.glAlphaFunc(gl.GL_GREATER, 0.0)
         (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
-        objects = []
         for y in range(cy2 - 1, cy1 + 4):
             for x in range(cx1 - 1, cx2 + 3):
                 imgs = self.floor.get((x, y))
