@@ -1,12 +1,15 @@
+from collections import defaultdict
 import os
+
 import pyglet
+from pyglet import gl
+from pyglet.window import key
 import pytmx
+
 from lostcolony.pathfinding import (
     HexGrid, HEX_WIDTH, HEX_HEIGHT
 )
-from pyglet import gl
-from pyglet.window import key
-from collections import defaultdict
+from lostcolony.world import World
 
 
 class TileOutline:
