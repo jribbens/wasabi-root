@@ -12,8 +12,10 @@ class Faction:
 
     def remove(self, actor):
         try:
-            print( [self.actors.index(actor)] )
-            self.actors.pop( self.actors.index(actor) )
+            self.actors.pop(self.actors.index(actor))
         except ValueError:
             if actor.faction != self:
-                assert False, "Can't reove actor {} from faction {} as it isn't a member".format(actor.name, self.name)
+                assert False, "Can't remove actor {} from faction {} as it isn't a member".format(actor.name, self.name)
+
+    def __iter__(self):
+        return iter(self.actors)
