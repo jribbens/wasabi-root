@@ -1,6 +1,37 @@
 import heapq
 import math
 
+OBSTRUCTIONS = {"bed",
+                "bunk",
+                "bunk2",
+                "column",
+                "crates1",
+                "crates2",
+                "crates3",
+                "crates4",
+                "desk1",
+                "desk2",
+                "lily1",
+                "lily2",
+                "medbay-bed",
+                "medbay-bed2",
+                "server",
+                "server2",
+                "short-wall",
+                "shuttle-l",
+                "shuttle-m",
+                "shuttle-r",
+                "table",
+                "tree1",
+                "uplink",
+                "uplink-obj",
+                "veg1",
+                "veg2",
+                "veg3",
+                "veg4",
+                "wall",
+                }
+
 
 def cube_round(h):
     """Round cubic hexagonal coordinates to an integer cubic tile."""
@@ -199,7 +230,7 @@ class HexGrid:
 
             for next in self.neighbours(current):
                 new_cost = cost_so_far[current] + self.distance(current, next)
-                if next not in cost_so_far or new_cost < cost_so_far[next]:
+                if (next not in cost_so_far or new_cost < cost_so_far[next]) and self.cells[next][-1] not in OBSTRUCTIONS:
                     cost_so_far[next] = new_cost
                     priority = new_cost + heuristic(goal, next)
                     frontier.put(next, priority)
@@ -213,7 +244,7 @@ class HexGrid:
             path.append(current)
         return path
 
-    def visible(self, start, target, blocking_terrain_types):
+    def visible(self, start, target, blocking_terrain_types=OBSTRUCTIONS):
         """
         Can you see the target from the starting position?
 
@@ -224,7 +255,7 @@ class HexGrid:
 
         :param start: Observer coordinates
         :param target: Target coordinates
-        :param blocking_terrain: Tuple of blocking terrain types
+        :param blocking_terrain_types: Set of blocking terrain types
         :return: set of obstacle coordinates (empty if full line of sight)
         """
         if start == target:
@@ -240,9 +271,9 @@ class HexGrid:
         # Look for obstacles
         obstacles = set()
         for i in range(int(math.ceil(d_len))):
-            checked = (c_start[0] + d_1[0]*i, c_start[1] + d_1[1]*i, )
+            checked = (c_start[0] + d_1[0] * i, c_start[1] + d_1[1] * i,)
             for fuzzy_x, fuzzy_y in (-1e-6, -1e-6), (-1e-6, 1e-6), (1e-6, -1e-6), (1e-6, 1e-6):
-                checked_coord = self.world_to_coord((checked[0]+fuzzy_x, checked[1]+fuzzy_y))
-                if self[checked_coord] in blocking_terrain_types:
+                checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
+                if self[checked_coord][-1] in blocking_terrain_types:
                     obstacles.add(checked_coord)
         return obstacles
