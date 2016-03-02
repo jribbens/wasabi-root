@@ -3,35 +3,103 @@ import os
 
 import pyglet
 
-Frame = namedtuple('Frame', 'sprite offset')
-Sequence = namedtuple('Sequence', 'frames next_sequence')
 
-DEFAULT_FRAME_RATE = 1
+RESOURCE_DIR = os.path.join(os.path.dirname(__file__), '../images')
+
+DEFAULT_FRAME_RATE = 0.15
 
 loop = object()
 
 
+def load(impath):
+    """Load a single image from the images/ directory."""
+    path = os.path.join(RESOURCE_DIR, impath)
+    return pyglet.image.load(path)
+
+
+class Sequence:
+    """A sequence is a set of frames.
+
+    The base implementation does not have a facing.
+
+    """
+    @classmethod
+    def load(cls, tmpl, num, next=loop, anchor_x=0, anchor_y=0):
+        frames = [load(tmpl.format(n=i)) for i in range(1, num + 1)]
+        for f in frames:
+            f.anchor_x = anchor_x
+            f.anchor_y = anchor_y
+        return cls(frames, next)
+
+    def __init__(self, frames, next_sequence):
+        self.frames = frames
+        self.next_sequence = next_sequence
+
+    def __len__(self):
+        return len(self.frames)
+
+    def __getitem__(self, key):
+        """Get a frame.
+
+        Key must be a tuple (facing, frame).
+
+        """
+        facing, frame = key
+        return self.frames[frame]
+
+
+class DirectionalSequence(Sequence):
+    """An implementation of a sequence that has 6 directions."""
+    DIRECTIONS = 'n ne se s sw nw'.split()
+
+    @classmethod
+    def load(cls, tmpl, num, next=loop, anchor_x=0, anchor_y=0):
+        frames = {}
+        for dir in cls.DIRECTIONS:
+            fs = [load(tmpl.format(n=i, dir=dir)) for i in range(1, num + 1)]
+            for f in fs:
+                f.anchor_x = anchor_x
+                f.anchor_y = anchor_y
+            frames[dir] = fs
+        return cls(frames, num, next)
+
+    def __init__(self, frames, length, next_sequence):
+        super().__init__(frames, next_sequence)
+        self.length = length
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, key):
+        """Get a frame.
+
+        Key must be a tuple (facing, frame).
+
+        """
+        facing, frame = key
+        return self.frames[facing][frame]
+
+
 class Animation:
-    def __init__(self, sequences, frame_rate=DEFAULT_FRAME_RATE):
+    def __init__(
+            self, sequences,
+            default='default',
+            frame_rate=DEFAULT_FRAME_RATE):
         self.sequences = sequences
         self.frame_rate = frame_rate
+        self.default = default
 
-    def create_instance(self, pos=(0,0)):
+    def create_instance(self, pos=(0, 0)):
         return AnimationInstance(self, pos)
 
 
-class CharacterAnimation(Animation):
-    def create_instance(self, character_name, direction, pos=(0,0)):
-        return CharacterAnimationInstance(character_name, direction, self, pos)
-
-
-
 class AnimationInstance:
-    def __init__(self, animation, pos=(0,0)):
+    def __init__(self, animation, pos=(0, 0), direction='s'):
         self.animation = animation
         self.pos = pos
-        self.play('default')
-        pyglet.clock.schedule(self.next_frame, self.animation.frame_rate)
+        self.play(animation.default)
+        self.direction = direction
+        pyglet.clock.schedule_interval(self.next_frame, self.animation.frame_rate)
 
     def play(self, sequence_name):
         """
@@ -52,64 +120,32 @@ class AnimationInstance:
         Move to the next frame of the animation.
         """
         self.current_frame += 1
-        if self.current_frame >= len(self.sequence.frames):
+        if self.current_frame >= len(self.sequence):
             next = self.sequence.next_sequence
-            if next is loop:  # We want to loop this animation infinitely, so go back to the beginning.
+            if next is loop:
+                # We want to loop this animation infinitely, so go back to
+                # the beginning.
                 self.current_frame = 0
             else:
                 self.play(next)
 
     def draw(self):
-        """
-        Current placeholder, used to send the appropriate image file to the actor being animated.
-
-        :return: str, path to correct image file for animation.
-        """
-        return os.path.join("images",
-                            "pc",
-                            "{action}{phase}.png".format(action=self.playing.replace('default', 'stand'),
-                                                         phase=self.sequence.frames[self.current_frame]))
+        """Returns the pyglet.graphics.Image representing the current frame."""
+        return self.sequence[self.direction, self.current_frame]
 
     def destroy(self):
         pyglet.clock.unschedule(self.next_frame)
 
 
-class CharacterAnimationInstance(AnimationInstance):
-    def __init__(self, character_name, direction, *args, **kwargs):
-        super(CharacterAnimationInstance, self).__init__(*args, **kwargs)
-        self.name = character_name
-        self.direction = direction
+kw = dict(anchor_x=46, anchor_y=10)
+rex = Animation({
+        'stand': DirectionalSequence.load('pc/rex-{dir}-stand.png', 1, **kw),
+        'walk': DirectionalSequence.load('pc/rex-{dir}-walk{n}.png', 4, **kw),
+        'shoot': DirectionalSequence.load('pc/rex-{dir}-shoot.png', 1, next='stand', **kw),
+    },
+    default='stand'
+)
 
-    def play(self, sequence_name):
-        """
-        Start the sequence for a specified animation.
-
-        Set current_frame to 0 to start.
-
-        :param sequence_name: str, animation we are playing
-        """
-        self.current_frame = 0
-        self.playing = sequence_name
-        self.sequence = self.animation.sequences[sequence_name]
-
-    def draw(self):
-        """
-        Current placeholder, used to send the appropriate image file to the actor being animated.
-
-        :return: str, path to correct image file for animation.
-        """
-        return os.path.join("images",
-                            "pc",
-                            "{name}-{dir}-{action}{phase}.png".format(name=self.name,
-                                                                      dir=self.direction,
-                                                                      action=self.playing.replace('default', 'stand'),
-                                                                      phase=self.sequence.frames[self.current_frame]))
-
-
-animated_character = CharacterAnimation({
-    'stand': Sequence(('',), loop),
-    'default': Sequence(('',), loop),
-    'walk': Sequence((1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4), loop),  # hack, frame_rate isn't working for me.
-    'shoot': Sequence(('',), loop)
+raptor = Animation({
+    'default': DirectionalSequence.load('mobs/raptor-{dir}.png', 1, anchor_x=64, anchor_y=24)
 })
-

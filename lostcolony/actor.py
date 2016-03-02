@@ -3,7 +3,6 @@
 import os
 import logging
 
-from lostcolony.animation import animated_character
 from lostcolony.pathfinding import (
     HEX_WIDTH, HEX_HEIGHT, NoPath
 )
@@ -29,11 +28,11 @@ class Actor(object):
     FACING_TO_DIR = {1: 'n', 2: 'ne', 3: 'se', 4: 's', 5: 'sw', 6: 'nw'}
     DIR_TO_FACING = {'n': 1, 'ne': 2, 'se': 3, 's': 4, 'sw': 5, 'nw': 6}
 
-    def __init__(self, world, name, position, faction, facing):
+    def __init__(self, world, anim, position, faction, facing):
         """
 
         :param world:
-        :param name:
+        :param anim:
         :param position:
         :param faction:
         :param facing: Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
@@ -43,8 +42,8 @@ class Actor(object):
         # This attribute can be
         #   - None for still objects
         #   - A coordinate for the target, should be a neighbour of self.position
+        self.anim = anim.create_instance()
         self.world = world
-        self.name = name
         self.position = position
         self.faction = faction
         faction.add(self)
@@ -129,6 +128,7 @@ class Actor(object):
             direction += 'w'
 
         self.facing = self.DIR_TO_FACING[direction]
+        self.anim.direction = direction
 
     def hit(self, damage):
         """
@@ -142,30 +142,22 @@ class Actor(object):
     def walk_to(self, target):
         logger.warn("I can't walk! you put a non-Character() in the player faction! ,%s", repr(self))
 
-    def get_pic(self):
-        # Placeholder - I need a dino to shoot at quickly!
-        return os.path.join("images",
-                            "mobs",
-                            "{name}-{facing}.png".format(name=self.name, facing=self.FACING_TO_DIR[self.facing]))
-
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
         off_x, off_y = self.get_coords()
         base_x, base_y = _coord_to_world(self.position)
         new_x = sx + (off_x - base_x) * HEX_WIDTH / 2
         new_y = sy - (off_y - base_y) * HEX_HEIGHT / 2
-        return new_x, new_y, self.get_pic()
+        return new_x, new_y, self.anim.draw()
 
 
 class Character(Actor):
 
-    DEFAULT_SPEED = 2
+    DEFAULT_SPEED = 1.2
 
-    def __init__(self, world, name, position, faction, facing):
-        # Note: name should match the sprite filenames
-        super().__init__(world, name, position, faction, facing)
+    def __init__(self, world, anim, position, faction, facing):
+        super().__init__(world, anim, position, faction, facing)
         self.walking_to = None
-        self.anim = animated_character.create_instance(self.name, direction=self.FACING_TO_DIR[self.facing])
 
     def get_pic(self):
         return self.anim.draw()
