@@ -5,7 +5,6 @@ from glob import iglob
 import pyglet
 from pyglet import gl
 from pyglet.window import key
-import pytmx
 
 from lostcolony.pathfinding import (
     HexGrid, HEX_WIDTH, HEX_HEIGHT
@@ -13,6 +12,7 @@ from lostcolony.pathfinding import (
 from lostcolony.tile_outline import TileOutline
 from lostcolony.ui import UI
 from lostcolony.world import World
+from lostcolony.maploader import Map
 
 
 class Camera:
@@ -38,17 +38,21 @@ class Camera:
             self.viewport[1] - sy + cy
         )
 
-    def viewport_to_coord(self, coord):
-        """Given a viewport coordinate, get the tile coordinate."""
+    def viewport_to_world(self, coord):
+        """Get the world coordinate for a viewport coordinate."""
         x, y = coord
         cx, cy = self.pos
         wx = (x + cx) / self.WSCALE
         wy = (self.viewport[1] - y + cy) / self.HSCALE
-        return HexGrid.world_to_coord((wx, wy))
+        return wx, wy
 
-    def viewport_to_world(self, coord):
-        """Get the world coordinate of the tile for a viewport coordinate."""
-        return HexGrid.coord_to_world(self.viewport_to_coord(coord))
+    def viewport_to_coord(self, coord):
+        """Given a viewport coordinate, get the tile coordinate."""
+        return HexGrid.world_to_coord(self.viewport_to_world(coord))
+
+#    def viewport_to_world(self, coord):
+#        """Get the world coordinate of the tile for a viewport coordinate."""
+#        return HexGrid.coord_to_world(self.viewport_to_coord(coord))
 
     def viewport_bounds(self):
         """Return the p1, p2 bounds of the viewport in screen space."""
@@ -60,77 +64,23 @@ class Camera:
         """Return the x1, y1, x2, y2 bounds of the viewport in map coords."""
         return self.viewport_to_coord((0, 0)), self.viewport_to_coord(self.viewport)
 
+    def world_bounds(self):
+        """Return the x1, y1, x2, y2 bounds of the viewport in world coords."""
+        return self.viewport_to_world((0, 0)), self.viewport_to_world(self.viewport)
 
-class PygletTiledMap:
-    def __init__(self, window, mapfile):
+
+class Scene:
+    def __init__(self, window, map):
         self.camera = Camera((window.width, window.height), pos=(0, 0))
         self.cursor = TileOutline((255, 0, 0))
         self.window = window
         self.images = {}
         self.mouse_coords = (0, 0)
-        self.floor = {}  # A list of floor graphics in draw order, keyed by coord
-        self.objects = {}  # Static images occupying a tile, keyed by coord
-        self.grid = HexGrid()
+
+        self.floor = map.floor
+        self.objects = map.objects
+        self.grid = map.grid
         self.world = World(self.grid)
-
-        self.load_file(mapfile)
-
-    def load_file(self, mapfile):
-        """Load a TMX file."""
-        tmx = pytmx.TiledMap(mapfile)
-        for image_data in tmx.images:
-            if image_data:
-                image, _, _ = image_data
-                self.load_image(image)
-
-        self.nlayers = len(tmx.layers)
-        floor = defaultdict(list)
-        for n, layer in enumerate(tmx.layers[:-1]):
-            for x, y, (imgpath, *stuff) in layer.tiles():
-                image = self.images[imgpath]
-                floor[x, y].append(image)
-
-                try:
-                    self.grid[x, y].append(os.path.splitext(os.path.basename(imgpath))[0])
-                except AttributeError:
-                    self.grid[x, y] = [os.path.splitext(os.path.basename(imgpath))[0]]
-
-        self.floor = dict(floor)
-
-        self.objects = {}
-        # Top layer contains object data
-        for x, y, (imgpath, *_) in tmx.layers[-1].tiles():
-            self.objects[x, y] = self.images[imgpath]
-
-            try:
-                self.grid[x, y].append(os.path.splitext(os.path.basename(imgpath))[0])
-            except AttributeError:
-                self.grid[x, y] = [os.path.splitext(os.path.basename(imgpath))[0]]
-
-        # To be deleted, replaced by the lines immediately below
-        """
-        # FIXME: Who should know the list of PC sprites?
-        for character_name in ["rex"]:
-            for heading in "ne n nw se s sw".split():
-                for action in ["shoot", "stand"]:
-                    self.load_image(os.path.join("images",
-                                                 "pc",
-                                                 "{name}-{heading}-{action}.png".format(name=character_name,
-                                                                                        heading=heading,
-                                                                                        action=action)))
-                for step in "1234":
-                    fname = "%s-%s-walk%s.png" % (character_name, heading, step)
-                    self.load_image(os.path.join("images", "pc", fname))
-        """
-        for folder in ('mobs', 'pc'):
-            for image_name in iglob(os.path.join('images', folder, '*.png')):
-                self.load_image(image_name)
-
-    def load_image(self, name):
-        path = os.path.abspath(name)
-        im = self.images[name] = pyglet.image.load(path)
-        im.anchor_x = im.width // 2
-        im.anchor_y = 24
 
     def draw(self):
         """Draw the floor and any decals."""
@@ -163,15 +113,14 @@ class PygletTiledMap:
         for y in range(cy2 - 1, cy1 + 4):
             for x in range(cx1 - 1, cx2 + 3):
                 obj = self.objects.get((x, y))
-                if obj is None:
-                    actor = self.world.get_actor((x, y))
-                    if actor:
-                        sx, sy = self.camera.coord_to_viewport((x, y))
-                        sx, sy, pic = actor.drawable(sx, sy)
-                        objects.append((round(sy), round(sx), pic))
-                else:
+                if obj is not None:
                     sx, sy = self.camera.coord_to_viewport((x, y))
                     objects.append((sy, sx, obj))
+
+                for actor in self.world.get_actors((x, y)):
+                    sx, sy = self.camera.coord_to_viewport((x, y))
+                    sx, sy, pic = actor.drawable(sx, sy)
+                    objects.append((round(sy), round(sx), pic))
         return objects
 
     def hover(self, x, y):
@@ -184,10 +133,13 @@ class PygletTiledMap:
         c = self.camera.viewport_to_coord(self.mouse_coords)
         self.cursor.pos = self.camera.coord_to_viewport(c)
 
+
 window = pyglet.window.Window(resizable=True)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
-tmxmap = PygletTiledMap(window, "maps/encounter-01.tmx")
+
+game_map = Map("maps/encounter-01.tmx")
+tmxmap = Scene(window, game_map)
 ui = UI(tmxmap.world, tmxmap.camera)
 
 

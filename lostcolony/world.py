@@ -4,6 +4,37 @@ from lostcolony.faction import Faction
 from itertools import chain
 
 
+OBSTRUCTIONS = {"bed",
+                "bunk",
+                "bunk2",
+                "column",
+                "crates1",
+                "crates2",
+                "crates3",
+                "crates4",
+                "desk1",
+                "desk2",
+                "lily1",
+                "lily2",
+                "medbay-bed",
+                "medbay-bed2",
+                "server",
+                "server2",
+                "short-wall",
+                "shuttle-l",
+                "shuttle-m",
+                "shuttle-r",
+                "table",
+                "tree1",
+                "uplink",
+                "uplink-obj",
+                "veg1",
+                "veg2",
+                "veg3",
+                "veg4",
+                "wall",
+                }
+
 class World:
     """
     Top-level container for the map, factions, actors etc
@@ -34,15 +65,9 @@ class World:
     def actors(self):
         return chain(*[faction.actors for faction in self.factions])
 
-    def drawables(self):
-        # to do: May need to sort them to set the drawing order? But is this the right place?
-        return self.actors
-
-    def get_actor(self, hex):
-        # replace this with a sensible way to get them. What object can we interrogate?
-        for a in self.actors:
-            if a.position == hex:
-                return a
+    def get_actors(self, hex):
+        """Get a list of actors "in" the given tile."""
+        return [a for a in self.actors if a.position == hex]
 
     def update(self, dt):
         for a in self.actors:

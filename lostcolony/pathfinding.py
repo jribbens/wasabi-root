@@ -1,37 +1,6 @@
 import heapq
 import math
 
-OBSTRUCTIONS = {"bed",
-                "bunk",
-                "bunk2",
-                "column",
-                "crates1",
-                "crates2",
-                "crates3",
-                "crates4",
-                "desk1",
-                "desk2",
-                "lily1",
-                "lily2",
-                "medbay-bed",
-                "medbay-bed2",
-                "server",
-                "server2",
-                "short-wall",
-                "shuttle-l",
-                "shuttle-m",
-                "shuttle-r",
-                "table",
-                "tree1",
-                "uplink",
-                "uplink-obj",
-                "veg1",
-                "veg2",
-                "veg3",
-                "veg4",
-                "wall",
-                }
-
 
 def cube_round(h):
     """Round cubic hexagonal coordinates to an integer cubic tile."""
@@ -120,13 +89,13 @@ class HexGrid:
         self.cells = {}
 
     def __setitem__(self, coords, value):
-        self.cells[coords] = value
+        self.cells[coords] = bool(value)
 
     def __getitem__(self, coords):
         return self.cells.get(coords)
 
     def __contains__(self, coords):
-        return bool(self.cells.get(coords))
+        return self.cells.get(coords)
 
     NEIGHBOURS_EVEN = [
         (0, -1),
@@ -181,7 +150,7 @@ class HexGrid:
         neighbours = self.NEIGHBOURS_ODD if x % 2 else self.NEIGHBOURS_EVEN
         for dx, dy in neighbours:
             c = x + dx, y + dy
-            if c in self:
+            if self[c]:
                 yield c
 
     def hex_in_front(self, coords, facing):
@@ -230,7 +199,7 @@ class HexGrid:
 
             for next in self.neighbours(current):
                 new_cost = cost_so_far[current] + self.distance(current, next)
-                if (next not in cost_so_far or new_cost < cost_so_far[next]) and self.cells[next][-1] not in OBSTRUCTIONS:
+                if (next not in cost_so_far or new_cost < cost_so_far[next]):
                     cost_so_far[next] = new_cost
                     priority = new_cost + heuristic(goal, next)
                     frontier.put(next, priority)
@@ -244,14 +213,13 @@ class HexGrid:
             path.append(current)
         return path
 
-    def visible(self, start, target, blocking_terrain_types=OBSTRUCTIONS):
+    def visible(self, start, target):
         """
         Can you see the target from the starting position?
 
-        The first blocking terrain type is considered visible: you can see ito the bush, but not
-        through it.
-        This is used for line-of-sight attacks, e.g. you can throw a grenade over some things you
-        can't shoot through
+        The first blocking terrain type is considered visible: you can see ito
+        the bush, but not through it.  This is used for line-of-sight attacks,
+        e.g. you can throw a grenade over some things you can't shoot through
 
         :param start: Observer coordinates
         :param target: Target coordinates
@@ -274,6 +242,6 @@ class HexGrid:
             checked = (c_start[0] + d_1[0] * i, c_start[1] + d_1[1] * i,)
             for fuzzy_x, fuzzy_y in (-1e-6, -1e-6), (-1e-6, 1e-6), (1e-6, -1e-6), (1e-6, 1e-6):
                 checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
-                if self[checked_coord][-1] in blocking_terrain_types:
+                if not self[checked_coord]:
                     obstacles.add(checked_coord)
         return obstacles
