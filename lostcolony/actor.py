@@ -25,17 +25,27 @@ class Actor(object):
     FACING_TO_DIR = {1: 'n', 2: 'ne', 3: 'se', 4: 's', 5: 'sw', 6: 'nw'}
     DIR_TO_FACING = {'n': 1, 'ne': 2, 'se': 3, 's': 4, 'sw': 5, 'nw': 6}
 
-    def __init__(self, world):
+    def __init__(self, world, name, position, faction, facing):
         """
 
-        :param tmx: Used to obey terrain restrictions
+        :param world:
+        :param name:
+        :param position:
+        :param faction:
+        :param facing: Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
         :return:
         """
         # Integer coordinates of the actor
-        self.position = (0, 0)
         # This attribute can be
         #   - None for still objects
         #   - A coordinate for the target, should be a neighbour of self.position
+        self.world = world
+        self.name = name
+        self.position = position
+        self.faction = faction
+        faction.add(self)
+        self.facing = facing
+
         self.moving_to = None
         # Non-integer progress of movement: 0.0 == just started, 1.0 == arrived
         self.progress = 0
@@ -43,8 +53,7 @@ class Actor(object):
         self.speed = 0
         self.weapon = None
         # FIXME: why does this need a world??
-        self.world = world
-        self.facing = 3  # Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
+
         self.faction = None  # Faction object it belongs to
         self.action = 'stand'
         self.phase = ''
@@ -127,16 +136,11 @@ class Actor(object):
         pass
 
 
-class Character(Actor):
-
-    DEFAULT_SPEED = 2
-
-    def __init__(self, world, name):
-        # Note: name should match the sprite filenames
-        self.name = name
-        self.walking_to = None
-        super().__init__(world)
-        self.anim = animated_character.create_instance(self.name, direction=self.FACING_TO_DIR[self.facing])
+    def get_pic(self):
+        # Placeholder - I need a dino to shoot at quickly!
+        return os.path.join("images",
+                            "mobs",
+                            "{name}-{facing}.png".format(name=self.name, facing=self.FACING_TO_DIR[self.facing]))
 
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
@@ -144,7 +148,21 @@ class Character(Actor):
         base_x, base_y = _coord_to_world(self.position)
         new_x = sx + (off_x - base_x) * HEX_WIDTH / 2
         new_y = sy - (off_y - base_y) * HEX_HEIGHT / 2
-        return new_x, new_y, self.anim.draw()
+        return new_x, new_y, self.get_pic()
+
+
+class Character(Actor):
+
+    DEFAULT_SPEED = 2
+
+    def __init__(self, world, name, position, faction, facing):
+        # Note: name should match the sprite filenames
+        super().__init__(world, name, position, faction, facing)
+        self.walking_to = None
+        self.anim = animated_character.create_instance(self.name, direction=self.FACING_TO_DIR[self.facing])
+
+    def get_pic(self):
+        return self.anim.draw()
 
     def walk_to(self, target):
         self.walking_to = target

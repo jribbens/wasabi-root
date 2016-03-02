@@ -1,5 +1,6 @@
-from lostcolony.actor import Character
-
+from lostcolony.actor import Character, Actor
+from lostcolony.faction import Faction
+from itertools import chain
 
 class World:
     """
@@ -8,21 +9,41 @@ class World:
 
     def __init__(self, grid):
         # TODO: un-hardcode this. can we set this in tiled?
-        rex = Character(self, "rex")
-        rex.position = (5, 5)
         self.grid = grid
 
-        self.heroes = [rex]
+        self.factions = [self.init_player()] # first faction is the player
+        self.factions += self.init_npcs()
+
+        # The actor controls apply to (e.g. the one you're moving)
+        self.active_actor = self.factions[0].actors[0]
+
+    def init_player(self):
+        # Stub code - this should come from scenario set-up
+        faction = Faction("Player")
+        rex = Character(self, "rex", faction=faction, position = (5,5), facing=4)
+        pet = Actor(self, "raptor", faction=faction, position = (7,5), facing=3) # pet dino
+        return faction
+
+    def init_npcs(self):
+        # to do: get from scenario set-up
+        targets = Faction("Targets for weapon testing")
+        victim = Actor(self, "raptor", position=(8,8), faction=targets, facing=3)
+        return [targets]
+
+    @property
+    def actors(self):
+        return chain( *[ faction.actors for faction in self.factions] )
 
     def drawables(self):
-        return self.heroes
+        # to do: May need to sort them to set the drawing order? But is this the right place?
+        return self.actors
 
     def get_actor(self, hex):
         # replace this with a sensible way to get them. What object can we interrogate?
-        for h in self.heroes:
-            if h.position == hex:
-                return h
+        for a in self.actors:
+            if a.position == hex:
+                return a
 
     def update(self, dt):
-        for h in self.heroes:
-            h.update(dt)
+        for a in self.actors:
+            a.update(dt)

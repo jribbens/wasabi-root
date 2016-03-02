@@ -1,5 +1,6 @@
 from collections import defaultdict
 import os
+from glob import iglob
 
 import pyglet
 from pyglet import gl
@@ -148,6 +149,8 @@ class PygletTiledMap:
             except AttributeError:
                 self.grid[x, y] = [os.path.splitext(os.path.basename(imgpath))[0]]
 
+        # To be deleted, replaced by the lines immediately below
+        """
         # FIXME: Who should know the list of PC sprites?
         for character_name in ["rex"]:
             for heading in "ne n nw se s sw".split():
@@ -160,6 +163,10 @@ class PygletTiledMap:
                 for step in "1234":
                     fname = "%s-%s-walk%s.png" % (character_name, heading, step)
                     self.load_image(os.path.join("images", "pc", fname))
+        """
+        for folder in ('mobs', 'pc'):
+            for image_name in iglob(os.path.join('images', folder, '*.png')):
+                self.load_image(image_name)
 
     def load_image(self, name):
         path = os.path.abspath(name)
@@ -231,8 +238,7 @@ class PygletTiledMap:
         c = self.camera.viewport_to_coord((x, y))
         new_clicked_pos = self.camera.coord_to_viewport(c)
 
-        # FIXME: use the ui class to handle this instead fo hardcoded "move hero 0"
-        self.world.heroes[0].walk_to(c)
+        self.world.active_actor.walk_to(c)
 
         if self.clicked.pos == new_clicked_pos:
             self.clicked.pos = (0, 0)
