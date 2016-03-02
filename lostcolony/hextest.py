@@ -98,7 +98,7 @@ def draw():
     draw_hex(ax * size, ay * size, TOKEN, size=10)
     # Line of sight
     los_x, los_y = g.coord_to_world(hover)
-    screen.draw.line((ax* size, ay*size), (los_x * size, los_y * size), LOS)
+    screen.draw.line((ax * size, ay * size), (los_x * size, los_y * size), LOS)
     obstacles = g.visible(token.position, hover, [None])
 
     # Show map
