@@ -52,10 +52,7 @@ class Map:
                 image = self.images[imgpath]
                 floor[x, y].append(image)
 
-                if IMPASSABLE_FLOORS.match(imgpath):
-                    self.grid[x, y] = False
-                else:
-                    self.grid[x, y] = True
+                self.grid[x, y] = bool(IMPASSABLE_FLOORS.match(imgpath))
         self.floor = dict(floor)
 
     def load_objects(self, tmx):
@@ -69,10 +66,7 @@ class Map:
         for x, y, (imgpath, *_) in tmx.layers[-1].tiles():
             self.objects[x, y] = self.images[imgpath]
 
-            if imgpath in NOT_OBSTRUCTIONS:
-                self.grid[x, y] = True
-            else:
-                self.grid[x, y] = False
+            self.grid[x, y] = imgpath not in NOT_OBSTRUCTIONS
 
     def load_images(self, tmx):
         """Load a dictionary of tile images from the TiledMap given."""

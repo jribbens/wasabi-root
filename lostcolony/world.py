@@ -21,6 +21,19 @@ class World:
         self.factions = [self.init_player()]  # first faction is the player
         self.factions += self.init_npcs()
 
+    def add(self, actor, pos):
+        """Add an actor to the world at pos."""
+        self.actors_by_pos[pos].add(actor)
+
+    def remove(self, actor, pos):
+        """Remove an actor from the world at pos."""
+        self.actors_by_pos[pos].discard(actor)
+
+    def move(self, actor, from_pos, to_pos):
+        """Move an actor from from_pos to to_pos."""
+        self.remove(actor, from_pos)
+        self.add(actor, to_pos)
+
     def init_player(self):
         # Stub code - this should come from scenario set-up
         faction = Faction("Player")

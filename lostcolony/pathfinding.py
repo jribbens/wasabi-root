@@ -87,18 +87,15 @@ class NoPath(Exception):
 
 class HexGrid:
     def __init__(self):
-        self.cells = ChainMap(defaultdict(lambda: 1))
-
-    @property
-    def layers(self):
-        return self.cells.maps
+        self.cells = {}
+        self.layers = [self.cells]
 
     def __setitem__(self, coords, value):
-        self.cells[coords] = bool(value)
+        self.cells[coords] = value
 
     def blocked(self, coords):
         """Return True if the given coordinates are blocked."""
-        return bool(self.cells.get(coords))
+        return any(layer.get(coords) for layer in self.layers)
 
     NEIGHBOURS_EVEN = [
         (0, -1),
@@ -152,9 +149,7 @@ class HexGrid:
         x, y = coords
         neighbours = self.NEIGHBOURS_ODD if x % 2 else self.NEIGHBOURS_EVEN
         for dx, dy in neighbours:
-            c = x + dx, y + dy
-            if not self.blocked(c):
-                yield c
+            yield x + dx, y + dy
 
     def hex_in_front(self, coords, facing):
         """
@@ -185,6 +180,8 @@ class HexGrid:
         This can be quite expensive if goal is unreachable.
 
         """
+        if self.blocked(goal):
+            raise NoPath(start, goal)
         frontier = PriorityQueue()
         frontier.put(start, 0)
         came_from = {}
@@ -199,6 +196,8 @@ class HexGrid:
                 break
 
             for next in self.neighbours(current):
+                if self.blocked(next):
+                    continue
                 new_cost = cost_so_far[current] + self.distance(current, next)
                 if (next not in cost_so_far or new_cost < cost_so_far[next]):
                     cost_so_far[next] = new_cost
@@ -243,4 +242,4 @@ class HexGrid:
                 checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
                 if self.blocked(checked_coord):
                     return False
-        return obstacles
+        return True

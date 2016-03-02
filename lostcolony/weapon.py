@@ -38,7 +38,7 @@ class Weapon():
 
         This default implementation reflects melee fighters
         """
-        adjacent = self.actor.world.hex_grid.neighbours(self.actor.position)
+        adjacent = self.actor.world.grid.neighbours(self.actor.position)
         facing = self.actor.facing
         self.field_of_fire = ( adjacent[facing], adjacent[(facing + 1) % 6], adjacent[(facing + 5) % 6], )
 
@@ -138,7 +138,7 @@ class AutoCannon(Weapon):
         return True
 
     def reset_field_of_fire(self):
-        adjacent = self.actor.world.hex_grid.neighbours(self.actor.position)
+        adjacent = self.actor.world.grid.neighbours(self.actor.position)
         facing = self.actor.facing
         field_of_fire = [ adjacent[facing] ] # NB list not tuple
 
@@ -147,8 +147,9 @@ class AutoCannon(Weapon):
 
         assert len(self.field_of_fire > 0) # to do: debug only, remove for release. If this fails, fix the bug.
 
-        coord = self.actor.world.hex_grid.frot_hex()
-        if coord and self.actor.world.hex_grid.visible(self.actor.position, coord, None):
+        grid = self.actor.world.grid
+        coord = grid.hex_in_front()
+        if coord and grid.visible(self.actor.position, coord, None):
             self.field_of_fire.append( (x,y) )
 
 
@@ -168,7 +169,7 @@ def _field_of_fire_front_arc(min_range, max_range, actor):
     :return:
     """
     coords = []
-    hex_in_front = actor.world.hex_grid.hex_in_front
+    hex_in_front = actor.world.grid.hex_in_front
     frontal_hex = actor.position
     facing = actor.facing
 
@@ -189,9 +190,10 @@ def _field_of_fire_front_arc(min_range, max_range, actor):
             right_hex = hex_in_front(right_hex, right_facing)
             coords.append(right_hex)
 
+    grid = actor.world.grid
     return [
         c
         for c in coords
-        if c in actor.world.hex_grid # on-map
-        and actor.world.hex_grid.visible(actor.position, c)
+        if not grid.blocked(c) # on-map
+        and grid.visible(actor.position, c)
     ]

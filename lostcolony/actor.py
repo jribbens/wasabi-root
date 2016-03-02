@@ -34,7 +34,7 @@ class Actor(object):
         :param world:
         :param position: hex coordinates
         :param faction: the int used for FACING_TO_DIR etc
-        :param facing: Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at hex_grid.neighbours()[facing]
+        :param facing: Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at grid.neighbours()[facing]
         :param colour: colour used for fields of fire, only used for the player faction. Think of it as a brand value...
         :return:
         """
@@ -63,7 +63,7 @@ class Actor(object):
         self.action = 'stand'
         self.phase = ''
 
-        self.world.actors_by_pos[self.position].add(self)
+        self.world.add(self, self.position)
 
     def update(self, t, dt):
         """Update, essentially moving"""
@@ -75,8 +75,7 @@ class Actor(object):
                 # Got there
                 if self.weapon:
                     self.weapon.got_there(t)
-                self.world.actors_by_pos[self.position].discard(self)
-                self.world.actors_by_pos[self.moving_to].add(self)
+                self.world.move(self, from_pos=self.position, to_pos=self.moving_to)
                 self.position = self.moving_to
                 self.moving_to = None
                 self.speed = 0
@@ -94,7 +93,6 @@ class Actor(object):
         assert self.moving_to is None
         if self.position == destination:
             return
-        self.world.actors_by_pos[self.moving_to].add(self)
         self.moving_to = destination
         self.speed = speed
         if self.weapon:
