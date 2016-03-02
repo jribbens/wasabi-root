@@ -1,13 +1,17 @@
 # encoding: utf-8
 
 import os
+import logging
 
 from lostcolony.animation import animated_character
 from lostcolony.pathfinding import (
-    HexGrid, HEX_WIDTH, HEX_HEIGHT
+    HEX_WIDTH, HEX_HEIGHT, NoPath
 )
 # Note: coordinates are in the "even-q vertical" layout in the terminology of
 # http://www.redblobgames.com/grids/hexagons/#coordinates
+
+
+logger = logging.getLogger(__name__)
 
 
 # to do: too many versions of this code
@@ -136,8 +140,7 @@ class Actor(object):
         pass
 
     def walk_to(self, target):
-        print("I can't walk! you put a non-Character() in the player faction! ,%s" % repr(self))
-
+        logger.warn("I can't walk! you put a non-Character() in the player faction! ,%s", repr(self))
 
     def get_pic(self):
         # Placeholder - I need a dino to shoot at quickly!
@@ -178,9 +181,15 @@ class Character(Actor):
             self.anim.play('stand')
         if self.moving_to is None and self.walking_to is not None:
             # Plan path
-            path = self.world.grid.find_path(self.position, self.walking_to)
-            next_tile = path[-2]
-            # Go to next place in path
-            self.go(next_tile, self.DEFAULT_SPEED)
+            try:
+                path = self.world.grid.find_path(self.position, self.walking_to)
+                next_tile = path[-2]
+                # Go to next place in path
+                self.go(next_tile, self.DEFAULT_SPEED)
+            except NoPath:
+                # Can't go there, just ignore
+                logger.info("%s can not walk to %s", repr(self), self.walking_to)
+                self.walking_to = None
+                self.anim.play('stand')
         self.anim.pos = self.position
         self.anim.direction = self.FACING_TO_DIR[self.facing]
