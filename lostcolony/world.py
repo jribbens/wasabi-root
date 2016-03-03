@@ -21,6 +21,7 @@ class World:
         self.factions = [self.init_player()]  # first faction is the player
         self.factions += self.init_npcs()
 
+
     def add(self, actor, pos):
         """Add an actor to the world at pos."""
         self.actors_by_pos[pos].add(actor)
@@ -45,7 +46,8 @@ class World:
         dino.DEFAULT_SPEED = 2.0
         dino.weapon = Weapon()
 
-        #Actor(self, animation.raptor, faction=faction, position = (7,5), facing=3, colour = (20,20,20)) # pet dino
+        for actor in faction.actors:
+            actor.weapon.got_there(0, actor)
 
         return faction
 

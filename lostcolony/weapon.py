@@ -43,19 +43,19 @@ class Weapon():
             actor.world.grid.hex_in_front(actor.position, (actor.facing + 5) % 6),
         )
 
-    def update(self, t):
+    def update(self, t, actor):
         if self.attack_time < t:
             self.attack_time = t + self.seconds_per_attack
-            self.attack()
+            self.attack(actor)
 
 
-    def attack(self):
-        targets = self.select_targets()
+    def attack(self,attacking_actor):
+        targets = self.select_targets(attacking_actor)
         for target in targets:
             target.hit(self.damage)
 
 
-    def valid_target(self, target):
+    def valid_target(self, actor, target):
         """
         Is this a valid target?
 
@@ -64,23 +64,21 @@ class Weapon():
         :param target:
         :return: True means kill it!
         """
-        return self.actor.faction != target.faction
+        return actor.faction is not target.faction
 
 
-    def select_targets(self):
+    def select_targets(self, actor):
         ret = []
-
-        return ret # xxx
 
         if self.field_of_fire is None:
             return ret
 
         for target_hex in self.field_of_fire:
-            target = self.actor.world.get_actor(target_hex) # TODO: xxxxxxx
-            if target and self.valid_target(target):
-                ret.append(target)
-                if self.single_target:
-                    return ret
+            for target in actor.world.get_actors(target_hex):
+                if target and self.valid_target(actor, target):
+                    ret.append(target)
+                    if self.single_target:
+                        return ret
         return ret
 
 
@@ -109,8 +107,17 @@ class Grenade(Weapon):
 
     def reset_field_of_fire(self, actor):
         min_range = 4
-        max_range = 6
+        max_range = 7
         self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, actor)
+
+
+    def select_targets(self, world):
+        """
+        Ideally the greanade should select the hex affecting the most enemies.
+        For now, chuck it directly at the nearest.
+        :return:
+        """
+        super().select_targets(world)
 
 
 class SniperRifle(Weapon):
@@ -152,7 +159,7 @@ class AutoCannon(Weapon):
         :param actor: The violent actor, not the victim
         :return:
         """
-        super().attack()
+        super().attack(actor)
 
         if self.field_of_fire:
             coord = actor.world.grid.hex_in_front(self.field_of_fire[-1], actor.facing)

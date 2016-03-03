@@ -66,7 +66,6 @@ class Actor(object):
         # Linear speed in tiles per second. non-negative
         self.speed = 0
         self.weapon = None
-        # FIXME: why does this need a world?? Because weapons want to use it.
 
         self.action = 'stand'
         self.phase = ''
