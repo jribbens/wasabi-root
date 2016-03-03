@@ -182,7 +182,7 @@ class Actor(object):
         base_x, base_y = _coord_to_world(self.position)
         new_x = sx + (off_x - base_x) * HEX_WIDTH / 2
         new_y = sy - (off_y - base_y) * HEX_HEIGHT / 2
-        return new_x, new_y, self.anim.draw(), self.get_health(sx, sy)
+        return new_x, new_y, self.anim.draw(), self.get_health(new_x, new_y)
 
     def death(self):
         self.world.remove(self, self.position)
