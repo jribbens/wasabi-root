@@ -1,12 +1,20 @@
 import pyglet
 from pyglet import gl
 
+from lostcolony.animation import load
 from lostcolony.pathfinding import (
     HexGrid, HEX_WIDTH, HEX_HEIGHT
 )
 
+BASE_COLOR = (0, 0, 0, 255)
 
-class TileOutline:
+
+def as_color4(*color):
+    """Convert the given color tuple to 4-tuple."""
+    return color + BASE_COLOR[len(color):]
+
+
+class TileOutlineCursor:
     """This class draws a hexagonal tile outline.
 
     The attribute pos can be used to move the outline around: this is
@@ -29,7 +37,7 @@ class TileOutline:
     pts = pts()
 
     def __init__(self, color, pos=(0, 0)):
-        self.list = pyglet.graphics.vertex_list(7, 'v2f', ('c3B', color * 7))
+        self.list = pyglet.graphics.vertex_list(7, 'v2f', ('c4B', as_color4(*color) * 7))
         self.pos = pos
 
     @property
@@ -45,9 +53,47 @@ class TileOutline:
             pts.append(py + y)
         self.list.vertices = pts
 
-    def set_hex(self, coord):
-        self.pos(  )
-
     def draw(self):
         self.list.draw(gl.GL_LINE_STRIP)
 
+
+class FilledCursor(TileOutlineCursor):
+    def draw(self):
+        self.list.draw(gl.GL_POLYGON)
+
+
+class ImageCursor(object):
+    image = None
+
+    @classmethod
+    def load_image(cls):
+        if cls.image:
+            return
+        im = cls.image = load(cls.FILENAME)
+        im.anchor_x = im.width // 2
+        im.anchor_y = im.height // 2
+
+    def __init__(self, color, pos=(0, 0)):
+        self.load_image()
+        self.sprite = pyglet.sprite.Sprite(self.image)
+        self.sprite.position = pos
+        # TODO: honour color
+
+    @property
+    def pos(self):
+        return self.sprite.position
+
+    @pos.setter
+    def pos(self, v):
+        self.sprite.position = v
+
+    def draw(self):
+        self.sprite.draw()
+
+
+class SelectionCursor(ImageCursor):
+    FILENAME = 'ui/selected-pc.png'
+
+
+class MoveCursor(ImageCursor):
+    FILENAME = 'ui/move-to.png'

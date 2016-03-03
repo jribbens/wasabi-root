@@ -1,4 +1,4 @@
-from lostcolony.tile_outline import TileOutline
+from lostcolony.tile_outline import SelectionCursor
 
 # Colors
 CURRENT_HERO = (0, 255, 0)
@@ -10,7 +10,7 @@ class UI:
         self.current_hero = None
         self.world = world
         self.camera = camera
-        self.selection = TileOutline(CURRENT_HERO)
+        self.selection = SelectionCursor(CURRENT_HERO)
         self.select_next_hero()
 
     def select_by_name(self, name):
