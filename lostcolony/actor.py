@@ -68,10 +68,10 @@ class Actor(object):
 
     def update(self, t, dt):
         """Update, essentially moving"""
-        #if hp is less then kill of the actor
+        # if hp is less then kill of the actor
         if self.hp <= 0:
             self.death()
-        #Moving
+        # Moving
         if self.moving_to is not None:
             if self.weapon is not None:
                 self.weapon.update(t)
@@ -200,7 +200,7 @@ class Character(Actor):
             except NoPath:
                 # Can't go there, just ignore
                 logger.info("%s can not walk to %s", repr(self), self.walking_to)
-                self.hit(10) #for testing hp
+                self.hit(10)  # for testing hp
                 self.walking_to = None
                 self.anim.play('stand')
         self.anim.pos = self.position
