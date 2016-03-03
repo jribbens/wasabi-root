@@ -53,14 +53,13 @@ class Weapon:
 
     def attack(self, attacking_actor):
         targets = self.select_targets(attacking_actor)
-        pos = set()
         for target in targets:
             target.hit(self.damage)
             attacking_actor.anim.play('shoot')
         if self.effect:
             world = attacking_actor.world
-            for p in pos:
-                self.effect(world, p)
+            for p in targets:
+                self.effect(world, p.position)
 
     def valid_target(self, actor, target):
         """
@@ -146,8 +145,8 @@ class AutoCannon(Weapon):
     def __init__(self):
         super().__init__()
         self.setup_time = 0
-        self.seconds_per_attack = 0.3
-        self.damage = 2
+        self.seconds_per_attack = 0.5
+        self.damage = 1
         self.single_target = True
 
     def valid_target(self, actor, target):
@@ -176,6 +175,7 @@ class AutoCannon(Weapon):
             coord = aggressor.world.grid.hex_in_front(self.field_of_fire[-1], aggressor.facing)
             if aggressor.world.grid.visible(aggressor.position, coord):
                 self.field_of_fire.append(coord)
+        self.effect(aggressor.world, self.field_of_fire[-1])
 
 
 def _field_of_fire_front_arc(min_range, max_range, actor):
