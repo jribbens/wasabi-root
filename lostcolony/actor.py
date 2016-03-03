@@ -101,6 +101,17 @@ class Actor(object):
         self.speed = speed
         if self.weapon:
             self.weapon.moving()
+        self.look(destination)
+
+    def look(self, destination):
+        """
+        Update facing towards an adjacent square
+        """
+        # update direction
+        delta = (destination[0] - self.position[0], destination[1] - self.position[1])
+        direction = self.get_dir(delta)
+        self.facing = self.DIR_TO_FACING[direction]
+        self.anim.direction = direction
 
     def get_coords(self):
         """Cartesian (x, y) coords for this actor"""
@@ -110,12 +121,6 @@ class Actor(object):
         else:
             dest = _coord_to_world(self.moving_to)
             delta = (dest[0] - source[0], dest[1] - source[1])
-
-            # FIXME: this direction update should go elsewhere
-            direction = self.get_dir(delta)
-            self.facing = self.DIR_TO_FACING[direction]
-            self.anim.direction = direction
-
             return source[0] + delta[0] * self.progress, source[1] + delta[1] * self.progress
 
     def get_dir(self, delta):
