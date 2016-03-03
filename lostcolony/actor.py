@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-import os
 import logging
 
 from lostcolony.pathfinding import (
@@ -29,7 +28,7 @@ class Actor(object):
     FACING_TO_DIR = {0: 'n', 1: 'ne', 2: 'se', 3: 's', 4: 'sw', 5: 'nw'}
     DIR_TO_FACING = {'n': 0, 'ne': 1, 'se': 2, 's': 3, 'sw': 4, 'nw': 5}
 
-    def __init__(self, world, anim, position, faction, facing, hp = 10, colour = (0,0,0)):
+    def __init__(self, world, anim, position, faction, facing, hp=10, colour=(0, 0, 0)):
         """
         :param world:
         :param position: hex coordinates
@@ -148,11 +147,9 @@ class Actor(object):
         :param damage: int
         :return:
         """
-        #deduct damage taken
+        # deduct damage taken
         self.hp = self.hp - damage
         print(self.hp)
-
-
 
     def walk_to(self, target):
         logger.warn("I can't walk! you put a non-Character() in the player faction! ,%s", repr(self))
@@ -167,6 +164,7 @@ class Actor(object):
 
     def death(self):
         print('You dead son')
+
 
 class Character(Actor):
 
