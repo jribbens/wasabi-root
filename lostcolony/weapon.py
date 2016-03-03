@@ -8,9 +8,13 @@ It also indirectly manages their effects.
 """
 
 import time
+from lostcolony.effects import Ricochet, ShotgunRicochet
 
 
-class Weapon():
+
+class Weapon:
+    effect = None
+
     def __init__(self, seconds_per_attack = 1.0, damage = 1, single_target = True):
         self.attack_time = 0 # based on time.perf_counter(), you start ready to rumble
         self.setup_time = 0 # Seconds between stopping and attacking.
@@ -48,12 +52,16 @@ class Weapon():
             self.attack_time = t + self.seconds_per_attack
             self.attack(actor)
 
-
     def attack(self,attacking_actor):
         targets = self.select_targets(attacking_actor)
+        pos = set()
         for target in targets:
             target.hit(self.damage)
-
+            pos.add(target.position)
+        if self.effect:
+            world = attacking_actor.world
+            for p in pos:
+                self.effect(world, p)
 
     def valid_target(self, actor, target):
         """
@@ -83,6 +91,8 @@ class Weapon():
 
 
 class Rifle(Weapon):
+    effect = ShotgunRicochet
+
     def __init__(self):
         super().__init__()
         self.setup_time = 0
@@ -136,6 +146,8 @@ class SniperRifle(Weapon):
 
 
 class AutoCannon(Weapon):
+    effect = Ricochet
+
     def __init__(self):
         super().__init__()
         self.setup_time = 0
