@@ -2,6 +2,8 @@
 
 import logging
 
+import pyglet
+
 from lostcolony import behaviour
 from lostcolony.pathfinding import (
     HEX_WIDTH, HEX_HEIGHT, NoPath
@@ -56,6 +58,8 @@ class Actor(object):
         assert 0 <= facing < 6
         self.facing = facing
         self.colour = colour
+
+        self.total_hp = hp
 
         self.hp = hp
 
@@ -145,11 +149,25 @@ class Actor(object):
         """
         # deduct damage taken
         self.hp = self.hp - damage
-        print(self.hp)
 
     def walk_to(self, target):
         self.walking_to = target
         self.anim.play('walk')
+
+    def get_health(self, x, y):
+        vertex_list = pyglet.graphics.Batch()
+
+        health_left = ((self.hp/self.total_hp) * 80) - 40
+
+        vertex_list.add(4, pyglet.gl.GL_QUADS, None,
+                        ('v2f', (x-41, y+79, x+41, y+79, x+41, y+91, x-41, y+91)),
+                        ('c3B', (150, 0, 0)*4))
+
+        vertex_list.add(4, pyglet.gl.GL_QUADS, None,
+                        ('v2f', (x-40, y+80, x+health_left, y+80, x+health_left, y+90, x-40, y+90)),
+                        ('c3B', (40, 180, 0)*4))
+
+        return vertex_list
 
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
@@ -157,7 +175,7 @@ class Actor(object):
         base_x, base_y = _coord_to_world(self.position)
         new_x = sx + (off_x - base_x) * HEX_WIDTH / 2
         new_y = sy - (off_y - base_y) * HEX_HEIGHT / 2
-        return new_x, new_y, self.anim.draw()
+        return new_x, new_y, self.anim.draw(), self.get_health(sx, sy)
 
     def death(self):
         self.world.remove(self, self.position)

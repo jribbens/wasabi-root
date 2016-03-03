@@ -119,6 +119,7 @@ class Scene:
         """
         (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
         objects = []
+        modifiers = []
         for y in range(cy2 - 1, cy1 + 4):
             for x in range(cx1 - 1, cx2 + 3):
                 obj = self.objects.get((x, y))
@@ -128,9 +129,11 @@ class Scene:
 
                 for actor in self.world.get_actors((x, y)):
                     sx, sy = self.camera.coord_to_viewport((x, y))
-                    sx, sy, pic = actor.drawable(sx, sy)
+                    sx, sy, pic, health = actor.drawable(sx, sy)
                     objects.append((round(sy), round(sx), pic))
-        return objects
+                    modifiers.append(health)
+
+        return objects, modifiers
 
     def hover(self, x, y):
         """Set the position of the mouse cursor."""
@@ -158,10 +161,12 @@ def on_draw():
     tmxmap.draw()
     ui.draw()
 
-    drawables = tmxmap.get_drawables()
+    drawables, modifiers = tmxmap.get_drawables()
     drawables.sort(reverse=True, key=lambda t: (t[0], t[1]))
     for y, x, img in drawables:
         img.blit(x, y, 0)
+    for modifier in modifiers:
+        modifier.draw()
 
 
 @window.event
