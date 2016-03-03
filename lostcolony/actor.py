@@ -42,7 +42,7 @@ class Actor(object):
         #   - None for still objects
         #   - A coordinate for the target, should be a neighbour of self.position
         self.anim = anim.create_instance()
-        self.world = world
+        self.world = world        # why does this need a world?? Because weapons want to use it.
         self.position = position
         self.faction = faction
         faction.add(self)
@@ -58,9 +58,7 @@ class Actor(object):
         # Linear speed in tiles per second. non-negative
         self.speed = 0
         self.weapon = None
-        # FIXME: why does this need a world?? Because weapons want to use it.
 
-        self.faction = None  # Faction object it belongs to
         self.action = 'stand'
         self.phase = ''
 
@@ -68,13 +66,15 @@ class Actor(object):
 
     def update(self, t, dt):
         """Update, essentially moving"""
+
+        if self.weapon is not None:
+            self.weapon.update(t, self)
+
         # if hp is less then kill of the actor
         if self.hp <= 0:
             self.death()
         # Moving
         if self.moving_to is not None:
-            if self.weapon is not None:
-                self.weapon.update(t)
             self.progress += self.speed * dt
             if self.progress >= 1.0:
                 # Got there
