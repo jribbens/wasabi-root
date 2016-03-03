@@ -56,7 +56,7 @@ class Weapon:
         pos = set()
         for target in targets:
             target.hit(self.damage)
-        attacking_actor.anim.play('shoot')
+            attacking_actor.anim.play('shoot')
         if self.effect:
             world = attacking_actor.world
             for p in pos:
@@ -146,7 +146,7 @@ class AutoCannon(Weapon):
     def __init__(self):
         super().__init__()
         self.setup_time = 0
-        self.seconds_per_attack = 1.0
+        self.seconds_per_attack = 0.3
         self.damage = 2
         self.single_target = True
 
@@ -169,6 +169,7 @@ class AutoCannon(Weapon):
             return
 
         super().attack(aggressor)
+        aggressor.anim.play('shoot')
 
         max_range = 12
         if self.field_of_fire and len(self.field_of_fire) < max_range:

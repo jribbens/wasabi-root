@@ -50,8 +50,11 @@ class World:
         # Stub code - this should come from scenario set-up
         faction = Faction("Player")
 
-        rex = Character(self, "rex", animation.rex, faction=faction, position = (5,5), facing=4, hp=100, colour = (255,215,0))
-        rex.weapon = AutoCannon()
+        rex = Character(self, "rex", animation.rex, faction=faction, position = (5,5), facing=3, hp=100, colour = (255,215,0))
+        rex.weapon = Rifle()
+
+        matt = Character(self, "matt", animation.rex, faction=faction, position = (7,5), facing=2, hp=100, colour = (255,120,0))
+        matt.weapon = AutoCannon()
 
         dino = Character(self, "tom", animation.raptor, faction=faction, position = (6,5), facing=0, hp=25, colour = (0x40, 0x40, 0xC0))
         dino.DEFAULT_SPEED = 2.0
