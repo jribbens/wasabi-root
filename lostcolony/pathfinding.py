@@ -213,7 +213,7 @@ class HexGrid:
             path.append(current)
         return path
 
-    def visible(self, start, target):
+    def obstacles_in_line_of_sight(self, start, target):
         """
         Can you see the target from the starting position?
 
@@ -244,3 +244,9 @@ class HexGrid:
                 if self.blocked(checked_coord):
                     obstacles.add(checked_coord)
         return obstacles
+
+    def visible(self, start, target):
+        obstacles = self.obstacles_in_line_of_sight(start, target)
+        if obstacles:
+            return False
+        return True

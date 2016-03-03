@@ -147,11 +147,9 @@ class AutoCannon(Weapon):
         return True
 
     def reset_field_of_fire(self, actor):
-        coord = actor.world.grid.hex_in_front(actor.position, actor.facing)
-        if actor.world.grid.visible(actor.position, coord): # which actually means if blocked
-            self.field_of_fire = []
-        else:
-            self.field_of_fire = [coord]
+        grid = actor.world.grid
+        coord = grid.hex_in_front(actor.position, actor.facing)
+        self.field_of_fire = [coord] if grid.visible(actor.position, coord) else []
 
     def attack(self, actor):
         """
@@ -163,7 +161,7 @@ class AutoCannon(Weapon):
 
         if self.field_of_fire:
             coord = actor.world.grid.hex_in_front(self.field_of_fire[-1], actor.facing)
-            if not actor.world.grid.visible(actor.position, coord): # visible returns a list of obstructions!
+            if actor.world.grid.visible(actor.position, coord):
                 self.field_of_fire.append(coord)
 
 def _field_of_fire_front_arc(min_range, max_range, actor):
@@ -208,5 +206,5 @@ def _field_of_fire_front_arc(min_range, max_range, actor):
         c
         for c in coords
         if c in grid.cells # on-map
-        and not grid.visible(actor.position, c) # i.e. no obstacles
+        and grid.visible(actor.position, c)
     ]
