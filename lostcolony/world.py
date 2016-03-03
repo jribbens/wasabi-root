@@ -38,10 +38,10 @@ class World:
         # Stub code - this should come from scenario set-up
         faction = Faction("Player")
 
-        rex = Character(self, animation.rex, faction=faction, position = (5,5), facing=4, hp=100, colour = (255,215,0))
+        rex = Character(self, "rex", animation.rex, faction=faction, position = (5,5), facing=4, hp=100, colour = (255,215,0))
         rex.weapon = Rifle()
 
-        dino = Character(self, animation.raptor, faction=faction, position = (6,5), facing=0, hp=25, colour = (0x40, 0x40, 0xC0))
+        dino = Character(self, "tom", animation.raptor, faction=faction, position = (6,5), facing=0, hp=25, colour = (0x40, 0x40, 0xC0))
         dino.DEFAULT_SPEED = 2.0
         dino.weapon = Weapon()
 
@@ -52,7 +52,16 @@ class World:
     def init_npcs(self):
         # to do: get from scenario set-up
         targets = Faction("Targets for weapon testing")
-        victim = Actor(self, animation.raptor, position=(8,8), faction=targets, facing=3)
+        victim = Actor(self, "victim", animation.raptor, position=(8, 8), faction=targets, facing=3)
+        chaser = Actor(self, "chaser", animation.raptor, position=(18, 18), faction=targets, facing=3)
+        # This should be configured in the map, or prebuilt
+        from lostcolony import behaviour
+        chaser.behaviour = behaviour.sequence(
+            behaviour.die,
+            behaviour.move_step,
+            behaviour.chase_closest_enemy,
+            behaviour.pathfinding,
+        )
         return [targets]
 
     @property

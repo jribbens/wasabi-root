@@ -2,6 +2,7 @@
 
 import logging
 
+from lostcolony import behaviour
 from lostcolony.pathfinding import (
     HEX_WIDTH, HEX_HEIGHT, NoPath
 )
@@ -28,9 +29,13 @@ class Actor(object):
     FACING_TO_DIR = {0: 'n', 1: 'ne', 2: 'se', 3: 's', 4: 'sw', 5: 'nw'}
     DIR_TO_FACING = {'n': 0, 'ne': 1, 'se': 2, 's': 3, 'sw': 4, 'nw': 5}
 
-    def __init__(self, world, anim, position, faction, facing, hp=10, colour=(0, 0, 0)):
+    DEFAULT_SPEED = 1.2
+
+
+    def __init__(self, world, id, anim, position, faction, facing, hp=10, colour=(0, 0, 0)):
         """
         :param world:
+        :param id: a string id for lookup purposes
         :param position: hex coordinates
         :param faction: the int used for FACING_TO_DIR etc
         :param facing: Hex side: 0 = top, 1 = top right ..; e.g. you're pointing at grid.neighbours()[facing]
@@ -43,7 +48,9 @@ class Actor(object):
         #   - A coordinate for the target, should be a neighbour of self.position
         self.anim = anim.create_instance()
         self.world = world
+        self.id = id
         self.position = position
+
         self.faction = faction
         faction.add(self)
         assert 0 <= facing < 6
@@ -53,6 +60,7 @@ class Actor(object):
         self.hp = hp
 
         self.moving_to = None
+        self.walking_to = None
         # Non-integer progress of movement: 0.0 == just started, 1.0 == arrived
         self.progress = 0
         # Linear speed in tiles per second. non-negative
@@ -60,31 +68,20 @@ class Actor(object):
         self.weapon = None
         # FIXME: why does this need a world?? Because weapons want to use it.
 
-        self.faction = None  # Faction object it belongs to
         self.action = 'stand'
         self.phase = ''
+
+        # Default behavior:
+        self.behaviour = behaviour.sequence(
+            behaviour.die,
+            behaviour.move_step
+        )
 
         self.world.add(self, self.position)
 
     def update(self, t, dt):
         """Update, essentially moving"""
-        # if hp is less then kill of the actor
-        if self.hp <= 0:
-            self.death()
-        # Moving
-        if self.moving_to is not None:
-            if self.weapon is not None:
-                self.weapon.update(t)
-            self.progress += self.speed * dt
-            if self.progress >= 1.0:
-                # Got there
-                self.world.move(self, from_pos=self.position, to_pos=self.moving_to)
-                self.position = self.moving_to
-                self.moving_to = None
-                self.speed = 0
-                self.progress = 0
-                if self.weapon:
-                    self.weapon.got_there(t, self)
+        self.behaviour(self, t, dt)
 
     def go(self, destination, speed):
         """
@@ -152,7 +149,8 @@ class Actor(object):
         print(self.hp)
 
     def walk_to(self, target):
-        logger.warn("I can't walk! you put a non-Character() in the player faction! ,%s", repr(self))
+        self.walking_to = target
+        self.anim.play('walk')
 
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
@@ -165,43 +163,21 @@ class Actor(object):
     def death(self):
         self.world.remove(self, self.position)
 
+    def __repr__(self):
+        return "<%s %r>" % (type(self).__name__, self.id)
+
 
 class Character(Actor):
 
-    DEFAULT_SPEED = 1.2
-
-    def __init__(self, world, anim, position, faction, facing, hp, colour):
+    def __init__(self, world, id, anim, position, faction, facing, hp, colour):
         """
         :param colour: rgb tuple used for field of fire display
         :return:
         """
-        super().__init__(world, anim, position, faction, facing, hp, colour)
-        self.walking_to = None
-
-    def get_pic(self):
-        return self.anim.draw()
-
-    def walk_to(self, target):
-        self.walking_to = target
-        self.anim.play('walk')
-
-    def update(self, t, dt):
-        super().update(t, dt)
-        if self.position == self.walking_to:
-            self.walking_to = None
-            self.anim.play('stand')
-        if self.moving_to is None and self.walking_to is not None:
-            # Plan path
-            try:
-                path = self.world.grid.find_path(self.position, self.walking_to)
-                next_tile = path[-2]
-                # Go to next place in path
-                self.go(next_tile, self.DEFAULT_SPEED)
-            except NoPath:
-                # Can't go there, just ignore
-                logger.info("%s can not walk to %s", repr(self), self.walking_to)
-                self.hit(10)  # for testing hp
-                self.walking_to = None
-                self.anim.play('stand')
-        self.anim.pos = self.position
-        self.anim.direction = self.FACING_TO_DIR[self.facing]
+        super().__init__(world, id, anim, position, faction, facing, hp, colour)
+        # Default behavior:
+        self.behaviour = behaviour.sequence(
+            behaviour.die,
+            behaviour.move_step,
+            behaviour.pathfinding,
+        )

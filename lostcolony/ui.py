@@ -15,7 +15,7 @@ class UI:
 
     def select_by_name(self, name):
         f = [fac for fac in self.world.factions if fac.name == "Player"][0]
-        heroes = [h for h in f if h.name == name]
+        heroes = [h for h in f if h.id == name]
         self.current_hero = heroes[0] if heroes else None
 
     def select_next_hero(self):
