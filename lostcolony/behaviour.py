@@ -17,10 +17,10 @@ def die(actor, t, dt):
 
 def move_step(actor, t, dt):
     # FIXME: weapon should be split away from this
+    if actor.weapon is not None:
+        actor.weapon.update(t, actor)
     # Moving
     if actor.moving_to is not None:
-        if actor.weapon is not None:
-            actor.weapon.update(t)
         actor.progress += actor.speed * dt
         if actor.progress >= 1.0:
             # Got there
