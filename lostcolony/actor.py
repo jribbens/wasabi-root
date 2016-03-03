@@ -29,7 +29,7 @@ class Actor(object):
     FACING_TO_DIR = {0: 'n', 1: 'ne', 2: 'se', 3: 's', 4: 'sw', 5: 'nw'}
     DIR_TO_FACING = {'n': 0, 'ne': 1, 'se': 2, 's': 3, 'sw': 4, 'nw': 5}
 
-    def __init__(self, world, anim, position, faction, facing, colour = (0,0,0)):
+    def __init__(self, world, anim, position, faction, facing, hp = 10, colour = (0,0,0)):
         """
         :param world:
         :param position: hex coordinates
@@ -50,6 +50,8 @@ class Actor(object):
         assert 0 <= facing < 6
         self.facing = facing
         self.colour = colour
+
+        self.hp = hp
 
         self.moving_to = None
         # Non-integer progress of movement: 0.0 == just started, 1.0 == arrived
@@ -142,7 +144,10 @@ class Actor(object):
         :param damage: int
         :return:
         """
-        pass
+        self.hp = self.hp - damage
+        print(self.hp)
+        if self.hp <= 0:
+            print('You dead son')
 
     def walk_to(self, target):
         logger.warn("I can't walk! you put a non-Character() in the player faction! ,%s", repr(self))
@@ -160,12 +165,12 @@ class Character(Actor):
 
     DEFAULT_SPEED = 1.2
 
-    def __init__(self, world, anim, position, faction, facing, colour):
+    def __init__(self, world, anim, position, faction, facing, hp, colour):
         """
         :param colour: rgb tuple used for field of fire display
         :return:
         """
-        super().__init__(world, anim, position, faction, facing, colour)
+        super().__init__(world, anim, position, faction, facing, hp, colour)
         self.walking_to = None
 
     def get_pic(self):
@@ -190,6 +195,7 @@ class Character(Actor):
             except NoPath:
                 # Can't go there, just ignore
                 logger.info("%s can not walk to %s", repr(self), self.walking_to)
+                self.hit(10) #for testing hp
                 self.walking_to = None
                 self.anim.play('stand')
         self.anim.pos = self.position
