@@ -198,7 +198,7 @@ class Actor(object):
         return new_x, new_y, self.anim.draw(), self.get_health(new_x, new_y)
 
     def death(self):
-        self.world.remove(self, self.position)
+        self.world.kill_actor(self, self.faction)
 
     def __repr__(self):
         return "<%s %r>" % (type(self).__name__, self.id)
