@@ -170,11 +170,15 @@ class Actor(object):
         health_left = ((self.hp/self.total_hp) * 80) - 40
 
         vertex_list.add(4, pyglet.gl.GL_QUADS, None,
-                        ('v2f', (x-41, y+79, x+41, y+79, x+41, y+91, x-41, y+91)),
+                        ('v2f', (x-41, y+79, x+41, y+79, x+41, y+86, x-41, y+86)),
+                        ('c3B', (150, 150, 150)*4))
+
+        vertex_list.add(4, pyglet.gl.GL_QUADS, None,
+                        ('v2f', (x-40, y+80, x+40, y+80, x+40, y+85, x-40, y+85)),
                         ('c3B', (150, 0, 0)*4))
 
         vertex_list.add(4, pyglet.gl.GL_QUADS, None,
-                        ('v2f', (x-40, y+80, x+health_left, y+80, x+health_left, y+90, x-40, y+90)),
+                        ('v2f', (x-40, y+80, x+health_left, y+80, x+health_left, y+85, x-40, y+85)),
                         ('c3B', (40, 180, 0)*4))
 
         return vertex_list
