@@ -221,9 +221,10 @@ def on_mouse_release(x, y, button, mods):
     if pyglet.window.mouse.LEFT == button:
         ui.go((x, y))
     elif pyglet.window.mouse.RIGHT == button:
-        from lostcolony.effects import ShotgunRicochet
+        from lostcolony.effects import ShotgunRicochet, BloodSpray
         pos = tmxmap.camera.viewport_to_coord((x, y))
-        ShotgunRicochet(tmxmap.world, pos)
+        BloodSpray(tmxmap.world, pos, 13, 5)
+
 
 @window.event
 def on_resize(*args):

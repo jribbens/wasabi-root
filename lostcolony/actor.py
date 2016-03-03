@@ -8,6 +8,7 @@ from lostcolony import behaviour
 from lostcolony.pathfinding import (
     HEX_WIDTH, HEX_HEIGHT, NoPath
 )
+from lostcolony.effects import BloodSpray
 
 # Note: coordinates are in the "even-q vertical" layout in the terminology of
 # http://www.redblobgames.com/grids/hexagons/#coordinates
@@ -150,7 +151,7 @@ class Actor(object):
 
         return direction
 
-    def hit(self, damage):
+    def hit(self, damage, max_value=10):
         """
         Receive some damage, manage the consequences
 
@@ -159,6 +160,7 @@ class Actor(object):
         """
         # deduct damage taken
         self.hp = self.hp - damage
+        BloodSpray(self.world, self.position, damage, max_value)
 
     def walk_to(self, target):
         self.walking_to = target
