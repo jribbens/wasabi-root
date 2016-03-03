@@ -111,7 +111,10 @@ class Actor(object):
             dest = _coord_to_world(self.moving_to)
             delta = (dest[0] - source[0], dest[1] - source[1])
 
-            self.get_dir(delta)
+            # FIXME: this direction update should go elsewhere
+            direction = self.get_dir(delta)
+            self.facing = self.DIR_TO_FACING[direction]
+            self.anim.direction = direction
 
             return source[0] + delta[0] * self.progress, source[1] + delta[1] * self.progress
 
@@ -136,8 +139,7 @@ class Actor(object):
         elif delta[0] < 0:
             direction += 'w'
 
-        self.facing = self.DIR_TO_FACING[direction]
-        self.anim.direction = direction
+        return direction
 
     def hit(self, damage):
         """

@@ -43,6 +43,11 @@ def chase_closest_enemy(actor, t, dt):
         for e in enemies:
             if distance_to_actor(e) < 2:
                 # We're already there! adjacent are at distance sqrt3
+                # Just change facing
+                delta = (e[0] - actor.position[0], e[1] - actor.position[1])
+                direction = actor.get_dir(delta)
+                actor.facing = actor.DIR_TO_FACING[direction]
+                actor.anim.direction = direction
                 return
             # Find closest unblocked location to attack
             attackable = [p for p in grid.neighbours(e) if not grid.blocked(p)]
