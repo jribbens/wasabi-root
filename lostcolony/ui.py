@@ -39,11 +39,10 @@ class UI:
 
         :param symbol: str, key used (q or e)
         """
-        dir_buffer = [0,1,2,3,4,5]
         if symbol == 'Q':
-            self.current_hero.facing = dir_buffer[(self.current_hero.facing - 1) % len(dir_buffer)]
+            self.current_hero.facing = (self.current_hero.facing - 1) % 6
         elif symbol == 'E':
-            self.current_hero.facing = dir_buffer[(self.current_hero.facing + 1) % len(dir_buffer)]
+            self.current_hero.facing = (self.current_hero.facing + 1) % 6
 
         if self.current_hero.weapon:
             self.current_hero.weapon.reset_field_of_fire(self.current_hero)
