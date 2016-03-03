@@ -166,7 +166,7 @@ class Actor(object):
         return new_x, new_y, self.anim.draw()
 
     def death(self):
-        print('You dead son')
+        self.world.remove(self, self.position)
 
 class Character(Actor):
 
