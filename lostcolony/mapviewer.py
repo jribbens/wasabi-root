@@ -9,7 +9,7 @@ from pyglet.window import key
 from lostcolony.pathfinding import (
     HexGrid, HEX_WIDTH, HEX_HEIGHT
 )
-from lostcolony.tile_outline import TileOutline
+from lostcolony.tile_outline import TileOutlineCursor, FilledCursor, MoveCursor
 from lostcolony.ui import UI
 from lostcolony.world import World
 from lostcolony.maploader import Map
@@ -72,7 +72,7 @@ class Camera:
 class Scene:
     def __init__(self, window, map):
         self.camera = Camera((window.width, window.height), pos=(0, 0))
-        self.cursor = TileOutline((255, 0, 0))
+        self.cursor = MoveCursor((255, 0, 0))
         self.window = window
         self.images = {}
         self.mouse_coords = (0, 0)
@@ -82,7 +82,7 @@ class Scene:
         self.grid = map.grid
         self.world = World(self.grid)
         self.fof_effect = {
-            character : TileOutline(colour)
+            character : FilledCursor(colour + (66,))
             for character, colour
             in self.world.field_of_fire_colours()
         }
