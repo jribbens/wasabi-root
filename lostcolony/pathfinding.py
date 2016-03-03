@@ -247,6 +247,6 @@ class HexGrid:
 
     def visible(self, start, target):
         obstacles = self.obstacles_in_line_of_sight(start, target)
-        if obstacles:
+        if obstacles and obstacles != {target}:
             return False
         return True

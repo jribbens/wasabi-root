@@ -53,6 +53,7 @@ class Weapon():
         targets = self.select_targets(attacking_actor)
         for target in targets:
             target.hit(self.damage)
+            print("Damage:", self.damage)
 
 
     def valid_target(self, actor, target):
@@ -140,10 +141,10 @@ class AutoCannon(Weapon):
         super().__init__()
         self.setup_time = 0
         self.seconds_per_attack = 1.0
-        self.damage = 1
+        self.damage = 2
         self.single_target = True
 
-    def valid_target(self):
+    def valid_target(self, actor, target):
         return True
 
     def reset_field_of_fire(self, actor):
@@ -151,18 +152,24 @@ class AutoCannon(Weapon):
         coord = grid.hex_in_front(actor.position, actor.facing)
         self.field_of_fire = [coord] if grid.visible(actor.position, coord) else []
 
-    def attack(self, actor):
+    def attack(self, aggressor):
         """
 
-        :param actor: The violent actor, not the victim
+        :param aggressor: The violent actor, not the victim
         :return:
         """
-        super().attack(actor)
+        if aggressor.walking_to is not None:
+            self.field_of_fire = [] # can't move and fire
+            return
 
-        if self.field_of_fire:
-            coord = actor.world.grid.hex_in_front(self.field_of_fire[-1], actor.facing)
-            if actor.world.grid.visible(actor.position, coord):
+        super().attack(aggressor)
+
+        max_range = 12
+        if self.field_of_fire and len(self.field_of_fire) < max_range:
+            coord = aggressor.world.grid.hex_in_front(self.field_of_fire[-1], aggressor.facing)
+            if aggressor.world.grid.visible(aggressor.position, coord):
                 self.field_of_fire.append(coord)
+
 
 def _field_of_fire_front_arc(min_range, max_range, actor):
     """
