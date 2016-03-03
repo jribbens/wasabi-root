@@ -147,5 +147,9 @@ rex = Animation({
 )
 
 raptor = Animation({
-    'default': DirectionalSequence.load('mobs/raptor-{dir}.png', 1, anchor_x=64, anchor_y=24)
-})
+        'stand': DirectionalSequence.load('mobs/raptor-{dir}-stand.png', 1, anchor_x=64, anchor_y=32),
+        'walk': DirectionalSequence.load('mobs/raptor-{dir}-walk{n}.png', 4, anchor_x=64, anchor_y=32),
+    },
+    default='stand',
+    frame_rate=0.1
+)

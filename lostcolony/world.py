@@ -41,10 +41,11 @@ class World:
         rex = Character(self, animation.rex, faction=faction, position = (5,5), facing=4, colour = (255,215,0))
         rex.weapon = Rifle(rex)
 
-        rex2 = Character(self, animation.rex, faction=faction, position = (6,5), facing=0, colour = (128,215,0))
-        rex2.weapon = Rifle(rex)
+        dino = Character(self, animation.raptor, faction=faction, position = (6,5), facing=0, colour = (128,215,0))
+        dino.DEFAULT_SPEED = 2.0
+        dino.weapon = Rifle(rex)
 
-        Actor(self, animation.raptor, faction=faction, position = (7,5), facing=3, colour = (20,20,20)) # pet dino
+        #Actor(self, animation.raptor, faction=faction, position = (7,5), facing=3, colour = (20,20,20)) # pet dino
 
         return faction
 
