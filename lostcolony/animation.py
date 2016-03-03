@@ -149,6 +149,8 @@ rex = Animation({
 raptor = Animation({
         'stand': DirectionalSequence.load('mobs/raptor-{dir}-stand.png', 1, anchor_x=64, anchor_y=32),
         'walk': DirectionalSequence.load('mobs/raptor-{dir}-walk{n}.png', 4, anchor_x=64, anchor_y=32),
+        # no attack graphic for dinos, just make them stand
+        'shoot': DirectionalSequence.load('mobs/raptor-{dir}-stand.png', 1, anchor_x=64, anchor_y=32, next='stand'),
     },
     default='stand',
     frame_rate=0.1

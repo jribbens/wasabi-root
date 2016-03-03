@@ -56,6 +56,7 @@ class Weapon:
         pos = set()
         for target in targets:
             target.hit(self.damage)
+        attacking_actor.anim.play('shoot')
         if self.effect:
             world = attacking_actor.world
             for p in pos:
