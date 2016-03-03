@@ -87,20 +87,37 @@ class Scene:
             in self.world.field_of_fire_colours()
         }
 
-    def draw(self):
-        """Draw the floor and any decals."""
-        gl.glEnable(gl.GL_BLEND)
-        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glEnable(gl.GL_ALPHA_TEST)
-        gl.glAlphaFunc(gl.GL_GREATER, 0.0)
+    floor_batch = None
+    floor_batch_pos = None
+    floor_groups = [
+        pyglet.graphics.OrderedGroup(layer) for layer in range(10)
+    ]
+
+    def get_floor_batch(self):
+        if self.floor_batch_pos == self.camera.pos:
+            return self.floor_batch
+
+        self.floor_batch = pyglet.graphics.Batch()
+        self.floor_sprites = []
         (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
         for y in range(cy2 - 1, cy1 + 4):
             for x in range(cx1 - 1, cx2 + 3):
                 imgs = self.floor.get((x, y))
                 if imgs:
                     sx, sy = self.camera.coord_to_viewport((x, y))
-                    for img in imgs:
-                        img.blit(sx, sy, 0)
+                    for i, img in enumerate(imgs):
+                        self.floor_sprites.append(
+                            pyglet.sprite.Sprite(img, sx, sy, batch=self.floor_batch, group=self.floor_groups[i])
+                        )
+        return self.floor_batch
+
+    def draw(self):
+        """Draw the floor and any decals."""
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glEnable(gl.GL_ALPHA_TEST)
+        gl.glAlphaFunc(gl.GL_GREATER, 0.0)
+        self.get_floor_batch().draw()
 
         for character in self.world.get_all_player_actors():
             if character.weapon and character.weapon.field_of_fire:
