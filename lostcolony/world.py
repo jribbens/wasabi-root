@@ -16,11 +16,11 @@ class World:
         # TODO: un-hardcode this. can we set this in tiled?
         self.grid = grid
         self.actors_by_pos = defaultdict(set)
+        self.effects_by_pos = defaultdict(set)
         self.grid.layers.insert(0, self.actors_by_pos)
 
         self.factions = [self.init_player()]  # first faction is the player
         self.factions += self.init_npcs()
-
 
     def add(self, actor, pos):
         """Add an actor to the world at pos."""
@@ -29,6 +29,17 @@ class World:
     def remove(self, actor, pos):
         """Remove an actor from the world at pos."""
         self.actors_by_pos[pos].discard(actor)
+
+    def add_effect(self, effect, pos):
+        """Add an actor to the world at pos."""
+        self.effects_by_pos[pos].add(effect)
+
+    def remove_effect(self, effect, pos):
+        """Remove an effect from the world at pos."""
+        self.effects_by_pos[pos].discard(effect)
+
+    def get_effects(self, pos):
+        return self.effects_by_pos[pos]
 
     def move(self, actor, from_pos, to_pos):
         """Move an actor from from_pos to to_pos."""

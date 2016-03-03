@@ -1,3 +1,4 @@
+from itertools import chain
 import pyglet
 from pyglet import gl
 from pyglet.window import key
@@ -34,6 +35,13 @@ class Camera:
             self.viewport[1] - sy + cy
         )
 
+    def world_to_viewport(self, coord):
+        wx, wy = coord
+        cx, cy = self.pos
+        vx = wx * self.WSCALE - cx
+        vy = -(wy * self.HSCALE - cy - self.viewport[1])
+        return vx, vy
+
     def viewport_to_world(self, coord):
         """Get the world coordinate for a viewport coordinate."""
         x, y = coord
@@ -45,10 +53,6 @@ class Camera:
     def viewport_to_coord(self, coord):
         """Given a viewport coordinate, get the tile coordinate."""
         return HexGrid.world_to_coord(self.viewport_to_world(coord))
-
-#    def viewport_to_world(self, coord):
-#        """Get the world coordinate of the tile for a viewport coordinate."""
-#        return HexGrid.coord_to_world(self.viewport_to_coord(coord))
 
     def viewport_bounds(self):
         """Return the p1, p2 bounds of the viewport in screen space."""
@@ -122,9 +126,10 @@ class Scene:
         modifiers = []
         for y in range(cy2 - 1, cy1 + 4):
             for x in range(cx1 - 1, cx2 + 3):
-                obj = self.objects.get((x, y))
+                c = x, y
+                obj = self.objects.get(c)
                 if obj is not None:
-                    sx, sy = self.camera.coord_to_viewport((x, y))
+                    sx, sy = self.camera.coord_to_viewport(c)
                     objects.append((sy, sx, obj))
 
                 for actor in self.world.get_actors((x, y)):
@@ -132,6 +137,11 @@ class Scene:
                     sx, sy, pic, health = actor.drawable(sx, sy)
                     objects.append((round(sy), round(sx), pic))
                     modifiers.append(health)
+
+                for effect in self.world.get_effects(c):
+                    for c, im in effect.get_drawables():
+                        sx, sy = self.camera.world_to_viewport(c)
+                        objects.append((sy, sx, im))
 
         return objects, modifiers
 
@@ -145,7 +155,8 @@ class Scene:
         c = self.camera.viewport_to_coord(self.mouse_coords)
         self.cursor.pos = self.camera.coord_to_viewport(c)
 
-
+FPS = 30
+pyglet.clock.set_fps_limit(30)
 window = pyglet.window.Window(resizable=True)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
@@ -209,7 +220,10 @@ def on_mouse_release(x, y, button, mods):
     """
     if pyglet.window.mouse.LEFT == button:
         ui.go((x, y))
-
+    elif pyglet.window.mouse.RIGHT == button:
+        from lostcolony.effects import ShotgunRicochet
+        pos = tmxmap.camera.viewport_to_coord((x, y))
+        ShotgunRicochet(tmxmap.world, pos)
 
 @window.event
 def on_resize(*args):
@@ -235,7 +249,7 @@ def on_key_press(symbol, mods):
 window.push_handlers(on_key_press)
 
 
-def update(_, dt):
+def update(dt):
 
     tmxmap.world.update(dt)
 
@@ -260,4 +274,4 @@ def update(_, dt):
 #
 #    tmxmap.camera = nx, ny
 
-pyglet.clock.schedule(update, 1/60)
+pyglet.clock.schedule(update)
