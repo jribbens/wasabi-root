@@ -1,7 +1,3 @@
-from collections import defaultdict
-import os
-from glob import iglob
-
 import pyglet
 from pyglet import gl
 from pyglet.window import key
@@ -9,7 +5,7 @@ from pyglet.window import key
 from lostcolony.pathfinding import (
     HexGrid, HEX_WIDTH, HEX_HEIGHT
 )
-from lostcolony.tile_outline import TileOutlineCursor, FilledCursor, MoveCursor
+from lostcolony.tile_outline import FilledCursor, MoveCursor
 from lostcolony.ui import UI
 from lostcolony.world import World
 from lostcolony.maploader import Map
