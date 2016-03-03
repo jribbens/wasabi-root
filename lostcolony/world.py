@@ -3,7 +3,7 @@ from lostcolony.actor import Character, Actor
 from lostcolony import animation
 from lostcolony.faction import Faction
 from itertools import chain
-from lostcolony.weapon import Rifle
+from lostcolony.weapon import Rifle, Weapon, Grenade
 import time
 
 
@@ -39,11 +39,11 @@ class World:
         faction = Faction("Player")
 
         rex = Character(self, animation.rex, faction=faction, position = (5,5), facing=4, colour = (255,215,0))
-        rex.weapon = Rifle(rex)
+        rex.weapon = Rifle()
 
-        dino = Character(self, animation.raptor, faction=faction, position = (6,5), facing=0, colour = (128,215,0))
+        dino = Character(self, animation.raptor, faction=faction, position = (6,5), facing=0, colour = (0x40, 0x40, 0xC0))
         dino.DEFAULT_SPEED = 2.0
-        dino.weapon = Rifle(rex)
+        dino.weapon = Weapon()
 
         #Actor(self, animation.raptor, faction=faction, position = (7,5), facing=3, colour = (20,20,20)) # pet dino
 
@@ -63,7 +63,7 @@ class World:
         return (
             (actor, actor.colour,)
             for actor in self.factions[0].actors
-            if isinstance(actor, Character)
+            # if isinstance(actor, Character)
         )
 
     def drawables(self):
@@ -73,12 +73,8 @@ class World:
         """Get a list of actors "in" the given tile."""
         return self.actors_by_pos.get(hex) or []
 
-    def get_characters(self):
-        return (
-            actor
-            for actor in self.factions[0].actors
-            if isinstance(actor, Character)
-        )
+    def get_all_player_actors(self):
+        return self.factions[0].actors
 
     def update(self, dt):
         t = time.time()

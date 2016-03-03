@@ -11,6 +11,7 @@ class UI:
         self.world = world
         self.camera = camera
         self.selection = TileOutline(CURRENT_HERO)
+        self.select_next_hero()
 
     def select_by_name(self, name):
         f = [fac for fac in self.world.factions if fac.name == "Player"][0]

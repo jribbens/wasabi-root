@@ -73,13 +73,13 @@ class Actor(object):
             self.progress += self.speed * dt
             if self.progress >= 1.0:
                 # Got there
-                if self.weapon:
-                    self.weapon.got_there(t)
                 self.world.move(self, from_pos=self.position, to_pos=self.moving_to)
                 self.position = self.moving_to
                 self.moving_to = None
                 self.speed = 0
                 self.progress = 0
+                if self.weapon:
+                    self.weapon.got_there(t, self)
 
     def go(self, destination, speed):
         """

@@ -45,6 +45,9 @@ class TileOutline:
             pts.append(py + y)
         self.list.vertices = pts
 
+    def set_hex(self, coord):
+        self.pos(  )
+
     def draw(self):
         self.list.draw(gl.GL_LINE_STRIP)
 

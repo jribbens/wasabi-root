@@ -102,11 +102,11 @@ class Scene:
                     for img in imgs:
                         img.blit(sx, sy, 0)
 
-        for character in self.world.get_characters():
+        for character in self.world.get_all_player_actors():
             if character.weapon and character.weapon.field_of_fire:
                 fof_effect = self.fof_effect[character]
                 for fof_hex in character.weapon.field_of_fire:
-                    fof_effect.coord = fof_hex
+                    fof_effect.pos = self.camera.coord_to_viewport(fof_hex)
                     fof_effect.draw()
 
         self.cursor.draw()

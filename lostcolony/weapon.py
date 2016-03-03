@@ -11,37 +11,37 @@ import time
 
 
 class Weapon():
-    def __init__(self, actor):
-        self.actor = actor
+    def __init__(self, seconds_per_attack = 1.0, damage = 1, single_target = True):
         self.attack_time = 0 # based on time.perf_counter(), you start ready to rumble
         self.setup_time = 0 # Seconds between stopping and attacking.
-        self.seconds_per_attack = 1.0
+        self.seconds_per_attack = seconds_per_attack
         self.field_of_fire = [] # coordiates. Earlier in the list = higher priority.
-        self.damage = 1
-        self.single_target = True
+        self.damage = damage
+        self.single_target = single_target
 
     def moving(self):
         if self.setup_time > 0:
             self.attack_time += 10000 # hack for don't attack
 
-    def got_there(self, t):
+    def got_there(self, t, actor):
         """
         The instant it becomes stationary after a move.
         """
         self.attack_time = self.setup_time + t
-        self.reset_field_of_fire()
+        self.reset_field_of_fire(actor)
 
-    def reset_field_of_fire(self):
+    def reset_field_of_fire(self, actor):
         """
-        Reset self.field_of_fire: prioritised list of possible target hexes
+        Regenerate the prioritised list of legal target hexes
         :return: None
 
         This default implementation reflects melee fighters
         """
-        adjacent = self.actor.world.grid.neighbours(self.actor.position)
-        facing = self.actor.facing
-        self.field_of_fire = ( adjacent[facing], adjacent[(facing + 1) % 6], adjacent[(facing + 5) % 6], )
-
+        self.field_of_fire = (
+            actor.world.grid.hex_in_front(actor.position, actor.facing),
+            actor.world.grid.hex_in_front(actor.position, (actor.facing + 1) % 6),
+            actor.world.grid.hex_in_front(actor.position, (actor.facing + 5) % 6),
+        )
 
     def update(self, t):
         if self.attack_time < t:
@@ -70,11 +70,13 @@ class Weapon():
     def select_targets(self):
         ret = []
 
+        return ret # xxx
+
         if self.field_of_fire is None:
             return ret
 
         for target_hex in self.field_of_fire:
-            target = self.actor.world.get_actor(target_hex)
+            target = self.actor.world.get_actor(target_hex) # TODO: xxxxxxx
             if target and self.valid_target(target):
                 ret.append(target)
                 if self.single_target:
@@ -83,52 +85,52 @@ class Weapon():
 
 
 class Rifle(Weapon):
-    def __init__(self, actor):
-        super().__init__(actor)
+    def __init__(self):
+        super().__init__()
         self.setup_time = 0
         self.seconds_per_attack = 1.0
         self.damage = 1
         self.single_target = True
 
-    def reset_field_of_fire(self):
+    def reset_field_of_fire(self, actor):
         min_range = 1
         max_range = 9
-        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, self.actor)
+        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, actor)
 
 
 class Grenade(Weapon):
-    def __init__(self, actor):
-        super().__init__(actor)
+    def __init__(self):
+        super().__init__()
         self.setup_time = 1
         self.seconds_per_attack = 5.0
         self.damage = 3
         self.single_target = True
 
 
-    def reset_field_of_fire(self):
+    def reset_field_of_fire(self, actor):
         min_range = 4
         max_range = 6
-        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, self.actor)
+        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, actor)
 
 
 class SniperRifle(Weapon):
-    def __init__(self, actor):
-        super().__init__(actor)
+    def __init__(self):
+        super().__init__()
         self.setup_time = 3
         self.seconds_per_attack = 5.0
         self.damage = 7 # do to: range-based
         self.single_target = True
 
 
-    def reset_field_of_fire(self):
+    def reset_field_of_fire(self, actor):
         min_range = 1
         max_range = 12
-        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, self.actor)
+        self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, actor)
 
 
 class AutoCannon(Weapon):
-    def __init__(self, actor):
-        super().__init__(actor)
+    def __init__(self):
+        super().__init__()
         self.setup_time = 0
         self.seconds_per_attack = 1.0
         self.damage = 1
@@ -137,21 +139,25 @@ class AutoCannon(Weapon):
     def valid_target(self):
         return True
 
-    def reset_field_of_fire(self):
-        adjacent = self.actor.world.grid.neighbours(self.actor.position)
-        facing = self.actor.facing
-        field_of_fire = [ adjacent[facing] ] # NB list not tuple
+    def reset_field_of_fire(self, actor):
+        coord = actor.world.grid.hex_in_front(actor.position, actor.facing)
+        if actor.world.grid.visible(actor.position, coord): # which actually means if blocked
+            self.field_of_fire = []
+        else:
+            self.field_of_fire = [coord]
 
-    def attack(self):
+    def attack(self, actor):
+        """
+
+        :param actor: The violent actor, not the victim
+        :return:
+        """
         super().attack()
 
-        assert len(self.field_of_fire > 0) # to do: debug only, remove for release. If this fails, fix the bug.
-
-        grid = self.actor.world.grid
-        coord = grid.hex_in_front()
-        if coord and grid.visible(self.actor.position, coord, None):
-            self.field_of_fire.append( (x,y) )
-
+        if self.field_of_fire:
+            coord = actor.world.grid.hex_in_front(self.field_of_fire[-1], actor.facing)
+            if not actor.world.grid.visible(actor.position, coord): # visible returns a list of obstructions!
+                self.field_of_fire.append(coord)
 
 def _field_of_fire_front_arc(min_range, max_range, actor):
     """
@@ -194,6 +200,6 @@ def _field_of_fire_front_arc(min_range, max_range, actor):
     return [
         c
         for c in coords
-        if not grid.blocked(c) # on-map
-        and grid.visible(actor.position, c)
+        if c in grid.cells # on-map
+        and not grid.visible(actor.position, c) # i.e. no obstacles
     ]

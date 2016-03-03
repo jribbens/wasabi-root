@@ -227,7 +227,7 @@ class HexGrid:
         """
         if start == target:
             # Simplest case, avoids division by 0 in the code below
-            return []
+            return set()
         c_start = self.coord_to_world(start)
         c_target = self.coord_to_world(target)
         # Delta
@@ -236,10 +236,11 @@ class HexGrid:
         # Normalize to unit
         d_1 = (delta[0] / d_len, delta[1] / d_len)
         # Look for obstacles
-        for i in range(int(math.ceil(d_len))):
+        obstacles = set()
+        for i in range(1, int(math.ceil(d_len))):
             checked = (c_start[0] + d_1[0] * i, c_start[1] + d_1[1] * i,)
             for fuzzy_x, fuzzy_y in (-1e-6, -1e-6), (-1e-6, 1e-6), (1e-6, -1e-6), (1e-6, 1e-6):
                 checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
                 if self.blocked(checked_coord):
-                    return False
-        return True
+                    obstacles.add(checked_coord)
+        return obstacles
