@@ -82,7 +82,7 @@ class Scene:
         self.grid = map.grid
         self.world = World(self.grid)
         self.fof_effect = {
-            character : FilledCursor(colour + (66,))
+            character: FilledCursor(colour + (66,))
             for character, colour
             in self.world.field_of_fire_colours()
         }
@@ -232,6 +232,7 @@ def on_key_press(symbol, mods):
         ui.rotate('E')
 # Using push_handlers to avoid breaking the other handler
 window.push_handlers(on_key_press)
+
 
 def update(_, dt):
 
