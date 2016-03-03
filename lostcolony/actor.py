@@ -69,6 +69,10 @@ class Actor(object):
 
     def update(self, t, dt):
         """Update, essentially moving"""
+        #if hp is less then kill of the actor
+        if self.hp <= 0:
+            self.death()
+        #Moving
         if self.moving_to is not None:
             if self.weapon is not None:
                 self.weapon.update(t)
@@ -144,10 +148,11 @@ class Actor(object):
         :param damage: int
         :return:
         """
+        #deduct damage taken
         self.hp = self.hp - damage
         print(self.hp)
-        if self.hp <= 0:
-            print('You dead son')
+
+
 
     def walk_to(self, target):
         logger.warn("I can't walk! you put a non-Character() in the player faction! ,%s", repr(self))
@@ -160,6 +165,8 @@ class Actor(object):
         new_y = sy - (off_y - base_y) * HEX_HEIGHT / 2
         return new_x, new_y, self.anim.draw()
 
+    def death(self):
+        print('You dead son')
 
 class Character(Actor):
 
