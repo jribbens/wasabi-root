@@ -67,6 +67,8 @@ class World:
         targets = Faction("Targets for weapon testing")
         victim = Actor(self, "victim", animation.raptor, position=(8, 8), faction=targets, facing=3)
         chaser = Actor(self, "chaser", animation.raptor, position=(18, 18), faction=targets, facing=3)
+        chaser.weapon = Weapon()
+
         # This should be configured in the map, or prebuilt
         from lostcolony import behaviour
         chaser.behaviour = behaviour.sequence(
