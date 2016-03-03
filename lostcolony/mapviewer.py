@@ -226,6 +226,10 @@ def on_key_press(symbol, mods):
         ui.select_by_name("tom")
     if symbol == pyglet.window.key.TAB:
         ui.select_next_hero()
+    if symbol == pyglet.window.key.Q:
+        ui.rotate('Q')
+    elif symbol == pyglet.window.key.E:
+        ui.rotate('E')
 # Using push_handlers to avoid breaking the other handler
 window.push_handlers(on_key_press)
 

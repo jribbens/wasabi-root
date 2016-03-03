@@ -31,6 +31,13 @@ class UI:
             c = self.camera.viewport_to_coord(target)
             self.current_hero.walk_to(c)
 
+    def rotate(self, symbol):
+        dir_buffer = [0,1,2,3,4,5]
+        if symbol == 'Q':
+            self.current_hero.facing = dir_buffer[(self.current_hero.facing - 1) % len(dir_buffer)]
+        elif symbol == 'E':
+            self.current_hero.facing = dir_buffer[(self.current_hero.facing + 1) % len(dir_buffer)]
+
     def draw(self):
         if self.current_hero is not None:
             sx, sy = self.camera.coord_to_viewport(self.current_hero.position)
