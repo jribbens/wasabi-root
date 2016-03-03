@@ -1,5 +1,6 @@
 """
-Conceptually, the bit where the cte fuzzy proto-mamal picks up a dead T-Rex's jaws and begins his rampage...
+Conceptually, the bit where the cte fuzzy proto-mamal picks up a dead T-Rex's jaws and begins his
+rampage...
 
 Fortunately in this game you can't transfer weapons.
 
@@ -7,25 +8,23 @@ This class looks after things like when they fire, fields of fire, hit probabili
 It also indirectly manages their effects.
 """
 
-import time
 from lostcolony.effects import Ricochet, ShotgunRicochet
-
 
 
 class Weapon:
     effect = None
 
-    def __init__(self, seconds_per_attack = 1.0, damage = 1, single_target = True):
-        self.attack_time = 0 # based on time.perf_counter(), you start ready to rumble
-        self.setup_time = 0 # Seconds between stopping and attacking.
+    def __init__(self, seconds_per_attack=1.0, damage=1, single_target=True):
+        self.attack_time = 0  # based on time.perf_counter(), you start ready to rumble
+        self.setup_time = 0   # Seconds between stopping and attacking.
         self.seconds_per_attack = seconds_per_attack
-        self.field_of_fire = [] # coordiates. Earlier in the list = higher priority.
+        self.field_of_fire = []  # coordinates. Earlier in the list = higher priority.
         self.damage = damage
         self.single_target = single_target
 
     def moving(self):
         if self.setup_time > 0:
-            self.attack_time += 10000 # hack for don't attack
+            self.attack_time += 10000  # hack for don't attack
 
     def got_there(self, t, actor):
         """
@@ -52,7 +51,7 @@ class Weapon:
             self.attack_time = t + self.seconds_per_attack
             self.attack(actor)
 
-    def attack(self,attacking_actor):
+    def attack(self, attacking_actor):
         targets = self.select_targets(attacking_actor)
         pos = set()
         for target in targets:
@@ -72,7 +71,6 @@ class Weapon:
         :return: True means kill it!
         """
         return actor.faction is not target.faction
-
 
     def select_targets(self, actor):
         ret = []
@@ -113,12 +111,10 @@ class Grenade(Weapon):
         self.damage = 3
         self.single_target = True
 
-
     def reset_field_of_fire(self, actor):
         min_range = 4
         max_range = 7
         self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, actor)
-
 
     def select_targets(self, world):
         """
@@ -134,9 +130,8 @@ class SniperRifle(Weapon):
         super().__init__()
         self.setup_time = 3
         self.seconds_per_attack = 5.0
-        self.damage = 7 # do to: range-based
+        self.damage = 7  # to do: range-based
         self.single_target = True
-
 
     def reset_field_of_fire(self, actor):
         min_range = 1
@@ -169,7 +164,7 @@ class AutoCannon(Weapon):
         :return:
         """
         if aggressor.walking_to is not None:
-            self.field_of_fire = [] # can't move and fire
+            self.field_of_fire = []  # can't move and fire
             return
 
         super().attack(aggressor)
@@ -222,6 +217,6 @@ def _field_of_fire_front_arc(min_range, max_range, actor):
     return [
         c
         for c in coords
-        if c in grid.cells # on-map
+        if c in grid.cells  # on-map
         and grid.visible(actor.position, c)
     ]
