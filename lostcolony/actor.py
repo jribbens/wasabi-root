@@ -198,6 +198,8 @@ class Actor(object):
         return new_x, new_y, self.anim.draw(), self.get_health(new_x, new_y)
 
     def death(self):
+        """This Actor has run out of HP. Kill it."""
+
         self.world.kill_actor(self, self.faction)
 
     def __repr__(self):

@@ -52,6 +52,8 @@ class UI:
 
     def draw(self):
         if self.current_hero is not None:
+            if self.current_hero.hp <= 0:
+                self.select_next_hero()
             sx, sy = self.camera.coord_to_viewport(self.current_hero.position)
             hx, hy, *_ = self.current_hero.drawable(sx, sy)
             self.selection.pos = hx, hy

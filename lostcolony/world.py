@@ -98,6 +98,12 @@ class World:
         return self.actors_by_pos.get(hex) or []
 
     def kill_actor(self, actor, faction):
+        """
+        An actor has died, we need to clean up the references we have left.
+
+        :param actor: Actor, dead actor.
+        :param faction: Faction, faction actor belongs to.
+        """
         self.factions[faction.name].remove(actor)
         self.remove(actor, actor.position)
 
