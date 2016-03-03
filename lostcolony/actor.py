@@ -85,6 +85,9 @@ class Actor(object):
     def update(self, t, dt):
         """Update, essentially moving"""
         self.behaviour(self, t, dt)
+        self.anim.pos = self.position
+        self.anim.direction = self.FACING_TO_DIR[self.facing]
+
 
     def go(self, destination, speed):
         """
@@ -168,6 +171,10 @@ class Actor(object):
                         ('c3B', (40, 180, 0)*4))
 
         return vertex_list
+
+    def stop(self):
+        self.walking_to = None
+        self.anim.play('stand')
 
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
