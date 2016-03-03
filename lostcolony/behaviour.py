@@ -41,10 +41,13 @@ def chase_closest_enemy(actor, t, dt):
         enemies.sort(key=distance_to_actor)
         # print([a.faction for a in actor.world.actors])
         for e in enemies:
+            if distance_to_actor(e) < 2:
+                # We're already there! adjacent are at distance sqrt3
+                return
             # Find closest unblocked location to attack
             attackable = [p for p in grid.neighbours(e) if not grid.blocked(p)]
             if attackable:
-                actor.walking_to = min(attackable, key=distance_to_actor)
+                actor.walk_to(min(attackable, key=distance_to_actor))
                 break
             # Can not attack this enemy, try another
         if actor.walking_to is None:
@@ -53,8 +56,7 @@ def chase_closest_enemy(actor, t, dt):
 
 def pathfinding(actor, t, dt):
     if actor.position == actor.walking_to:
-        actor.walking_to = None
-        actor.anim.play('stand')
+        actor.stop()
     if actor.moving_to is None and actor.walking_to is not None:
         # Plan path
         try:
@@ -65,12 +67,7 @@ def pathfinding(actor, t, dt):
         except NoPath:
             # Can't go there, just ignore
             logger.info("%s can not walk to %s", repr(actor), actor.walking_to)
-            actor.hit(10)  # for testing hp
-            actor.walking_to = None
-            actor.anim.play('stand')
-    # FIXME: animations should go back to the actor and not the behaviour?
-    actor.anim.pos = actor.position
-    actor.anim.direction = actor.FACING_TO_DIR[actor.facing]
+            actor.stop()
 
 
 def sequence(*bs):
