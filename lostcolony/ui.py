@@ -32,11 +32,21 @@ class UI:
             self.current_hero.walk_to(c)
 
     def rotate(self, symbol):
+        """
+        Rotate a player left (q) or right (e) on keypress.
+
+        Once rotated update the field of fire.
+
+        :param symbol: str, key used (q or e)
+        """
         dir_buffer = [0,1,2,3,4,5]
         if symbol == 'Q':
             self.current_hero.facing = dir_buffer[(self.current_hero.facing - 1) % len(dir_buffer)]
         elif symbol == 'E':
             self.current_hero.facing = dir_buffer[(self.current_hero.facing + 1) % len(dir_buffer)]
+
+        if self.current_hero.weapon:
+            self.current_hero.weapon.reset_field_of_fire(self.current_hero)
 
     def draw(self):
         if self.current_hero is not None:
