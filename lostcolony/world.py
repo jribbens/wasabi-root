@@ -19,8 +19,8 @@ class World:
         self.effects_by_pos = defaultdict(set)
         self.grid.layers.insert(0, self.actors_by_pos)
 
-        self.factions = [self.init_player()]  # first faction is the player
-        self.factions += self.init_npcs()
+        self.factions = {'Player': self.init_player()}  # first faction is the player
+        self.factions['Targets for weapon testing'] = self.init_npcs()
 
     def add(self, actor, pos):
         """Add an actor to the world at pos."""
@@ -77,16 +77,16 @@ class World:
             behaviour.chase_closest_enemy,
             behaviour.pathfinding,
         )
-        return [targets]
+        return targets
 
     @property
     def actors(self):
-        return chain.from_iterable(faction.actors for faction in self.factions)
+        return chain.from_iterable(faction.actors for faction in self.factions.values())
 
     def field_of_fire_colours(self):
         return (
             (actor, actor.colour,)
-            for actor in self.factions[0].actors
+            for actor in self.factions['Player'].actors
             # if isinstance(actor, Character)
         )
 
@@ -97,8 +97,12 @@ class World:
         """Get a list of actors "in" the given tile."""
         return self.actors_by_pos.get(hex) or []
 
+    def kill_actor(self, actor, faction):
+        self.factions[faction.name].remove(actor)
+        self.remove(actor, actor.position)
+
     def get_all_player_actors(self):
-        return self.factions[0].actors
+        return self.factions['Player'].actors
 
     def update(self, dt):
         t = time.time()
