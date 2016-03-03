@@ -53,6 +53,9 @@ class World:
         rex = Character(self, "rex", animation.rex, faction=faction, position = (5,5), facing=3, hp=100, colour = (255,215,0))
         rex.weapon = Rifle()
 
+        tom = Character(self, "tom", animation.tom, faction=faction, position=(5,5), facing=3, hp=100, colour=(22, 44, 80))
+        tom.weapon = Rifle()
+
         matt = Character(self, "matt", animation.rex, faction=faction, position = (7,5), facing=2, hp=100, colour = (255,120,0))
         matt.weapon = AutoCannon()
 

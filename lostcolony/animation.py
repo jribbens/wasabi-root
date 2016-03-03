@@ -145,6 +145,13 @@ rex = Animation({
     },
     default='stand'
 )
+tom = Animation({
+        'stand': DirectionalSequence.load('pc/tom-{dir}-stand.png', 1, **kw),
+        'walk': DirectionalSequence.load('pc/tom-{dir}-walk{n}.png', 4, **kw),
+        'shoot': DirectionalSequence.load('pc/tom-{dir}-shoot.png', 1, next='stand', **kw),
+    },
+    default='stand'
+)
 
 raptor = Animation({
         'stand': DirectionalSequence.load('mobs/raptor-{dir}-stand.png', 1, anchor_x=64, anchor_y=32),
