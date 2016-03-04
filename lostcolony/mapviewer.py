@@ -13,8 +13,10 @@ from lostcolony.tile_outline import FilledCursor, MoveCursor
 from lostcolony.ui import UI
 from lostcolony.world import World
 from lostcolony.maploader import Map
+from lostcolony import wave
 
 logger = logging.getLogger(__name__)
+
 
 class Camera:
     WSCALE = HEX_WIDTH / 2
@@ -280,9 +282,6 @@ def on_mouse_release(x, y, button, mods):
             ui.go((x,y))
     elif pyglet.window.mouse.RIGHT == button:
         show_reachable((x, y))
-    #     from lostcolony.effects import ShotgunRicochet, BloodSpray, Ricochet
-    #     pos = tmxmap.camera.viewport_to_coord((x, y))
-    #     ShotgunRicochet(tmxmap.world, pos)
 
 
 @window.event
@@ -306,6 +305,11 @@ def on_key_press(symbol, mods):
         ui.rotate('Q')
     elif symbol == pyglet.window.key.E:
         ui.rotate('E')
+    elif symbol == pyglet.window.key.F9:
+        world = tmxmap.world
+        camera = tmxmap.camera
+        if not wave.current_wave:
+            wave.Wave(camera, world, world.factions['Player']).start()
 # Using push_handlers to avoid breaking the other handler
 window.push_handlers(on_key_press)
 

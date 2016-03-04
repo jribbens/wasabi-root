@@ -19,8 +19,10 @@ class World:
         self.effects_by_pos = defaultdict(set)
         self.grid.layers.insert(0, self.actors_by_pos)
 
-        self.factions = {'Player': self.init_player()}  # first faction is the player
-        self.factions['Targets for weapon testing'] = self.init_npcs()
+        self.factions = {
+            'Player': self.init_player(),
+            'Dinos': Faction("Dinos")
+        }
 
     def add(self, actor, pos):
         """Add an actor to the world at pos."""
@@ -62,31 +64,10 @@ class World:
         matt = Character(self, "matt", animation.matt, faction=faction, position = (8,5), facing=3, hp=100, colour = (255,120,0))
         matt.weapon = AutoCannon()
 
-        dino = Character(self, "dino", animation.raptor, faction=faction, position = (9,6), facing=0, hp=25, colour = (0x40, 0x40, 0xC0))
-        dino.DEFAULT_SPEED = 2.0
-        dino.weapon = Weapon()
-
         for actor in faction.actors:
             actor.weapon.got_there(0, actor)
 
         return faction
-
-    def init_npcs(self):
-        # to do: get from scenario set-up
-        targets = Faction("Targets for weapon testing")
-        victim = Actor(self, "victim", animation.raptor, position=(8, 8), faction=targets, facing=3)
-        chaser = Actor(self, "chaser", animation.raptor, position=(18, 18), faction=targets, facing=3)
-        chaser.weapon = Weapon()
-
-        # This should be configured in the map, or prebuilt
-        from lostcolony import behaviour
-        chaser.behaviour = behaviour.sequence(
-            behaviour.die,
-            behaviour.move_step,
-            behaviour.chase_closest_enemy,
-            behaviour.pathfinding,
-        )
-        return targets
 
     @property
     def actors(self):

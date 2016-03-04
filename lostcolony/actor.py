@@ -34,6 +34,8 @@ class Actor(object):
 
     DEFAULT_SPEED = 1.2
 
+    alive = True
+
 
     def __init__(self, world, id, anim, position, faction, facing, hp=10, colour=(0, 0, 0)):
         """
@@ -85,10 +87,11 @@ class Actor(object):
 
     def update(self, t, dt):
         """Update, essentially moving"""
+        if not self.alive:
+            return
         self.behaviour(self, t, dt)
         self.anim.pos = self.position
         self.anim.direction = self.FACING_TO_DIR[self.facing]
-
 
     def go(self, destination, speed):
         """
@@ -203,8 +206,8 @@ class Actor(object):
 
     def death(self):
         """This Actor has run out of HP. Kill it."""
-
         self.world.kill_actor(self, self.faction)
+        self.alive = False
 
     def __repr__(self):
         return "<%s %r>" % (type(self).__name__, self.id)

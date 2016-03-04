@@ -219,7 +219,8 @@ class HexGrid:
     def reachable(self, tile, dist=20):
         """Get the set of tiles that are reachable in at most dist steps.
 
-        This is a variation of Dijkstra's Algorithm.
+        This is a variation of Dijkstra's Algorithm. Note that this step does
+        not consider object layers, only the base grid.
 
         """
         seen = {tile,}
@@ -235,7 +236,7 @@ class HexGrid:
             if cost <= dist:
                 found.add(t)
             for t in self.neighbours(t):
-                if self.blocked(t):
+                if self.cells.get(t, True):
                     continue
                 newcost = cost + 1
                 if t in costs:

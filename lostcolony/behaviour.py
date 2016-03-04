@@ -16,10 +16,6 @@ def die(actor, t, dt):
 
 
 def move_step(actor, t, dt):
-    # FIXME: weapon should be split away from this
-    if actor.weapon is not None:
-        actor.weapon.update(t, actor)
-    # Moving
     if actor.moving_to is not None:
         actor.progress += actor.speed * dt
         if actor.progress >= 1.0:
@@ -31,6 +27,9 @@ def move_step(actor, t, dt):
             actor.progress = 0
             if actor.weapon:
                 actor.weapon.got_there(t, actor)
+    elif actor.weapon is not None:
+        # FIXME: weapon should be split away from this
+        actor.weapon.update(t, actor)
 
 
 def chase_closest_enemy(actor, t, dt):
@@ -49,7 +48,8 @@ def chase_closest_enemy(actor, t, dt):
             # Find closest unblocked location to attack
             attackable = [p for p in grid.neighbours(e) if not grid.blocked(p)]
             if attackable:
-                actor.walk_to(min(attackable, key=distance_to_actor))
+                dest = min(attackable, key=distance_to_actor)
+                actor.walk_to(dest)
                 break
             # Can not attack this enemy, try another
         if actor.walking_to is None:
