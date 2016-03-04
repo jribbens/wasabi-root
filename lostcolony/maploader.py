@@ -19,7 +19,7 @@ NOT_OBSTRUCTIONS = set([
 ])
 
 IMPASSABLE_FLOORS = re.compile(
-    r'pool.*|water'
+    r'/(pool.*|water)\.png$'
 )
 
 
@@ -52,7 +52,7 @@ class Map:
                 image = self.images[imgpath]
                 floor[x, y].append(image)
 
-                self.grid[x, y] = bool(IMPASSABLE_FLOORS.match(imgpath))
+                self.grid[x, y] = bool(IMPASSABLE_FLOORS.search(imgpath))
         self.floor = dict(floor)
 
     def load_objects(self, tmx):

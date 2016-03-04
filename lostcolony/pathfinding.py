@@ -1,5 +1,6 @@
 import heapq
 import math
+from math import sqrt
 from collections import ChainMap, defaultdict
 
 
@@ -78,7 +79,9 @@ def heuristic(a, b):
     """Get the distance between points a and b."""
     (x1, y1) = a
     (x2, y2) = b
-    return abs(x1 - x2) + abs(y1 - y2)
+    dx = x1 - x2
+    dy = y1 - y2
+    return sqrt(dx * dx + dy * dy)
 
 
 class NoPath(Exception):
@@ -212,6 +215,41 @@ class HexGrid:
             current = came_from[current]
             path.append(current)
         return path
+
+    def reachable(self, tile, dist=20):
+        """Get the set of tiles that are reachable in at most dist steps.
+
+        This is a variation of Dijkstra's Algorithm.
+
+        """
+        seen = {tile,}
+        found = {tile,}
+        costs = {tile: 0}
+        frontier = PriorityQueue()
+        frontier.put(tile, 0)
+
+        x, y = self.coord_to_world(tile)
+        while not frontier.empty():
+            t = frontier.get()
+            cost = costs[t]
+            if cost <= dist:
+                found.add(t)
+            for t in self.neighbours(t):
+                if self.blocked(t):
+                    continue
+                newcost = cost + 1
+                if t in costs:
+                    oldcost = costs[t]
+                    if newcost < oldcost:
+                        costs[t] = newcost
+                else:
+                    costs[t] = newcost
+
+                if t not in seen and newcost <= dist:
+                    seen.add(t)
+                    frontier.put(t, newcost)
+        return found
+
 
     def obstacles_in_line_of_sight(self, start, target):
         """
