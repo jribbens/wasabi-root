@@ -203,7 +203,7 @@ class Scene:
 
 FPS = 30
 pyglet.clock.set_fps_limit(30)
-window = pyglet.window.Window(resizable=True)
+window = pyglet.window.Window(width=1024, height=600, resizable=True)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
@@ -379,5 +379,3 @@ def check_triggers(dt):
 
 pyglet.clock.schedule(update)
 pyglet.clock.schedule_interval(check_triggers, 0.2)
-
-
