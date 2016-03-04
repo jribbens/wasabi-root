@@ -146,14 +146,14 @@ class AutoCannon(Weapon):
     def __init__(self):
         super().__init__()
         self.setup_time = 0
-        self.seconds_per_attack = 0.1
+        self.seconds_per_attack = 1
         self.single_target = True
         self.heat = 0
         self.overheated = False
 
     @property
     def damage(self):
-        return random.randint(1, 2)
+        return random.randint(1, 5)
 
     @damage.setter
     def damage(self, v):
@@ -174,8 +174,8 @@ class AutoCannon(Weapon):
         :param aggressor: The violent actor, not the victim
         :return: Number of targets engaged
         """
-        max_heat = 30
-        ok_heat = 10
+        max_heat = 4
+        ok_heat = 2
         if self.heat > 0:
             self.heat -= 1
             if self.heat < ok_heat:
@@ -190,7 +190,7 @@ class AutoCannon(Weapon):
         targets = 0
         if not self.overheated:
             targets = super().attack(aggressor)
-            self.heat += targets * 4
+            self.heat += 4
 
         # aggressor.anim.play('shoot')
 
