@@ -270,7 +270,7 @@
  </layer>
  <layer name="POIs" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt1zEKgDAQBMD8xL9ozP+flCBELLSw2hQzsHDlwnHFlQIAAAAAAKTsI8dITRfhdqYLACyopQsAAAAA138+Q1b7mMl43oV9rMMuAAAAAAAAAAAAeLOlCwAAAAAAAAAAAAAAAAAAAADATx1bCwPq
+   eJzt22sKgmAQhtHZSXvpYtn+F1RESNiFiGre6BwY9N838OAPBasAAPptz0MGPXJokWNbegAA8BnL46yOs+5ehMmm8eyh8Wyu6ZFhKC0S6JBDBwAAgP81lHf0FMOde3pcPhd65NACAAC+Y9e9ACe72dBLjzx6ZNEDAOB3jd0LMBlLjyRjaZJEDwCeseheAAAA/oBvNJk0AQAAAACo2s+u9NnfGHrcaqFHHz2y6JHjXgs9HvvUfxZ6vEaPLHpk+XYPHhtn13fRI4seebQAAADgGQdqXild
   </data>
  </layer>
 </map>
