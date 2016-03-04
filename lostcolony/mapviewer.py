@@ -1,4 +1,6 @@
 from itertools import chain
+import logging
+
 import pyglet
 from pyglet import gl
 from pyglet.window import key
@@ -11,6 +13,7 @@ from lostcolony.ui import UI
 from lostcolony.world import World
 from lostcolony.maploader import Map
 
+logger = logging.getLogger(__name__)
 
 class Camera:
     WSCALE = HEX_WIDTH / 2
@@ -173,6 +176,7 @@ class Scene:
         c = self.camera.viewport_to_coord(self.mouse_coords)
         self.cursor.pos = self.camera.coord_to_viewport(c)
 
+
 FPS = 30
 pyglet.clock.set_fps_limit(30)
 window = pyglet.window.Window(resizable=True)
@@ -237,7 +241,16 @@ def on_mouse_release(x, y, button, mods):
     :param y: y position
     """
     if pyglet.window.mouse.LEFT == button:
-        ui.go((x, y))
+        c = tmxmap.camera.viewport_to_coord((x, y))
+        if tmxmap.world.actors_by_pos[c]:  # an actor might exist here, we can't move there but we could select them.
+            for actor in tmxmap.world.actors_by_pos[c]:
+                if actor.faction.name == 'Player':  # If in the player faction they are selectable.
+                    ui.select_by_name(actor.id)
+                    break
+            else:
+                logger.info("No selectable character at {coord}".format(coord=c))
+        else:
+            ui.go((x,y))
     # elif pyglet.window.mouse.RIGHT == button:
     #     from lostcolony.effects import ShotgunRicochet, BloodSpray, Ricochet
     #     pos = tmxmap.camera.viewport_to_coord((x, y))
