@@ -91,14 +91,14 @@ class NoPath(Exception):
 class HexGrid:
     def __init__(self):
         self.cells = {}
-        self.layers = [self.cells]
+        self.layers = []
 
     def __setitem__(self, coords, value):
         self.cells[coords] = value
 
     def blocked(self, coords):
         """Return True if the given coordinates are blocked."""
-        return any(layer.get(coords) for layer in self.layers)
+        return any(layer.get(coords) for layer in self.layers) or self.cells.get(coords, True)
 
     NEIGHBOURS_EVEN = [
         (0, -1),
@@ -290,7 +290,7 @@ class HexGrid:
                 checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
                 if checked_coord not in self.cells:
                     continue # off map
-                object_layer = self.layers[1]
+                object_layer = self.layers[0]
                 if checked_coord != start and object_layer[checked_coord]:
                     obstacles.add(checked_coord)
         return obstacles
