@@ -59,7 +59,7 @@ class World:
             position = (5,5),
             facing=3,
             hp=100,
-            colour = (255,215,0))
+            colour = (255,0,0))
         rex.weapon = Rifle()
 
         tom = Character(self,
@@ -69,7 +69,7 @@ class World:
             position=(6,5),
             facing=3,
             hp=100,
-            colour=(22, 44, 80))
+            colour=(22, 200, 0))
         tom.weapon = Rifle()
 
         ping = Character(self,
