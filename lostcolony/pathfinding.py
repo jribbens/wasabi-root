@@ -154,6 +154,10 @@ class HexGrid:
         for dx, dy in neighbours:
             yield x + dx, y + dy
 
+    def unblocked_neighbours(self, coords):
+        """Adjacent cells that are not blocked."""
+        return (c for c in self.neighbours(coords) if not self.blocked(c))
+
     def hex_in_front(self, coords, facing):
         """
         Adjacent hex in the facing direction. May be off-map.
@@ -198,9 +202,7 @@ class HexGrid:
             if current == goal:
                 break
 
-            for next in self.neighbours(current):
-                if self.blocked(next):
-                    continue
+            for next in self.unblocked_neighbours(current):
                 new_cost = cost_so_far[current] + self.distance(current, next)
                 if (next not in cost_so_far or new_cost < cost_so_far[next]):
                     cost_so_far[next] = new_cost

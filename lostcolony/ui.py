@@ -21,6 +21,9 @@ class UI:
     def select_next_hero(self):
         f = [self.world.factions[fac] for fac in self.world.factions if fac == "Player"][0]
         hs = list(f)
+        if not hs:
+            self.current_hero = None
+            return
         if self.current_hero is None:
             self.current_hero = hs[0]
         else:
@@ -42,6 +45,8 @@ class UI:
 
         :param symbol: str, key used (q or e)
         """
+        if not self.current_hero:
+            return
         if symbol == 'Q':
             self.current_hero.facing = (self.current_hero.facing - 1) % 6
         elif symbol == 'E':
@@ -51,10 +56,11 @@ class UI:
             self.current_hero.weapon.reset_field_of_fire(self.current_hero)
 
     def draw(self):
-        if self.current_hero is not None:
-            if self.current_hero.hp <= 0:
-                self.select_next_hero()
-            sx, sy = self.camera.coord_to_viewport(self.current_hero.position)
-            hx, hy, *_ = self.current_hero.drawable(sx, sy)
-            self.selection.pos = hx, hy
-            self.selection.draw()
+        if not self.current_hero or not self.current_hero.alive:
+            self.select_next_hero()
+        if not self.current_hero:
+            return
+        sx, sy = self.camera.coord_to_viewport(self.current_hero.position)
+        hx, hy, *_ = self.current_hero.drawable(sx, sy)
+        self.selection.pos = hx, hy
+        self.selection.draw()

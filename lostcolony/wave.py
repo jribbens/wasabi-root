@@ -15,6 +15,7 @@ DEFAULT_BEHAVIOUR = behaviour.sequence(
     behaviour.move_step,
     behaviour.chase_closest_enemy,
     behaviour.pathfinding,
+    behaviour.run_away,
 )
 
 

@@ -1,4 +1,5 @@
 import logging
+import random
 
 from lostcolony.pathfinding import HexGrid, NoPath
 
@@ -52,8 +53,6 @@ def chase_closest_enemy(actor, t, dt):
                 actor.walk_to(dest)
                 break
             # Can not attack this enemy, try another
-        if actor.walking_to is None:
-            logger.info("%r has no enemies to chase!", actor)
 
 
 def pathfinding(actor, t, dt):
@@ -70,6 +69,16 @@ def pathfinding(actor, t, dt):
             # Can't go there, just ignore
             logger.info("%s can not walk to %s", repr(actor), actor.walking_to)
             actor.stop()
+
+
+def run_away(actor, t, dt):
+    world = actor.world
+    if actor.moving_to is None and actor.walking_to is None:
+        if any(a.alive for f in world.factions.values() if f is not actor.faction for a in f.actors):
+            return  # don't use this rule if enemies are alive
+
+        reachable = list(world.grid.reachable(actor.position))
+        actor.walk_to(random.choice(reachable))
 
 
 def sequence(*bs):
