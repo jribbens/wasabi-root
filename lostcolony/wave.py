@@ -77,7 +77,7 @@ class Wave:
                 faction=self.faction,
                 facing=3)
             dino.DEFAULT_SPEED = 2.5
-            dino.weapon = Teeth(seconds_per_attack=0.1, damage=5)
+            dino.weapon = Teeth(seconds_per_attack=1, damage=20)
             dino.behaviour = DEFAULT_BEHAVIOUR
             self.spawned.append(dino)
 

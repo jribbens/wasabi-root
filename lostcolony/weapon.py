@@ -114,6 +114,10 @@ class Rifle(Weapon):
         self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, actor)
 
 
+    def calc_damage(self,actor, target):
+        return random.randint(1,8)
+
+
 class Grenade(Weapon):
 
     def __init__(self):
@@ -140,7 +144,7 @@ class SniperRifle(Weapon):
     effect = ShotgunRicochet
 
     def __init__(self):
-        super().__init__(seconds_per_attack = 4.0, single_target = True)
+        super().__init__(seconds_per_attack = 3.0, single_target = True, damage=3)
         self.setup_time = 3
 
     def reset_field_of_fire(self, actor):
@@ -167,7 +171,7 @@ class AutoCannon(Weapon):
 
     @property
     def damage(self):
-        return random.randint(1, 5)
+        return random.randint(1, 16)
 
     @damage.setter
     def damage(self, v):
