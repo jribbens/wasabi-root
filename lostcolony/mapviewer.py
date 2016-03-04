@@ -155,6 +155,8 @@ class Scene:
                 if character.weapon and character.weapon.field_of_fire:
                     self.get_fof_effect(character.weapon.field_of_fire, character.colour).draw()
             gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        else:
+            goals.draw_outline(self.camera)
 
         self.cursor.draw()
 
