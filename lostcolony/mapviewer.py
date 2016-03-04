@@ -14,6 +14,7 @@ from lostcolony.ui import UI
 from lostcolony.world import World
 from lostcolony.maploader import Map
 from lostcolony import wave
+from lostcolony import goals
 
 logger = logging.getLogger(__name__)
 
@@ -228,6 +229,8 @@ def on_draw():
         img.blit(x, y, 0)
     for modifier in modifiers:
         modifier.draw()
+
+    goals.display_goal(tmxmap.camera)
 
 
 @window.event
