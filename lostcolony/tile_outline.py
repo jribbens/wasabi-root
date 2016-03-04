@@ -26,7 +26,7 @@ class TileOutlineCursor:
         """Calculate the points for a hexagon."""
         from math import radians, cos, sin
         pts = []
-        for i in range(7):
+        for i in range(6):
             angle_deg = 60 * i
             angle_rad = radians(angle_deg)
             pts.append((
@@ -36,8 +36,12 @@ class TileOutlineCursor:
         return pts
     pts = pts()
 
-    def __init__(self, color, pos=(0, 0)):
-        self.list = pyglet.graphics.vertex_list(7, 'v2f', ('c4B', as_color4(*color) * 7))
+    MODE = gl.GL_LINES
+    INDICES = [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 0]
+
+    def __init__(self, color, pos=(0, 0), batch=None):
+        self.batch = batch or pyglet.graphics.Batch()
+        self.list = self.batch.add_indexed(6, self.MODE, None, self.INDICES, 'v2f', ('c4B', as_color4(*color) * 6))
         self.pos = pos
 
     @property
@@ -54,12 +58,12 @@ class TileOutlineCursor:
         self.list.vertices = pts
 
     def draw(self):
-        self.list.draw(gl.GL_LINE_STRIP)
+        self.batch.draw()
 
 
 class FilledCursor(TileOutlineCursor):
-    def draw(self):
-        self.list.draw(gl.GL_POLYGON)
+    MODE = gl.GL_TRIANGLES
+    INDICES = [0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5]
 
 
 class ImageCursor(object):
