@@ -9,6 +9,7 @@ It also indirectly manages their effects.
 """
 import random
 from lostcolony.effects import Ricochet, ShotgunRicochet
+from lostcolony.pathfinding import HexGrid
 
 
 class Weapon:
@@ -51,10 +52,18 @@ class Weapon:
             self.attack_time = t + self.seconds_per_attack
             self.attack(actor)
 
+    def calc_damage(self,actor, target):
+        """
+        Override to make damage dependent on range, vulnerabilities etc
+        :param victim:
+        :return:
+        """
+        return self.damage
+
     def attack(self, attacking_actor):
         targets = self.select_targets(attacking_actor)
         for target in targets:
-            target.hit(self.damage)
+            target.hit(self.calc_damage(attacking_actor,target))
             attacking_actor.anim.play('shoot')
         if self.effect:
             world = attacking_actor.world
@@ -92,11 +101,7 @@ class Rifle(Weapon):
     effect = ShotgunRicochet
 
     def __init__(self):
-        super().__init__()
-        self.setup_time = 0
-        self.seconds_per_attack = 1.0
-        self.damage = 1
-        self.single_target = True
+        super().__init__(seconds_per_attack=1.0, damage=1, single_target=True)
 
     def reset_field_of_fire(self, actor):
         min_range = 1
@@ -105,12 +110,11 @@ class Rifle(Weapon):
 
 
 class Grenade(Weapon):
+
     def __init__(self):
-        super().__init__()
+        super().__init__(seconds_per_attack = 5.0, damage = 4, single_target = True)
         self.setup_time = 1
-        self.seconds_per_attack = 5.0
-        self.damage = 3
-        self.single_target = True
+
 
     def reset_field_of_fire(self, actor):
         min_range = 4
@@ -126,18 +130,23 @@ class Grenade(Weapon):
         super().select_targets(world)
 
 
+
 class SniperRifle(Weapon):
+    effect = ShotgunRicochet
+
     def __init__(self):
-        super().__init__()
+        super().__init__(seconds_per_attack = 4.0, single_target = True)
         self.setup_time = 3
-        self.seconds_per_attack = 5.0
-        self.damage = 7  # to do: range-based
-        self.single_target = True
 
     def reset_field_of_fire(self, actor):
         min_range = 1
         max_range = 12
         self.field_of_fire = _field_of_fire_front_arc(min_range, max_range, actor)
+        self.field_of_fire.reverse()
+
+    def calc_damage(self,actor, target):
+        range = HexGrid.distance(actor.position, target.position)
+        return random.randint(1,int(self.damage * range))
 
 
 class AutoCannon(Weapon):

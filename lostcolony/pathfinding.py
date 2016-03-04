@@ -33,10 +33,9 @@ def cube_to_hex(h):
 
 def hex_to_cube(h):
     """Convert a 2-tuple of "even-q vertical" coords to cubic coords."""
-    c, r = h
+    x, row = h
 
-    x = c
-    z = r - (c + (int(c) % 2)) // 2
+    z = row - ((x + (x & 1)) >> 1)
     return (
         x,
         -x - z,
@@ -74,7 +73,8 @@ class PriorityQueue:
     def get(self):
         return heapq.heappop(self.elements)[1]
 
-
+# TODO: This doesn't calculate a correct distance. (0,0) to (1,1) should be adjacent.
+# See HexGrid.distance
 def heuristic(a, b):
     """Get the distance between points a and b."""
     (x1, y1) = a
@@ -216,6 +216,13 @@ class HexGrid:
             path.append(current)
         return path
 
+    @staticmethod
+    def distance(start, target):
+        sx, sy, sz = hex_to_cube(start)
+        tx, ty, tz = hex_to_cube(target)
+        return max(abs(sx-tx), abs(sy-ty), abs(sz-tz))
+
+
     def reachable(self, tile, dist=20):
         """Get the set of tiles that are reachable in at most dist steps.
 
@@ -293,3 +300,9 @@ class HexGrid:
             return False
 
         return True
+
+def test_hex_grid_distance():
+    assert HexGrid.distance( (0,0), (1,1) ) == 1
+    assert HexGrid.distance( (1,1), (0,0) ) == 1
+    assert HexGrid.distance( (0,5), (7,0) ) == 9
+

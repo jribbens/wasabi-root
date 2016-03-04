@@ -3,7 +3,7 @@ from lostcolony.actor import Character, Actor
 from lostcolony import animation
 from lostcolony.faction import Faction
 from itertools import chain
-from lostcolony.weapon import Rifle, Weapon, Grenade, AutoCannon
+from lostcolony.weapon import Rifle, Weapon, Grenade, AutoCannon, SniperRifle
 import time
 
 
@@ -58,8 +58,8 @@ class World:
         tom = Character(self, "tom", animation.tom, faction=faction, position=(6,5), facing=3, hp=100, colour=(22, 44, 80))
         tom.weapon = Rifle()
 
-        tom = Character(self, "ping", animation.ping, faction=faction, position=(7,5), facing=3, hp=100, colour=(22, 90, 200))
-        tom.weapon = Rifle()
+        ping = Character(self, "ping", animation.ping, faction=faction, position=(7,5), facing=3, hp=100, colour=(22, 90, 200))
+        ping.weapon = SniperRifle()
 
         matt = Character(self, "matt", animation.matt, faction=faction, position = (8,5), facing=3, hp=100, colour = (255,120,0))
         matt.weapon = AutoCannon()
