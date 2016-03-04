@@ -32,7 +32,6 @@ class Camera:
         self.bottomright = (bottomright[0] - HEX_WIDTH / 2,
                             bottomright[1] - HEX_HEIGHT)
         self.pos = pos
-        print(self.viewport, self.topleft, self.bottomright)
 
     def pan(self, dx, dy):
         """Move the camera by a relative offset."""
