@@ -97,6 +97,7 @@ class Scene:
         if self.floor_batch_pos == self.camera.pos:
             return self.floor_batch
 
+        self.floor_batch_pos = self.camera.pos
         self.floor_batch = pyglet.graphics.Batch()
         self.floor_sprites = []
         (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
