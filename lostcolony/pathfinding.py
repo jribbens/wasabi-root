@@ -246,7 +246,11 @@ class HexGrid:
         return obstacles
 
     def visible(self, start, target):
+        if target not in self.cells:
+            return False # off-map
+
         obstacles = self.obstacles_in_line_of_sight(start, target)
         if obstacles and obstacles != {target}:
             return False
+
         return True

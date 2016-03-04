@@ -60,6 +60,7 @@ class Weapon:
             world = attacking_actor.world
             for p in targets:
                 self.effect(world, p.position)
+        return len(targets)
 
     def valid_target(self, actor, target):
         """
@@ -147,6 +148,8 @@ class AutoCannon(Weapon):
         self.setup_time = 0
         self.seconds_per_attack = 0.1
         self.single_target = True
+        self.heat = 0
+        self.overheated = False
 
     @property
     def damage(self):
@@ -162,28 +165,43 @@ class AutoCannon(Weapon):
     def reset_field_of_fire(self, actor):
         grid = actor.world.grid
         coord = grid.hex_in_front(actor.position, actor.facing)
-        self.field_of_fire = [coord] if grid.visible(actor.position, coord) else []
+        if coord in grid.cells:
+            self.field_of_fire = [coord] if grid.visible(actor.position, coord) else []
 
     def attack(self, aggressor):
         """
 
         :param aggressor: The violent actor, not the victim
-        :return:
+        :return: Number of targets engaged
         """
+        max_heat = 30
+        ok_heat = 10
+        if self.heat > 0:
+            self.heat -= 1
+            if self.heat < ok_heat:
+                self.overheated = False
+            elif self.heat > max_heat:
+                self.overheated = True
+
         if aggressor.walking_to is not None:
             self.field_of_fire = []  # can't move and fire
-            return
+            return 0
 
-        super().attack(aggressor)
-        aggressor.anim.play('shoot')
+        targets = 0
+        if not self.overheated:
+            targets = super().attack(aggressor)
+            self.heat += targets * 4
 
-        max_range = 12
+        # aggressor.anim.play('shoot')
+
+        max_range = 8
         if self.field_of_fire and len(self.field_of_fire) < max_range:
             coord = aggressor.world.grid.hex_in_front(self.field_of_fire[-1], aggressor.facing)
             if aggressor.world.grid.visible(aggressor.position, coord):
                 self.field_of_fire.append(coord)
         self.effect(aggressor.world, self.field_of_fire[-1])
 
+        return targets
 
 def _field_of_fire_front_arc(min_range, max_range, actor):
     """

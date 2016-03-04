@@ -62,7 +62,7 @@ class World:
         matt = Character(self, "matt", animation.matt, faction=faction, position = (8,5), facing=2, hp=100, colour = (255,120,0))
         matt.weapon = AutoCannon()
 
-        dino = Character(self, "tom", animation.raptor, faction=faction, position = (6,5), facing=0, hp=25, colour = (0x40, 0x40, 0xC0))
+        dino = Character(self, "tom", animation.raptor, faction=faction, position = (9,6), facing=0, hp=25, colour = (0x40, 0x40, 0xC0))
         dino.DEFAULT_SPEED = 2.0
         dino.weapon = Weapon()
 
