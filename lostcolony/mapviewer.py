@@ -17,6 +17,8 @@ from lostcolony import wave
 
 logger = logging.getLogger(__name__)
 
+mouse_click_pos = (0, 0)
+
 
 class Camera:
     WSCALE = HEX_WIDTH / 2
@@ -257,6 +259,16 @@ def on_mouse_motion(x, y, dx, dy):
 
 
 @window.event
+def on_mouse_press(x, y, button, mods):
+    """
+    Record the mouse position when a button is pressed, so that when it is
+    released we can tell if it was a drag or a simple click.
+    """
+    global mouse_click_pos
+    mouse_click_pos = x, y
+
+
+@window.event
 def on_mouse_release(x, y, button, mods):
     """
     Placeholder for a click event.
@@ -266,6 +278,12 @@ def on_mouse_release(x, y, button, mods):
     :param x: x position
     :param y: y position
     """
+    # Check how far the mouse has moved since the button was pressed,
+    # if it's a significant distance then don't do anything as it was
+    # a drag not a click.
+    drag_distance = (x - mouse_click_pos[0])**2 + (y - mouse_click_pos[1])**2
+    if drag_distance > 64:
+        return
     if pyglet.window.mouse.LEFT == button:
         c = tmxmap.camera.viewport_to_coord((x, y))
         if tmxmap.world.actors_by_pos[c]:  # an actor might exist here, we can't move there but we could select them.
