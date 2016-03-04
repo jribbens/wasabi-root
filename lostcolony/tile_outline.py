@@ -41,7 +41,7 @@ class TileOutlineCursor:
 
     def __init__(self, color, pos=(0, 0), batch=None):
         self.batch = batch or pyglet.graphics.Batch()
-        self.list = self.batch.add_indexed(6, self.MODE, None, self.INDICES, 'v2f', ('c4B', as_color4(*color) * 6))
+        self.list = self.batch.add_indexed(6, self.MODE, None, self.INDICES, 'v2f/stream', ('c4B/static', as_color4(*color) * 6))
         self.pos = pos
 
     @property
