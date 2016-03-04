@@ -206,7 +206,7 @@
    <image width="128" height="48" source="../images/gore/gore6.png"/>
   </tile>
  </tileset>
- <tileset firstgid="66" name="Points of interest" tilewidth="92" tileheight="86" tilecount="4">
+ <tileset firstgid="66" name="Points of interest" tilewidth="128" tileheight="86" tilecount="9">
   <tile id="0">
    <properties>
     <property name="pc" value=""/>
@@ -221,6 +221,36 @@
   </tile>
   <tile id="3">
    <image width="92" height="86" source="../images/pc/tom-se-stand.png"/>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="difficulty" value="1"/>
+   </properties>
+   <image width="128" height="71" source="../images/pois/trigger1.png"/>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="difficulty" value="2"/>
+   </properties>
+   <image width="128" height="71" source="../images/pois/trigger2.png"/>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="difficulty" value="3"/>
+   </properties>
+   <image width="128" height="71" source="../images/pois/trigger3.png"/>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="difficulty" value="4"/>
+   </properties>
+   <image width="128" height="71" source="../images/pois/trigger4.png"/>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="difficulty" value="5"/>
+   </properties>
+   <image width="128" height="71" source="../images/pois/trigger5.png"/>
   </tile>
  </tileset>
  <layer name="Tile Layer 1" width="100" height="100">
@@ -240,7 +270,7 @@
  </layer>
  <layer name="POIs" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJztzjENADAMBLFgSxv+lJqpFH6xpduvCgAAAAAASOntbDc9wjfpAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4h4MtAEP
+   eJzt0csJACAMREFr89d/SeYgViAkhxl41xDY1gAAAAAAgCw9GtHMfoRnfby1b9RkmzpsAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA1B71XAic=
   </data>
  </layer>
 </map>

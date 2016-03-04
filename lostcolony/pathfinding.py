@@ -142,7 +142,8 @@ class HexGrid:
         r = -x / 3 + root3 / 3 * y
         return cube_to_hex(cube_round((q, -q - r, r)))
 
-    def neighbours(self, coords):
+    @classmethod
+    def neighbours(cls, coords):
         """Iterate over the neighbour of the given coords.
 
         Note that we use an "even-q vertical" layout in the terminology of
@@ -150,7 +151,7 @@ class HexGrid:
 
         """
         x, y = coords
-        neighbours = self.NEIGHBOURS_ODD if x % 2 else self.NEIGHBOURS_EVEN
+        neighbours = cls.NEIGHBOURS_ODD if x % 2 else cls.NEIGHBOURS_EVEN
         for dx, dy in neighbours:
             yield x + dx, y + dy
 
@@ -224,7 +225,6 @@ class HexGrid:
         tx, ty, tz = hex_to_cube(target)
         return max(abs(sx-tx), abs(sy-ty), abs(sz-tz))
 
-
     def reachable(self, tile, dist=20):
         """Get the set of tiles that are reachable in at most dist steps.
 
@@ -259,7 +259,6 @@ class HexGrid:
                     seen.add(t)
                     frontier.put(t, newcost)
         return found
-
 
     def obstacles_in_line_of_sight(self, start, target):
         """

@@ -94,7 +94,7 @@ class Scene:
         self.floor = map.floor
         self.objects = map.objects
         self.grid = map.grid
-        self.world = World(self.grid, pois=map.pois)
+        self.world = World(self.grid, map)
 
     floor_batch = None
     floor_batch_pos = None
@@ -209,8 +209,10 @@ window.push_handlers(keys)
 
 game_map = Map("maps/world.tmx")
 tmxmap = Scene(window, game_map)
+triggers = game_map.triggers.copy()
 ui = UI(tmxmap.world, tmxmap.camera)
 tmxmap.camera.centre(ui.current_hero.position)
+
 
 @window.event
 def on_draw():
@@ -334,4 +336,48 @@ def update(dt):
 #
 #    tmxmap.camera = nx, ny
 
+DIFFICULTIES = {
+    1: {
+        "attackers": 3,
+        "spawn_interval": 5
+    },
+    2: {
+        "attackers": 4,
+        "spawn_interval": 4
+    },
+    3: {
+        "attackers": 5,
+        "spawn_interval": 3
+    },
+    4: {
+        "attackers": 7,
+        "spawn_interval": 3
+    },
+    5: {
+        "attackers": 8,
+        "spawn_interval": 2
+    },
+}
+
+
+def check_triggers(dt):
+    """Check if any waves are triggered."""
+    if wave.current_wave:
+        return
+    world = tmxmap.world
+    players = world.factions['Player']
+    for actor in players.actors:
+        t = triggers.get(actor.position)
+        if t:
+            for l in t.locs:
+                triggers[l] = None
+            camera = tmxmap.camera
+            kwargs = DIFFICULTIES.get(t.difficulty, {})
+            wave.Wave(camera, world, players, **kwargs).start()
+            return
+
+
 pyglet.clock.schedule(update)
+pyglet.clock.schedule_interval(check_triggers, 0.2)
+
+

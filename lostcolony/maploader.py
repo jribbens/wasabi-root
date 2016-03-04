@@ -5,7 +5,7 @@ PyTMX handles the format decoding; here we just unpack it into game structures.
 """
 import re
 import os
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 import pytmx
 import pyglet.image
@@ -23,6 +23,35 @@ IMPASSABLE_FLOORS = re.compile(
 )
 
 PCS_RE = re.compile(r'(?:^|/)(rex|tom|ping|matt)-[\w-]*\.png$')
+TRIGGERS_RE = re.compile(r'(?:^|/)trigger(\d+).png$')
+
+TriggerArea = namedtuple('TriggerArea', 'locs difficulty')
+
+
+def group_connected(triggers):
+    """Group the given list of triggers into connected sets."""
+    groups = []
+    ungrouped = set((x, y, difficulty) for (x, y), difficulty in triggers.items())
+    while ungrouped:
+        x, y, difficulty = ungrouped.pop()
+        pos = x, y
+        locs = [pos]
+        queue = [pos]
+        while queue:
+            pos = queue.pop()
+            for x, y in HexGrid.neighbours(pos):
+                if (x, y, difficulty) in ungrouped:
+                    ungrouped.discard((x, y, difficulty))
+                    c = x, y
+                    locs.append(c)
+                    queue.append(c)
+        groups.append(TriggerArea(locs, difficulty))
+
+    groups_by_loc = {}
+    for g in groups:
+        for l in g.locs:
+            groups_by_loc[l] = g
+    return groups, groups_by_loc
 
 
 class Map:
@@ -33,6 +62,7 @@ class Map:
         self.grid = HexGrid()
         self.images = {}
         self.pois = {}
+        self.triggers = {}
         self.load_file(filename)
 
     def load_file(self, mapfile):
@@ -46,10 +76,16 @@ class Map:
     def load_pois(self, mapfile):
         """Load points of interest."""
         poi_layer = [l for l in mapfile.layers if l.name == 'POIs'][0]
+        triggers = {}
         for x, y, (imgpath, *stuff) in poi_layer.tiles():
             mo = PCS_RE.search(imgpath)
             if mo:
                 self.pois[mo.group(1)] = (x, y)
+                continue
+            mo = TRIGGERS_RE.search(imgpath)
+            if mo:
+                triggers[x, y] = int(mo.group(1))
+        self.trigger_groups, self.triggers = group_connected(triggers)
 
     def load_floor(self, tmx):
         """Load the floor tiles.
