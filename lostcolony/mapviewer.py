@@ -146,12 +146,11 @@ class Scene:
         gl.glAlphaFunc(gl.GL_GREATER, 0.0)
         self.get_floor_batch().draw()
 
-        if wave.current_wave:
-            gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
-            for character in self.world.get_all_player_actors():
-                if character.weapon and character.weapon.field_of_fire:
-                    self.get_fof_effect(character.weapon.field_of_fire, character.colour).draw()
-            gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
+        for character in self.world.get_all_player_actors():
+            if character.weapon and character.weapon.field_of_fire:
+                self.get_fof_effect(character.weapon.field_of_fire, character.colour).draw()
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         self.cursor.draw()
 
@@ -296,9 +295,9 @@ def on_key_press(symbol, mods):
         ui.select_by_name("tom")
     if symbol == pyglet.window.key.TAB:
         ui.select_next_hero()
-    if symbol == pyglet.window.key.Q:
+    if symbol == pyglet.window.key.Q or symbol == pyglet.window.key.LEFT:
         ui.rotate('Q')
-    elif symbol == pyglet.window.key.E:
+    elif symbol == pyglet.window.key.E or symbol == pyglet.window.key.RIGHT:
         ui.rotate('E')
     elif symbol == pyglet.window.key.F9:
         world = tmxmap.world

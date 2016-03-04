@@ -289,7 +289,10 @@ class HexGrid:
             checked = (c_start[0] + d_1[0] * i, c_start[1] + d_1[1] * i,)
             for fuzzy_x, fuzzy_y in (-1e-6, -1e-6), (-1e-6, 1e-6), (1e-6, -1e-6), (1e-6, 1e-6):
                 checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
-                if checked_coord != start and self.blocked(checked_coord):
+                if checked_coord not in self.cells:
+                    continue # off map
+                object_layer = self.layers[1]
+                if checked_coord != start and object_layer[checked_coord]:
                     obstacles.add(checked_coord)
         return obstacles
 
