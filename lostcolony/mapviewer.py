@@ -217,9 +217,6 @@ def on_draw():
     for modifier in modifiers:
         modifier.draw()
 
-    if reachable:
-        reachable.draw()
-
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
@@ -247,17 +244,6 @@ def on_mouse_motion(x, y, dx, dy):
         my = -1
 
     tmxmap.camera_vector = mx, my
-
-
-reachable = None
-
-def show_reachable(pos):
-    global reachable
-    reachable = pyglet.graphics.Batch()
-    clicked = tmxmap.camera.viewport_to_coord(pos)
-    for hex in tmxmap.world.grid.reachable(clicked):
-        pos = tmxmap.camera.coord_to_viewport(hex)
-        FilledCursor((255, 0, 0, 90,), pos, reachable)
 
 
 @window.event

@@ -22,16 +22,32 @@ DEFAULT_BEHAVIOUR = behaviour.sequence(
 class Wave:
     """Trigger a wave of dinos to descend on the gang."""
 
-    def __init__(self, camera, world, target_faction, attackers=10, spawn_interval=1):
+    def __init__(self, camera, world, target_faction, attackers=10, spawn_interval=1, setup_delay=12):
         self.camera = camera
         self.world = world
         self.target_faction = target_faction
         self.faction = self.world.factions["Dinos"]
         self.attackers = attackers
         self.spawn_interval = spawn_interval
+        self.setup_delay = setup_delay
         self.spawned = []
 
     def start(self):
+        """Initiate the wave.
+
+        If there is a setup delay, wait that long before actually spawning
+        anything in order to let the player get set up.
+
+        """
+        global current_wave
+        current_wave = self
+        if self.setup_delay:
+            clock.schedule_once(self._start, self.setup_delay)
+        else:
+            self._start()
+
+    def _start(self, *_):
+        """Actually start the wave."""
         if not self.target_faction.actors:
             # nothing to attack!
             return
