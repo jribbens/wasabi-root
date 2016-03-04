@@ -118,7 +118,7 @@ class Scene:
         batch = pyglet.graphics.Batch()
         for hex in field_of_fire:
             pos = self.camera.coord_to_viewport(hex)
-            FilledCursor(colour + (66,), pos, batch)
+            FilledCursor(colour + (50,), pos, batch)
         return batch
 
     def get_fof_effect(self, field_of_fire, colour):
@@ -136,9 +136,11 @@ class Scene:
         gl.glAlphaFunc(gl.GL_GREATER, 0.0)
         self.get_floor_batch().draw()
 
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
         for character in self.world.get_all_player_actors():
             if character.weapon and character.weapon.field_of_fire:
                 self.get_fof_effect(character.weapon.field_of_fire, character.colour).draw()
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         self.cursor.draw()
 

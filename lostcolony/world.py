@@ -56,7 +56,7 @@ class World:
         tom = Character(self, "tom", animation.tom, faction=faction, position=(6,5), facing=3, hp=100, colour=(22, 44, 80))
         tom.weapon = Rifle()
 
-        tom = Character(self, "ping", animation.ping, faction=faction, position=(7,5), facing=3, hp=100, colour=(22, 44, 80))
+        tom = Character(self, "ping", animation.ping, faction=faction, position=(7,5), facing=3, hp=100, colour=(22, 90, 200))
         tom.weapon = Rifle()
 
         matt = Character(self, "matt", animation.matt, faction=faction, position = (8,5), facing=2, hp=100, colour = (255,120,0))
