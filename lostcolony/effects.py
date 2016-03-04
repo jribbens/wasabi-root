@@ -31,7 +31,7 @@ class Effect:
 class Ricochet(Effect):
     """This is the ricochet effect for the autocannon."""
 
-    def __init__(self, world, pos, duration=1.0):
+    def __init__(self, world, pos, duration=0.5):
         super().__init__(world, pos)
         if duration is not None:
             clock.schedule_once(self.destroy, duration)

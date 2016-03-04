@@ -68,6 +68,8 @@ class Map:
     def load_file(self, mapfile):
         """Load a TMX file."""
         tmx = pytmx.TiledMap(mapfile)
+        self.width = tmx.width
+        self.height = tmx.height
         self.load_images(tmx)
         self.load_floor(tmx)
         self.load_objects(tmx)
