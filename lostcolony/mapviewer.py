@@ -278,7 +278,7 @@ def on_key_press(symbol, mods):
     if symbol == pyglet.window.key._1:
         ui.select_by_name("rex")
     if symbol == pyglet.window.key._2:
-        ui.select_by_name("max")
+        ui.select_by_name("matt")
     if symbol == pyglet.window.key._3:
         ui.select_by_name("ping")
     if symbol == pyglet.window.key._4:
