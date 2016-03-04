@@ -286,6 +286,7 @@ def on_mouse_release(x, y, button, mods):
 
 @window.event
 def on_resize(*args):
+    tmxmap.floor_batch_pos = None
     tmxmap.camera.viewport = window.width, window.height
 
 
