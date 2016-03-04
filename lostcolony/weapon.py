@@ -164,10 +164,12 @@ class AutoCannon(Weapon):
     def __init__(self):
         super().__init__()
         self.setup_time = 0
-        self.seconds_per_attack = 1
+        self.seconds_per_attack = 0.8
         self.single_target = True
         self.heat = 0
         self.overheated = False
+        self.shot_effect_time = 0 # 0 means not shooting, else the time to display the next one.
+        self.shot_coord = None # not shooting
 
     @property
     def damage(self):
@@ -177,14 +179,24 @@ class AutoCannon(Weapon):
     def damage(self, v):
         pass
 
-    def valid_target(self, actor, target):
-        return True
-
     def reset_field_of_fire(self, actor):
         grid = actor.world.grid
         coord = grid.hex_in_front(actor.position, actor.facing)
         if coord in grid.cells:
             self.field_of_fire = [coord] if grid.visible(actor.position, coord) else []
+
+    def update(self, t, actor):
+        """Create the sparkly shooing effect"""
+        if self.shot_effect_time and self.shot_effect_time < t and self.shot_coord:
+            try:
+                coord = next(self.shot_coord)
+                self.shot_effect_time = t + 0.07
+                self.effect(actor.world, coord)
+                print(actor.get_coords(), coord)
+            except StopIteration:
+                self.shot_coord = None
+
+        super().update(t, actor)
 
     def attack(self, aggressor):
         """
@@ -192,11 +204,11 @@ class AutoCannon(Weapon):
         :param aggressor: The violent actor, not the victim
         :return: Number of targets engaged
         """
-        max_heat = 4
-        ok_heat = 2
+        max_heat = 8
+        ok_heat = 4
         if self.heat > 0:
             self.heat -= 1
-            if self.heat < ok_heat:
+            if self.heat <= ok_heat:
                 self.overheated = False
             elif self.heat > max_heat:
                 self.overheated = True
@@ -208,16 +220,17 @@ class AutoCannon(Weapon):
         targets = 0
         if not self.overheated:
             targets = super().attack(aggressor)
-            self.heat += 4
-
-        # aggressor.anim.play('shoot')
+            if targets:
+                self.heat += 4
+                self.shot_effect_time = 1 # display it
+                self.shot_coord = iter(self.field_of_fire)
 
         max_range = 8
         if self.field_of_fire and len(self.field_of_fire) < max_range:
             coord = aggressor.world.grid.hex_in_front(self.field_of_fire[-1], aggressor.facing)
             if aggressor.world.grid.visible(aggressor.position, coord):
                 self.field_of_fire.append(coord)
-        self.effect(aggressor.world, self.field_of_fire[-1])
+        # self.effect(aggressor.world, self.field_of_fire[-1])
 
         return targets
 
