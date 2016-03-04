@@ -25,22 +25,32 @@ class Camera:
     WSCALE = HEX_WIDTH / 2
     HSCALE = HEX_HEIGHT / 2
 
-    def __init__(self, viewport, pos=(0, 0)):
+    def __init__(self, viewport, topleft, bottomright, pos=(0, 0)):
         self.viewport = viewport
+        self.topleft = HexGrid.coord_to_screen(topleft)
+        bottomright = HexGrid.coord_to_screen(bottomright)
+        self.bottomright = (bottomright[0] - HEX_WIDTH / 2,
+                            bottomright[1] - HEX_HEIGHT)
         self.pos = pos
+        print(self.viewport, self.topleft, self.bottomright)
 
     def pan(self, dx, dy):
         """Move the camera by a relative offset."""
         x, y = self.pos
-        self.pos = x - dx, y + dy
+        self.pos = self.clip(x - dx, y + dy)
 
     def centre(self, coord):
         """Re-centre the camera on the given coord."""
         sx, sy = HexGrid.coord_to_screen(coord)
-        self.pos = (
+        self.pos = self.clip(
             sx - self.viewport[0] // 2,
             sy - self.viewport[1] // 2,
         )
+
+    def clip(self, x, y):
+        x = min(max(x, self.topleft[0]), self.bottomright[0] - self.viewport[0])
+        y = min(max(y, self.topleft[1]), self.bottomright[1] - self.viewport[1])
+        return x, y
 
     def coord_to_viewport(self, coord):
         """Given a tile coordinate, get its viewport position."""
@@ -88,7 +98,12 @@ class Camera:
 
 class Scene:
     def __init__(self, window, map):
-        self.camera = Camera((window.width, window.height), pos=(0, 0))
+        self.camera = Camera(
+            (window.width, window.height),
+            (0, 0),
+            (map.width, map.height),
+            pos=(0, 0)
+        )
         self.cursor = MoveCursor((255, 0, 0))
         self.window = window
         self.images = {}
