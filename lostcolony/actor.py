@@ -167,6 +167,10 @@ class Actor(object):
         self.anim.play('walk')
 
     def get_health(self, x, y):
+        if self.hp == self.total_hp:
+            # Don't show the health bar if it's full
+            return None
+
         vertex_list = pyglet.graphics.Batch()
 
         health_left = ((self.hp/self.total_hp) * 80) - 40

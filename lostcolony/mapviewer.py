@@ -169,7 +169,8 @@ class Scene:
                     sx, sy = self.camera.coord_to_viewport((x, y))
                     sx, sy, pic, health = actor.drawable(sx, sy)
                     objects.append((round(sy), round(sx), pic))
-                    modifiers.append(health)
+                    if health:
+                        modifiers.append(health)
 
                 for effect in self.world.get_effects(c):
                     for c, im in effect.get_drawables():
