@@ -152,6 +152,14 @@ tom = Animation({
     },
     default='stand'
 )
+matt = Animation({
+        'stand': DirectionalSequence.load('pc/matt-{dir}-stand.png', 1, **kw),
+        'walk': DirectionalSequence.load('pc/matt-{dir}-walk{n}.png', 4, **kw),
+        'shoot': DirectionalSequence.load('pc/matt-{dir}-shoot.png', 1, next='stand', **kw),
+    },
+    default='stand'
+)
+
 kw = dict(anchor_x=42, anchor_y=9)
 ping = Animation({
         'stand': DirectionalSequence.load('pc/ping-{dir}-stand.png', 1, **kw),
