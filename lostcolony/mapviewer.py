@@ -1,5 +1,6 @@
 from itertools import chain
 import logging
+from functools import lru_cache
 
 import pyglet
 from pyglet import gl
@@ -84,11 +85,6 @@ class Scene:
         self.objects = map.objects
         self.grid = map.grid
         self.world = World(self.grid)
-        self.fof_effect = {
-            character: FilledCursor(colour + (66,))
-            for character, colour
-            in self.world.field_of_fire_colours()
-        }
 
     floor_batch = None
     floor_batch_pos = None
@@ -115,6 +111,23 @@ class Scene:
                         )
         return self.floor_batch
 
+    fof_pos = None
+
+    @lru_cache()
+    def fof_effect_cached(self, field_of_fire, colour):
+        batch = pyglet.graphics.Batch()
+        for hex in field_of_fire:
+            pos = self.camera.coord_to_viewport(hex)
+            FilledCursor(colour + (66,), pos, batch)
+        return batch
+
+    def get_fof_effect(self, field_of_fire, colour):
+        if self.fof_pos != self.camera.pos:
+            self.fof_effect_cached.cache_clear()
+            self.fof_pos = self.camera.pos
+
+        return self.fof_effect_cached(tuple(field_of_fire), colour)
+
     def draw(self):
         """Draw the floor and any decals."""
         gl.glEnable(gl.GL_BLEND)
@@ -125,10 +138,7 @@ class Scene:
 
         for character in self.world.get_all_player_actors():
             if character.weapon and character.weapon.field_of_fire:
-                fof_effect = self.fof_effect[character]
-                for fof_hex in character.weapon.field_of_fire:
-                    fof_effect.pos = self.camera.coord_to_viewport(fof_hex)
-                    fof_effect.draw()
+                self.get_fof_effect(character.weapon.field_of_fire, character.colour).draw()
 
         self.cursor.draw()
 
