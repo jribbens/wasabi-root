@@ -22,6 +22,8 @@ IMPASSABLE_FLOORS = re.compile(
     r'/(pool.*|water)\.png$'
 )
 
+PCS_RE = re.compile(r'(?:^|/)(rex|tom|ping|matt)-[\w-]*\.png$')
+
 
 class Map:
     """Load a map from a TMX file."""
@@ -30,6 +32,7 @@ class Map:
         self.objects = {}  # Static images occupying a tile, keyed by coord
         self.grid = HexGrid()
         self.images = {}
+        self.pois = {}
         self.load_file(filename)
 
     def load_file(self, mapfile):
@@ -38,6 +41,15 @@ class Map:
         self.load_images(tmx)
         self.load_floor(tmx)
         self.load_objects(tmx)
+        self.load_pois(tmx)
+
+    def load_pois(self, mapfile):
+        """Load points of interest."""
+        poi_layer = [l for l in mapfile.layers if l.name == 'POIs'][0]
+        for x, y, (imgpath, *stuff) in poi_layer.tiles():
+            mo = PCS_RE.search(imgpath)
+            if mo:
+                self.pois[mo.group(1)] = (x, y)
 
     def load_floor(self, tmx):
         """Load the floor tiles.
@@ -47,7 +59,9 @@ class Map:
         """
         self.nlayers = len(tmx.layers)
         floor = defaultdict(list)
-        for n, layer in enumerate(tmx.layers[:-1]):
+        for n, layer in enumerate(tmx.layers):
+            if layer.name in ['Objects', 'POIs']:
+                continue
             for x, y, (imgpath, *stuff) in layer.tiles():
                 image = self.images[imgpath]
                 floor[x, y].append(image)
@@ -62,8 +76,8 @@ class Map:
 
         """
         self.objects = {}
-        # Top layer contains object data
-        for x, y, (imgpath, *_) in tmx.layers[-1].tiles():
+        obj_layer = [l for l in tmx.layers if l.name == 'Objects'][0]
+        for x, y, (imgpath, *_) in obj_layer.tiles():
             self.objects[x, y] = self.images[imgpath]
 
             self.grid[x, y] = imgpath not in NOT_OBSTRUCTIONS

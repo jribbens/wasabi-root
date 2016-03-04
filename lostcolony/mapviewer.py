@@ -31,6 +31,14 @@ class Camera:
         x, y = self.pos
         self.pos = x - dx, y + dy
 
+    def centre(self, coord):
+        """Re-centre the camera on the given coord."""
+        sx, sy = HexGrid.coord_to_screen(coord)
+        self.pos = (
+            sx - self.viewport[0] // 2,
+            sy - self.viewport[1] // 2,
+        )
+
     def coord_to_viewport(self, coord):
         """Given a tile coordinate, get its viewport position."""
         cx, cy = self.pos
@@ -86,7 +94,7 @@ class Scene:
         self.floor = map.floor
         self.objects = map.objects
         self.grid = map.grid
-        self.world = World(self.grid)
+        self.world = World(self.grid, pois=map.pois)
 
     floor_batch = None
     floor_batch_pos = None
@@ -199,10 +207,10 @@ window = pyglet.window.Window(resizable=True)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
-game_map = Map("maps/encounter-01.tmx")
+game_map = Map("maps/world.tmx")
 tmxmap = Scene(window, game_map)
 ui = UI(tmxmap.world, tmxmap.camera)
-
+tmxmap.camera.centre(ui.current_hero.position)
 
 @window.event
 def on_draw():

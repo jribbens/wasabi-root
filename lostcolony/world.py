@@ -12,9 +12,10 @@ class World:
     Top-level container for the map, factions, actors etc
     """
 
-    def __init__(self, grid):
+    def __init__(self, grid, pois={}):
         # TODO: un-hardcode this. can we set this in tiled?
         self.grid = grid
+        self.pois = pois
         self.actors_by_pos = defaultdict(set)
         self.effects_by_pos = defaultdict(set)
         self.grid.layers.insert(0, self.actors_by_pos)
@@ -56,7 +57,7 @@ class World:
             "rex",
             animation.rex,
             faction=faction,
-            position = (5,5),
+            position=self.pois.get('rex', (5, 5)),
             facing=3,
             hp=100,
             colour = (255,0,0))
@@ -66,7 +67,7 @@ class World:
             "tom",
             animation.tom,
             faction=faction,
-            position=(6,5),
+            position=self.pois.get('tom', (6, 5)),
             facing=3,
             hp=100,
             colour=(22, 200, 0))
@@ -76,7 +77,7 @@ class World:
             "ping",
             animation.ping,
             faction=faction,
-            position=(7,5),
+            position=self.pois.get('ping', (7, 5)),
             facing=3,
             hp=80,
             colour=(22, 90, 200))
@@ -86,7 +87,7 @@ class World:
             "matt",
             animation.matt,
             faction=faction,
-            position = (8,5),
+            position=self.pois.get('matt', (8, 5)),
             facing=3,
             hp=150,
             colour = (255,120,0))
