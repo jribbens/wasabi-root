@@ -192,7 +192,6 @@ class AutoCannon(Weapon):
                 coord = next(self.shot_coord)
                 self.shot_effect_time = t + 0.07
                 self.effect(actor.world, coord)
-                print(actor.get_coords(), coord)
             except StopIteration:
                 self.shot_coord = None
 
