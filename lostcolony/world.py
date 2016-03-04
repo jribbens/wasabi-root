@@ -59,7 +59,7 @@ class World:
         tom = Character(self, "ping", animation.ping, faction=faction, position=(7,5), facing=3, hp=100, colour=(22, 44, 80))
         tom.weapon = Rifle()
 
-        matt = Character(self, "matt", animation.matt, faction=faction, position = (8,5), facing=2, hp=100, colour = (255,120,0))
+        matt = Character(self, "matt", animation.matt, faction=faction, position = (8,5), facing=3, hp=100, colour = (255,120,0))
         matt.weapon = AutoCannon()
 
         dino = Character(self, "tom", animation.raptor, faction=faction, position = (9,6), facing=0, hp=25, colour = (0x40, 0x40, 0xC0))
