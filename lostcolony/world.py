@@ -52,16 +52,44 @@ class World:
         # Stub code - this should come from scenario set-up
         faction = Faction("Player")
 
-        rex = Character(self, "rex", animation.rex, faction=faction, position = (5,5), facing=3, hp=100, colour = (255,215,0))
+        rex = Character(self,
+            "rex",
+            animation.rex,
+            faction=faction,
+            position = (5,5),
+            facing=3,
+            hp=100,
+            colour = (255,215,0))
         rex.weapon = Rifle()
 
-        tom = Character(self, "tom", animation.tom, faction=faction, position=(6,5), facing=3, hp=100, colour=(22, 44, 80))
+        tom = Character(self,
+            "tom",
+            animation.tom,
+            faction=faction,
+            position=(6,5),
+            facing=3,
+            hp=100,
+            colour=(22, 44, 80))
         tom.weapon = Rifle()
 
-        ping = Character(self, "ping", animation.ping, faction=faction, position=(7,5), facing=3, hp=100, colour=(22, 90, 200))
+        ping = Character(self,
+            "ping",
+            animation.ping,
+            faction=faction,
+            position=(7,5),
+            facing=3,
+            hp=80,
+            colour=(22, 90, 200))
         ping.weapon = SniperRifle()
 
-        matt = Character(self, "matt", animation.matt, faction=faction, position = (8,5), facing=3, hp=100, colour = (255,120,0))
+        matt = Character(self,
+            "matt",
+            animation.matt,
+            faction=faction,
+            position = (8,5),
+            facing=3,
+            hp=150,
+            colour = (255,120,0))
         matt.weapon = AutoCannon()
 
         for actor in faction.actors:

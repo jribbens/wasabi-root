@@ -97,6 +97,11 @@ class Weapon:
         return ret
 
 
+class Teeth(Weapon):
+    def calc_damage(self, actor, target):
+        return random.randint(1, self.damage)
+
+
 class Rifle(Weapon):
     effect = ShotgunRicochet
 

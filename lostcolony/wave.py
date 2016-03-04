@@ -4,7 +4,7 @@ from pyglet import clock
 from lostcolony.actor import Actor
 from lostcolony import animation
 from lostcolony.faction import Faction
-from lostcolony.weapon import Weapon
+from lostcolony.weapon import Teeth
 from lostcolony import behaviour
 
 
@@ -60,7 +60,7 @@ class Wave:
                 faction=self.faction,
                 facing=3)
             dino.DEFAULT_SPEED = 2.5
-            dino.weapon = Weapon()
+            dino.weapon = Teeth(seconds_per_attack=0.1, damage=5)
             dino.behaviour = DEFAULT_BEHAVIOUR
             self.spawned.append(dino)
 
@@ -78,6 +78,29 @@ class Wave:
         """Poll periodically to see if the wave is over."""
         global current_wave
         if self.is_over():
+            for a in self.target_faction.actors:
+                # TODO: transition this over time
+                Transition(a, 'hp', a.total_hp, rate=2.0)
             current_wave = None
         else:
             clock.schedule_once(self.poll_finished, 2)
+
+
+class Transition:
+    def __init__(self, obj, attr, target_value, rate=1.0):
+        self.obj = obj
+        self.attr = attr
+        self.rate = rate
+        self.target_value = target_value
+        self.direction = 1 if target_value > getattr(obj, attr) else -1
+        clock.schedule(self.update)
+
+    def update(self, dt):
+        current = getattr(self.obj, self.attr)
+        if self.direction == 1:
+            current = min(current + self.rate * dt, self.target_value)
+        else:
+            current = max(current - self.rate * dt, self.target_value)
+        setattr(self.obj, self.attr, current)
+        if current == self.target_value:
+            clock.unschedule(self.update)
