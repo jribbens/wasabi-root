@@ -270,7 +270,7 @@
  </layer>
  <layer name="POIs" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt0csJACAMREFr89d/SeYgViAkhxl41xDY1gAAAAAAgCw9GtHMfoRnfby1b9RkmzpsAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA1B71XAic=
+   eJzt1zEKgDAQBMD8xL9ozP+flCBELLSw2hQzsHDlwnHFlQIAAAAAAKTsI8dITRfhdqYLACyopQsAAAAA138+Q1b7mMl43oV9rMMuAAAAAAAAAAAAeLOlCwAAAAAAAAAAAAAAAAAAAADATx1bCwPq
   </data>
  </layer>
 </map>
