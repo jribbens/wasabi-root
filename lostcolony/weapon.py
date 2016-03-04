@@ -7,7 +7,7 @@ Fortunately in this game you can't transfer weapons.
 This class looks after things like when they fire, fields of fire, hit probability and the like.
 It also indirectly manages their effects.
 """
-
+import random
 from lostcolony.effects import Ricochet, ShotgunRicochet
 
 
@@ -145,9 +145,16 @@ class AutoCannon(Weapon):
     def __init__(self):
         super().__init__()
         self.setup_time = 0
-        self.seconds_per_attack = 0.5
-        self.damage = 1
+        self.seconds_per_attack = 0.1
         self.single_target = True
+
+    @property
+    def damage(self):
+        return random.randint(1, 2)
+
+    @damage.setter
+    def damage(self, v):
+        pass
 
     def valid_target(self, actor, target):
         return True

@@ -29,6 +29,8 @@ class Effect:
 
 
 class Ricochet(Effect):
+    """This is the ricochet effect for the autocannon."""
+
     def __init__(self, world, pos, duration=1.0):
         super().__init__(world, pos)
         if duration is not None:
@@ -44,7 +46,7 @@ class Ricochet(Effect):
             yield c, im
 
     def get_drawables(self):
-        return self.random_sprites(random.randint(1, 5))
+        return self.random_sprites()
 
     def destroy(self, _):
         self.world.remove_effect(self, self.pos)
