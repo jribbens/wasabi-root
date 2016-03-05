@@ -69,7 +69,7 @@ class Weapon:
             target.hit(self.calc_damage(attacking_actor,target))
             attacking_actor.anim.play('shoot')
             if self.sound:
-                audio.effects[self.sound].play()
+                audio.play(self.sound)
         if self.effect:
             world = attacking_actor.world
             for p in targets:
