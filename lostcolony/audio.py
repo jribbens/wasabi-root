@@ -32,7 +32,7 @@ def normal_music():
 
 
 def action_music():
-    pygame.mixer.music.load(os.path.join("music", "Swamplandia.ogg"))
+    pygame.mixer.music.load(os.path.join("music", "Ominosity.ogg"))
     pygame.mixer.music.play(loops=-1)
     pygame.mixer.music.set_volume(0.5)
 
