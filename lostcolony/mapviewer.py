@@ -427,7 +427,12 @@ def check_triggers(dt):
             kwargs = DIFFICULTIES.get(t.difficulty, {})
             wave.Wave(camera, world, players, **kwargs).start()
             return
+    for actor in players.actors:
+        if actor.position == goals.goal_pos:
+            goals.goal_pos = None
+            pyglet.clock.schedule_once(lambda dt: goals.next_goal(), 3.0)
 
 
 pyglet.clock.schedule(update)
 pyglet.clock.schedule_interval(check_triggers, 0.2)
+pyglet.clock.schedule_once(lambda dt: goals.next_goal(), 3.0)

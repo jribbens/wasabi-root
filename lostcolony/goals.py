@@ -14,9 +14,25 @@ def relpath(p):
 pyglet.font.add_file(relpath('../fonts/gun4fc.ttf'))
 
 
-CURRENT_GOAL = '::: Proceed to complex'
+GOALS = [
+    ('Look for research chief Dr Alonso', (42, 19)),
+    ('Investigate dormitory', (48, 7)),
+    ('Get medical provisions from stores', (43, 29)),
+    ('Search lab computers for records', (63, 52)),
+    ('Download files in server room', (77, 42)),
+    ('Check for injured survivors in medbay', (75, 9)),
+    ('Inspect operating room', (92, 6)),
+    ('Activate sensor array', (79, 53)),
+    ('Run scan for dinosaurs', (52, 47)),
+    ('Follow trail at scientific site', (34, 59)),
+    ('Follow trail in botanic garden', (34, 85)),
+    ('Pursue dinos back to nest', (90, 84)),
+    ('Return to shuttle', (15, 14)),
+    ('Activate launch radar', (10, 70)),
+    ('Return to shuttle', (15, 14)),
+]
+
 GOAL_COLOUR = (255, 200, 100, 255)
-GOAL_POS = 42, 19
 
 DEFEND = '::: Motion detected'
 DEFEND_COLOUR = (180, 0, 0, 255)
@@ -24,12 +40,13 @@ DEFEND_COLOUR = (180, 0, 0, 255)
 FONT = 'Gunship Condensed'
 
 
-label = Label(
-    CURRENT_GOAL,
+goal_label = Label(
+    GOALS[0][0],
     font_name=FONT,
     font_size=12,
     color=GOAL_COLOUR
 )
+defend_label = Label(DEFEND, font_name=FONT, font_size=12, color=DEFEND_COLOUR)
 
 marker_img = pyglet.image.load(relpath('../images/pois/direction.png'))
 marker_img.anchor_x = marker_img.width
@@ -39,25 +56,41 @@ marker = pyglet.sprite.Sprite(marker_img)
 marker.color = GOAL_COLOUR[:3]
 
 
+current_goal = -1
+goal_pos = None
+
+
+def next_goal():
+    global current_goal, goal_pos, goal_text
+    current_goal += 1
+    goal_text, goal_pos = GOALS[current_goal]
+    goal_label.text = '::: ' + goal_text
+
 
 def goal_is_onscreen(camera):
-    x, y = GOAL_POS
+    if not goal_pos:
+        return False
+    x, y = goal_pos
     (cx1, cy1), (cx2, cy2) = camera.coord_bounds()
     return cy2 <= y < cy1 and cx1 <= x < cx2
 
 
 def draw_outline(camera):
     """Draw the tile outline."""
+    if not goal_pos:
+        return
     if goal_is_onscreen(camera):
-        outline.pos = camera.coord_to_viewport(GOAL_POS)
+        outline.pos = camera.coord_to_viewport(goal_pos)
         outline.draw()
 
 
 def draw_marker(camera):
     """Draw a pointer indicating the direction of the goal."""
+    if not goal_pos:
+        return
     if goal_is_onscreen(camera):
         return
-    x, y = camera.coord_to_viewport(GOAL_POS)
+    x, y = camera.coord_to_viewport(goal_pos)
     w, h = camera.viewport
     h -= 30
     w -= 10
@@ -90,15 +123,16 @@ def draw_marker(camera):
 
 def display_goal(camera):
     """Draw the goal HUD."""
+    if wave.current_wave:
+        label = defend_label
+    else:
+        if not goal_pos:
+            return
+        label = goal_label
+        draw_marker(camera)
+
     w, h = camera.viewport
     label.x = 10
     label.y = h - 20
-    if wave.current_wave:
-        label.text = DEFEND
-        label.color = DEFEND_COLOUR
-    else:
-        label.text = CURRENT_GOAL
-        label.color = GOAL_COLOUR
-        draw_marker(camera)
     label.draw()
 
