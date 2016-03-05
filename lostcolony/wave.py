@@ -54,11 +54,18 @@ class Wave:
         global current_wave
         current_wave = self
 
-        pos = self.target_faction.actors[0].position
-        reachable = self.world.grid.reachable(pos)
+        # Position based on the first reachable character
+        pos = None
+        for actor in self.target_faction.actors:
+            pos = actor.position
+            reachable = self.world.grid.reachable(pos)
+            if reachable != []:
+                break
 
         (cx1, cy1), (cx2, cy2) = self.camera.coord_bounds()
         reachable = [(x, y) for x, y in reachable if not (cy2 - 1 <= y < cy1 + 4 and cx1 - 1 <= x < cx2 + 3)]
+        print(reachable)
+        print(self.attackers)
         self.spawn_points = random.sample(reachable, self.attackers // 3)
 
         self.spawn()
