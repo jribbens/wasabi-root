@@ -16,7 +16,6 @@ from lostcolony.effects import BloodSpray
 
 logger = logging.getLogger(__name__)
 
-
 # to do: too many versions of this code
 def _coord_to_world(coord):
     """Convert a map coordinate to a Cartesian world coordinate."""
@@ -65,6 +64,8 @@ class Actor(object):
         self.total_hp = hp
 
         self.hp = hp
+
+        self.walking_sound = None
 
         self.moving_to = None
         self.walking_to = None
@@ -171,6 +172,8 @@ class Actor(object):
     def walk_to(self, target):
         self.walking_to = target
         self.anim.play('walk')
+        if self.walking_sound:
+            self.walking_sound.play()
 
     def get_health(self, x, y):
         if self.hp == self.total_hp:
@@ -198,6 +201,8 @@ class Actor(object):
     def stop(self):
         self.walking_to = None
         self.anim.play('stand')
+        if self.walking_sound:
+            self.walking_sound.pause()
 
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
@@ -218,12 +223,16 @@ class Actor(object):
 
 class Character(Actor):
 
-    def __init__(self, world, id, anim, position, faction, facing, hp, colour):
+    def __init__(self, world, id, anim, position, faction, facing, hp, colour, sound=None):
         """
         :param colour: rgb tuple used for field of fire display
         :return:
         """
         super().__init__(world, id, anim, position, faction, facing, hp, colour)
+        if sound:
+            self.walking_sound = pyglet.media.Player()
+            self.walking_sound.eos_action = self.walking_sound.EOS_LOOP
+            self.walking_sound.queue(sound)
         # Default behavior:
         self.behaviour = behaviour.sequence(
             behaviour.die,
