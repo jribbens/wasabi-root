@@ -251,13 +251,17 @@ def on_draw():
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    if pyglet.window.mouse.LEFT:
+    if buttons in (pyglet.window.mouse.LEFT, pyglet.window.mouse.MIDDLE):
         # Drag screen
         tmxmap.camera.pan(dx, dy)
         tmxmap.hover(x, y)
-    elif pyglet.window.mouse.RIGHT:
-        # Select by area
-        pass
+    elif buttons == pyglet.window.mouse.RIGHT:
+        x, y = tmxmap.camera.viewport_to_coord((x,y))
+
+        dir = ui.current_hero.get_dir((x - ui.current_hero.position[0],
+                                       y - ui.current_hero.position[1]))
+
+        ui.current_hero.facing = ui.current_hero.DIR_TO_FACING[dir]
 
 
 @window.event
