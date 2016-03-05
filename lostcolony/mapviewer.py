@@ -263,6 +263,9 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
 
         ui.current_hero.facing = ui.current_hero.DIR_TO_FACING[dir]
 
+        if ui.current_hero.weapon:
+            ui.current_hero.weapon.reset_field_of_fire(ui.current_hero)
+
 
 @window.event
 def on_mouse_motion(x, y, dx, dy):
