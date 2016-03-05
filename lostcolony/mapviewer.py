@@ -346,6 +346,9 @@ def on_key_press(symbol, mods):
     elif symbol == pyglet.window.key._4:
         ui.select_by_name("tom")
 
+    elif symbol == pyglet.window.key.F:
+        ui.following = not ui.following
+
     elif symbol == pyglet.window.key.TAB:
         ui.select_next_hero(1)
     elif symbol == 98784247808: # Not entirely sure how it gets this number, but it is lshift and tab together.
