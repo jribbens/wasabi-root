@@ -104,7 +104,8 @@ class Map:
                 image = self.images[imgpath]
                 floor[x, y].append(image)
 
-                self.grid[x, y] = bool(IMPASSABLE_FLOORS.search(imgpath))
+                # bit 0 blocks sight, bit 1 blocks movement
+                self.grid.cells[x, y] = 2 if bool(IMPASSABLE_FLOORS.search(imgpath)) else 0
         self.floor = dict(floor)
 
     def load_objects(self, tmx):
@@ -118,7 +119,8 @@ class Map:
         for x, y, (imgpath, *_) in obj_layer.tiles():
             self.objects[x, y] = self.images[imgpath]
 
-            self.grid[x, y] = imgpath not in NOT_OBSTRUCTIONS
+            # bit 0 blocks sight, 1 blocks movement so value 3 bloks both
+            self.grid.cells[x, y] = 3 if imgpath not in NOT_OBSTRUCTIONS else 0
 
     def load_images(self, tmx):
         """Load a dictionary of tile images from the TiledMap given."""

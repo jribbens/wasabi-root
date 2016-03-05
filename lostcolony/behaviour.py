@@ -47,7 +47,7 @@ def chase_closest_enemy(actor, t, dt):
                 actor.look(e)
                 return
             # Find closest unblocked location to attack
-            attackable = [p for p in grid.neighbours(e) if not grid.blocked(p)]
+            attackable = [p for p in grid.neighbours(e) if not grid.blocks_movement(p)]
             if attackable:
                 dest = min(attackable, key=distance_to_actor)
                 actor.walk_to(dest)
