@@ -249,7 +249,7 @@ class ShotGun(Weapon):
 
     def reset_field_of_fire(self, actor):
         min_range = 1
-        self.max_range = 5
+        self.max_range = 6
         self.field_of_fire = _field_of_fire_front_arc(min_range, self.max_range, actor)
 
     def calc_damage(self,actor, target):
