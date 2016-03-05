@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 mouse_click_pos = (0, 0)
 
+pyglet.options['audio'] = ('openal', 'silent')
 
 class Camera:
     WSCALE = HEX_WIDTH / 2
