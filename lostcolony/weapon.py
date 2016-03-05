@@ -132,7 +132,7 @@ class Grenade(Weapon):
 
     def select_targets(self, world):
         """
-        Ideally the greanade should select the hex affecting the most enemies.
+        Ideally the grenade should select the hex affecting the most enemies.
         For now, chuck it directly at the nearest.
         :return:
         """

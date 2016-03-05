@@ -50,7 +50,7 @@ class UI:
                 for hero in self.world.factions['Player']:
                     if hero is not self.current_hero and \
                        not hero.walking_to and \
-                       co in self.world.grid.reachable(hero.position, 12):
+                       co in self.world.grid.reachable(hero.position, 15):
 
                         hero.walk_to(co)
                         break

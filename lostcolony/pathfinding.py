@@ -75,6 +75,8 @@ class PriorityQueue:
 
 # TODO: This doesn't calculate a correct distance. (0,0) to (1,1) should be adjacent.
 # See HexGrid.distance
+
+
 def heuristic(a, b):
     """Get the distance between points a and b."""
     (x1, y1) = a
