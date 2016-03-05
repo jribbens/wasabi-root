@@ -14,6 +14,32 @@ from lostcolony.world import World
 from lostcolony.maploader import Map
 from lostcolony import wave
 from lostcolony import goals
+from lostcolony.credits import Credits
+
+
+DIFFICULTIES = {
+    1: {
+        "attackers": 3,
+        "spawn_interval": 5
+    },
+    2: {
+        "attackers": 4,
+        "spawn_interval": 4
+    },
+    3: {
+        "attackers": 5,
+        "spawn_interval": 3
+    },
+    4: {
+        "attackers": 7,
+        "spawn_interval": 3
+    },
+    5: {
+        "attackers": 8,
+        "spawn_interval": 2
+    },
+}
+
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +140,7 @@ class Scene:
         self.objects = map.objects
         self.grid = map.grid
         self.world = World(self.grid, map)
+        self.credits = None # when instantiated, the credits roll
 
 
     floor_batch = None
@@ -222,6 +249,9 @@ class Scene:
         c = self.camera.viewport_to_coord(self.mouse_coords)
         self.cursor.pos = self.camera.coord_to_viewport(c)
 
+    def start_credits(self):
+        self.credits = Credits(DIFFICULTIES, self.camera)
+
 
 FPS = 30
 pyglet.clock.set_fps_limit(30)
@@ -250,6 +280,8 @@ def on_draw():
         modifier.draw()
 
     goals.display_goal(tmxmap.camera)
+    if tmxmap.credits:
+        tmxmap.credits.on_draw(tmxmap.camera)
 
 
 @window.event
@@ -372,6 +404,9 @@ def on_key_press(symbol, mods):
     elif symbol == pyglet.window.key.F12:
         take_screenshot()
 
+    elif symbol == pyglet.window.key.C:
+        tmxmap.start_credits()
+
     elif symbol == pyglet.window.key.F9:
         world = tmxmap.world
         camera = tmxmap.camera
@@ -405,29 +440,6 @@ def update(dt):
 #    ny = oy + dy * dt * 500
 #
 #    tmxmap.camera = nx, ny
-
-DIFFICULTIES = {
-    1: {
-        "attackers": 3,
-        "spawn_interval": 5
-    },
-    2: {
-        "attackers": 4,
-        "spawn_interval": 4
-    },
-    3: {
-        "attackers": 5,
-        "spawn_interval": 3
-    },
-    4: {
-        "attackers": 7,
-        "spawn_interval": 3
-    },
-    5: {
-        "attackers": 8,
-        "spawn_interval": 2
-    },
-}
 
 
 def check_triggers(dt):
