@@ -1,4 +1,3 @@
-from collections import namedtuple
 import os
 
 import pyglet
@@ -88,8 +87,6 @@ class Animation:
         self.sequences = sequences
         self.frame_rate = frame_rate
         self.default = default
-        self.step_1 = pyglet.media.load(os.path.join('sounds', 'forest_step_1.wav'))
-        self.step_2 = pyglet.media.load(os.path.join('sounds', 'forest_step_2.wav'))
 
     def create_instance(self, pos=(0, 0)):
         return AnimationInstance(self, pos)
@@ -129,10 +126,6 @@ class AnimationInstance:
                 # the beginning.
                 self.current_frame = 0
             else:
-                if self.current_frame == 1:
-                    self.animation.step_1.play()
-                elif self.current_frame == 3:
-                    self.animation.step_2.play()
                 self.play(next)
 
 

@@ -4,6 +4,7 @@ import logging
 
 import pyglet
 
+from lostcolony import audio
 from lostcolony import behaviour
 from lostcolony.pathfinding import (
     HEX_WIDTH, HEX_HEIGHT, NoPath
@@ -66,6 +67,7 @@ class Actor(object):
         self.hp = hp
 
         self.walking_sound = None
+        self.walk_fx = None
 
         self.moving_to = None
         self.walking_to = None
@@ -172,8 +174,7 @@ class Actor(object):
     def walk_to(self, target):
         self.walking_to = target
         self.anim.play('walk')
-        if self.walking_sound:
-            self.walking_sound.play()
+        self.walking_sound = audio.start_walk(self.walk_fx)
 
     def get_health(self, x, y):
         if self.hp == self.total_hp:
@@ -201,8 +202,7 @@ class Actor(object):
     def stop(self):
         self.walking_to = None
         self.anim.play('stand')
-        if self.walking_sound:
-            self.walking_sound.pause()
+        audio.stop_walk(self.walking_sound)
 
     def drawable(self, sx, sy):
         # TODO: Add animation, use heading
@@ -229,10 +229,7 @@ class Character(Actor):
         :return:
         """
         super().__init__(world, id, anim, position, faction, facing, hp, colour)
-        if sound:
-            self.walking_sound = pyglet.media.Player()
-            self.walking_sound.eos_action = self.walking_sound.EOS_LOOP
-            self.walking_sound.queue(sound)
+        self.walk_fx = sound
         # Default behavior:
         self.behaviour = behaviour.sequence(
             behaviour.die,

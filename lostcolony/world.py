@@ -12,8 +12,6 @@ from lostcolony.weapon import Rifle, Weapon, Grenade, AutoCannon, SniperRifle, S
 import time
 
 
-HUMAN_WALK = load(os.path.join('sounds', 'forest_walk.wav'), streaming=False)
-
 class World:
     """
     Top-level container for the map, factions, actors etc
@@ -69,7 +67,7 @@ class World:
             facing=3,
             hp=100,
             colour = (255,0,0),
-            sound=HUMAN_WALK)
+            sound="forest_walk")
         rex.weapon = Rifle()
 
         tom = Character(self,
@@ -80,7 +78,7 @@ class World:
             facing=3,
             hp=100,
             colour=(22, 200, 0),
-            sound=HUMAN_WALK)
+            sound="forest_walk")
         tom.weapon = ShotGun()
 
         ping = Character(self,
@@ -91,7 +89,7 @@ class World:
             facing=3,
             hp=80,
             colour=(22, 90, 200),
-            sound=HUMAN_WALK)
+            sound="forest_walk")
         ping.weapon = SniperRifle()
 
         matt = Character(self,
@@ -102,7 +100,7 @@ class World:
             facing=3,
             hp=150,
             colour = (255,120,0),
-            sound=HUMAN_WALK)
+            sound="forest_walk")
         matt.weapon = AutoCannon()
 
         for actor in faction.actors:
