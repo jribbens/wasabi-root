@@ -7,7 +7,7 @@ effects = {}
 def init():
     pygame.init()
     normal_music()
-    for fx in "sniper rifle_burst shotgun".split():
+    for fx in "sniper rifle_burst shotgun autocannon".split():
         effects[fx] = pygame.mixer.Sound(os.path.join("sounds", "%s.wav" % fx))
 
 
