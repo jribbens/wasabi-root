@@ -63,7 +63,6 @@ class UI:
 
         :param symbol: str, key used (q or e)
         """
-        print(symbol)
         if not self.current_hero:
             return
         if symbol == 'Q':
