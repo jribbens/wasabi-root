@@ -18,7 +18,7 @@ class UI:
         heroes = [h for h in f if h.id == name]
         self.current_hero = heroes[0] if heroes else None
 
-    def select_next_hero(self):
+    def select_next_hero(self, move=1):
         f = [self.world.factions[fac] for fac in self.world.factions if fac == "Player"][0]
         hs = list(f)
         if not hs:
@@ -28,9 +28,12 @@ class UI:
             self.current_hero = hs[0]
         else:
             try:
-                self.current_hero = hs[(hs.index(self.current_hero) + 1) % len(hs)]
+                self.current_hero = hs[(hs.index(self.current_hero) + move) % len(hs)]
             except ValueError:
-                self.current_hero = hs[0]
+                if move == 1:
+                    self.current_hero = hs[0]
+                else:
+                    self.current_hero = hs[-1]
 
     def go(self, target):
         if self.current_hero is not None:

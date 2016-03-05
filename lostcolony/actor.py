@@ -138,14 +138,15 @@ class Actor(object):
         :param delta: tuple, co-ordinate difference between current position and next position.
         """
 
-        direction = ''
-
         if delta[1] < 0:
-            direction += 'n'
+            direction = 'n'
         elif delta[1] > 0:
-            direction += 's'
+            direction = 's'
         else:
-            direction += self.FACING_TO_DIR[self.facing][0]
+            if self.position[0] % 2:
+                direction = 's'
+            else:
+                direction = 'n'
 
         if delta[0] > 0:
             direction += 'e'
@@ -164,6 +165,8 @@ class Actor(object):
         # deduct damage taken
         self.hp = self.hp - damage
         BloodSpray(self.world, self.position, damage, max_value)
+        if self.hp <= 0:
+            self.death()
 
     def walk_to(self, target):
         self.walking_to = target

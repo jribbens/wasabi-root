@@ -338,22 +338,29 @@ def take_screenshot():
 
 
 def on_key_press(symbol, mods):
+
     if symbol == pyglet.window.key._1:
         ui.select_by_name("rex")
-    if symbol == pyglet.window.key._2:
+    elif symbol == pyglet.window.key._2:
         ui.select_by_name("matt")
-    if symbol == pyglet.window.key._3:
+    elif symbol == pyglet.window.key._3:
         ui.select_by_name("ping")
-    if symbol == pyglet.window.key._4:
+    elif symbol == pyglet.window.key._4:
         ui.select_by_name("tom")
-    if symbol == pyglet.window.key.TAB:
-        ui.select_next_hero()
-    if symbol == pyglet.window.key.Q or symbol == pyglet.window.key.LEFT:
+
+    elif symbol == pyglet.window.key.TAB:
+        ui.select_next_hero(1)
+    elif symbol == 98784247808: # Not entirely sure how it gets this number, but it is lshift and tab together.
+        ui.select_next_hero(-1)
+
+    elif symbol == pyglet.window.key.Q or symbol == pyglet.window.key.LEFT:
         ui.rotate('Q')
     elif symbol == pyglet.window.key.E or symbol == pyglet.window.key.RIGHT:
         ui.rotate('E')
+
     elif symbol == pyglet.window.key.F12:
         take_screenshot()
+
     elif symbol == pyglet.window.key.F9:
         world = tmxmap.world
         camera = tmxmap.camera
