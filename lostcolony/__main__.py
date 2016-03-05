@@ -2,16 +2,16 @@ import logging
 
 import pyglet.app
 
-import pygame  # For audio only
-
+import lostcolony.audio
 import lostcolony.mapviewer
 
 logging.basicConfig(level=logging.INFO)
 
+
 def main():
-    pygame.init()
+    lostcolony.audio.init()
     pyglet.app.run()
-    pygame.quit()
+    lostcolony.audio.quit()
 
 
 if __name__ == '__main__':
