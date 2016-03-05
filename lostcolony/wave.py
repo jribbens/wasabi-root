@@ -3,6 +3,7 @@ from pyglet import clock
 
 from lostcolony.actor import Actor
 from lostcolony import animation
+from lostcolony import audio
 from lostcolony.faction import Faction
 from lostcolony.weapon import Teeth
 from lostcolony import behaviour
@@ -41,6 +42,7 @@ class Wave:
         """
         global current_wave
         current_wave = self
+        audio.action_music()
         if self.setup_delay:
             clock.schedule_once(self._start, self.setup_delay)
         else:
@@ -104,6 +106,7 @@ class Wave:
                 # TODO: transition this over time
                 Transition(a, 'hp', a.total_hp, rate=2.0)
             current_wave = None
+            audio.normal_music()
         else:
             clock.schedule_once(self.poll_finished, 2)
 
