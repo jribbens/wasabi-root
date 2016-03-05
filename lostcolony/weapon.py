@@ -233,6 +233,21 @@ class AutoCannon(Weapon):
 
         return targets
 
+
+class ShotGun(Weapon):
+    def __init__(self, damage=2, **args):
+        super().__init__(damage=damage, **args)
+
+    def reset_field_of_fire(self, actor):
+        min_range = 1
+        self.max_range = 5
+        self.field_of_fire = _field_of_fire_front_arc(min_range, self.max_range, actor)
+
+    def calc_damage(self,actor, target):
+        range = HexGrid.distance(actor.position, target.position)
+        return random.randint(1,int(self.damage * (self.max_range - range)))
+
+
 def _field_of_fire_front_arc(min_range, max_range, actor):
     """
     Create a 120 degree arc of file. Hexes are in target priority order.
