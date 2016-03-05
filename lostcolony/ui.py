@@ -47,7 +47,10 @@ class UI:
         for co in self.world.grid.neighbours(co_ord):
             if not self.world.grid.blocks_movement(co):
                 for hero in self.world.factions['Player']:
-                    if hero is not self.current_hero and not hero.walking_to:
+                    if hero is not self.current_hero and \
+                       not hero.walking_to and \
+                       co in self.world.grid.reachable(hero.position, 12):
+
                         hero.walk_to(co)
                         break
                 else:
