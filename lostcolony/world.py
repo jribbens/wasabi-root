@@ -1,4 +1,9 @@
 from collections import defaultdict
+
+from pyglet.media import load
+
+import os
+
 from lostcolony.actor import Character, Actor
 from lostcolony import animation
 from lostcolony.faction import Faction
@@ -6,6 +11,8 @@ from itertools import chain
 from lostcolony.weapon import Rifle, Weapon, Grenade, AutoCannon, SniperRifle, ShotGun
 import time
 
+
+HUMAN_WALK = load(os.path.join('sounds', 'forest_walk.wav'), streaming=False)
 
 class World:
     """
@@ -61,7 +68,8 @@ class World:
             position=pois.get('rex', (5, 5)),
             facing=3,
             hp=100,
-            colour = (255,0,0))
+            colour = (255,0,0),
+            sound=HUMAN_WALK)
         rex.weapon = Rifle()
 
         tom = Character(self,
@@ -71,7 +79,8 @@ class World:
             position=pois.get('tom', (6, 5)),
             facing=3,
             hp=100,
-            colour=(22, 200, 0))
+            colour=(22, 200, 0),
+            sound=HUMAN_WALK)
         tom.weapon = ShotGun()
 
         ping = Character(self,
@@ -81,7 +90,8 @@ class World:
             position=pois.get('ping', (7, 5)),
             facing=3,
             hp=80,
-            colour=(22, 90, 200))
+            colour=(22, 90, 200),
+            sound=HUMAN_WALK)
         ping.weapon = SniperRifle()
 
         matt = Character(self,
@@ -91,7 +101,8 @@ class World:
             position=pois.get('matt', (8, 5)),
             facing=3,
             hp=150,
-            colour = (255,120,0))
+            colour = (255,120,0),
+            sound=HUMAN_WALK)
         matt.weapon = AutoCannon()
 
         for actor in faction.actors:
