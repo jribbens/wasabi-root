@@ -8,6 +8,8 @@ This class looks after things like when they fire, fields of fire, hit probabili
 It also indirectly manages their effects.
 """
 import random
+import pyglet
+import os
 from lostcolony.effects import Ricochet, ShotgunRicochet
 from lostcolony.pathfinding import HexGrid
 
@@ -22,6 +24,7 @@ class Weapon:
         self.field_of_fire = []  # coordinates. Earlier in the list = higher priority.
         self.damage = damage
         self.single_target = single_target
+        self.sound = None
 
     def moving(self):
         if self.setup_time > 0:
@@ -65,6 +68,8 @@ class Weapon:
         for target in targets:
             target.hit(self.calc_damage(attacking_actor,target))
             attacking_actor.anim.play('shoot')
+            if self.sound:
+                self.sound.play()
         if self.effect:
             world = attacking_actor.world
             for p in targets:
@@ -107,6 +112,7 @@ class Rifle(Weapon):
 
     def __init__(self):
         super().__init__(seconds_per_attack=1.0, damage=1, single_target=True)
+        self.sound = pyglet.media.load(os.path.join('sounds', 'rifle_burst.wav'), streaming=False)
 
     def reset_field_of_fire(self, actor):
         min_range = 1
@@ -146,6 +152,7 @@ class SniperRifle(Weapon):
     def __init__(self):
         super().__init__(seconds_per_attack = 3.0, single_target = True, damage=3)
         self.setup_time = 3
+        self.sound = pyglet.media.load(os.path.join('sounds', 'sniper.wav'), streaming=False)
 
     def reset_field_of_fire(self, actor):
         min_range = 1
@@ -237,6 +244,7 @@ class AutoCannon(Weapon):
 class ShotGun(Weapon):
     def __init__(self, damage=2, **args):
         super().__init__(damage=damage, **args)
+        self.sound = pyglet.media.load(os.path.join('sounds', 'shotgun.wav'), streaming=False)
 
     def reset_field_of_fire(self, actor):
         min_range = 1
