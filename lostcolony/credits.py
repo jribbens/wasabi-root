@@ -19,9 +19,10 @@ _name = [
     "Octavian",
     "Marclelus",
     "Cicero",
-    "Sarbiki",
+    "Sarbicki",
     "Shearwood",
     "Prado",
+    "Johansson"
     "Ribbens",
     "Aedituus",
     "Juvencus",
@@ -37,7 +38,16 @@ _name = [
     "Corippus",
     "Cornificia",
     "Bavius",
-    "Paulinus"
+    "Paulinus",
+    "Fallinus",
+    "Titus",
+    "Gluteus",
+    "Maximus",
+    "Sartorius",
+    "Fallous",
+    "Jakus",
+    "Marus",
+    "Borus"
 ]
 
 _epithet = [
@@ -70,7 +80,15 @@ _epithet = [
     "ox-eyed",
     "powerful",
     "raptor heart",
-    "mighty"
+    "mighty",
+    "edible",
+    "loud",
+    "erroneus",
+    "the",
+    "third",
+    "fourth",
+    "younger",
+    "elder"
 ]
 
 _epitaph = [
@@ -80,8 +98,8 @@ _epitaph = [
     "your poems outlive you",
     "here I lie, but don't you cry, one day too you will die",
     "his spirit lives on",
-    "his sipirit craves vengence",
-    "it's only a scratch",
+    "his spirit craves vengeance",
+    "tis only a scratch",
     "rest in peace",
     "I told you I was sick",
     "I need a pyramid!",
@@ -98,25 +116,31 @@ _epitaph = [
     "gentle and brave",
     "defender of his pack",
     "he kept his oath",
-    "archaeologists' bane"
+    "archaeologists' bane",
+    "a pacifist at heart",
+    '"hold my beer"',
+    "just 3 days from retirement",
+    "employee of the year, 2012",
+    "like father, like son"
 ]
 
 _credits = (
     # font size, following space (pixels) text
-    (24, 1.0, "Development Team"),
-    (16, 0.4, "Dan Pope, art & scrum master"),
-    (16, 0.4, "Nick Sarbiki, development"),
-    (16, 0.4, "Michael Grazebrook, armourer"),
-    (16, 0.4, "Connor Shearwood, development"),
-    (16, 0.4, "Daniel Moisset, development"),
-    (16, 0.4, "Andre Prado, development"),
-    (16, 0.9, "Jon Ribbens, development"),
-    (24, 0.9, "Tools and Components"),
-    (16, 0.6,  "Tiled"),
-    (16, 0.6,  "Pyglet"),
-    (18, 1.2, "Python"),
-    (24, 0.8, "In memory of the dinosaurs"),
-    (24, 1.0, "murdered for your enjoyment")
+    (24, 1.2, "Development Team"),
+    (16, 1.0, "Dan Pope, Art & Scrum Master"),
+    (16, 1.0, "Nick Sarbicki, Laser Raptor Tamer"),
+    (16, 1.0, "Michael Grazebrook, Armourer"),
+    (16, 1.0, "Connor Shearwood, Development"),
+    (16, 1.0, "Daniel Moisset, Development"),
+    (16, 1.0, "Andre Prado, Development"),
+    (16, 1.0, "Ted Johansson, Development"),
+    (16, 1.3, "Jon Ribbens, Development"),
+    (24, 1.3, "Tools and Components"),
+    (16, 1.0, "Tiled"),
+    (16, 1.0, "Pyglet"),
+    (18, 1.6, "Python"),
+    (24, 1.2, "In memory of the dinosaurs"),
+    (24, 1.4, "murdered for your enjoyment")
 )
 
 class Credits:
@@ -126,7 +150,7 @@ class Credits:
         self.labels = deque()
         self.credit_it = self.credit_text()
         self.camera = camera
-        schedule_interval(self.update_position, 0.013)
+        schedule_interval(self.update_position, 0.017)
         schedule_once(self.update_text, 0)
 
     def update_position(self, dt, _=None):
@@ -166,8 +190,8 @@ class Credits:
 
 
     def credit_text(self):
-        yield (36, 1.0, 'Game over')
-        yield (36, 0.8, 'Credits')
+        yield (36, 1.4, 'Game over')
+        yield (36, 1.2, 'Credits')
         for t in _credits:
             yield t
         for t in self._remember_dinos():
@@ -180,14 +204,14 @@ class Credits:
     def _remember_dinos(self):
         for wave in self.difficulties:
             victims = self.difficulties[wave]["attackers"]
-            yield (16, 0.9, "Wave {}, rest in peace".format(wave))
+            yield (16, 1.1, "Wave {}, rest in peace".format(wave))
 
             name = random.sample(_name, victims)
             epithet = random.sample(_epithet, victims)
             epitaph = random.sample(_epitaph, victims)
             for dino in range(victims):
-                yield 12, 0.4, "{} the {}, {}".format(name[dino], epithet[dino], epitaph[dino])
-            yield  12, 0.4, ""
+                yield 12, 0.6, "{} the {}, {}".format(name[dino], epithet[dino], epitaph[dino])
+            yield 12, 0.6, ""
 
 
 
