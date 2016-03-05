@@ -16,6 +16,8 @@ from lostcolony.maploader import Map
 from lostcolony import wave
 from lostcolony import goals
 
+
+
 logger = logging.getLogger(__name__)
 
 mouse_click_pos = (0, 0)
@@ -314,14 +316,25 @@ def on_mouse_release(x, y, button, mods):
                 logger.info("No selectable character at {coord}".format(coord=c))
         else:
             ui.go((x,y))
-    elif pyglet.window.mouse.RIGHT == button:
-        show_reachable((x, y))
 
 
 @window.event
 def on_resize(*args):
     tmxmap.floor_batch_pos = None
     tmxmap.camera.viewport = window.width, window.height
+
+
+def take_screenshot():
+    import os.path
+    import datetime
+    path = datetime.datetime.now().strftime('grabs/screenshot_%Y-%m-%d_%H:%M:%S.%f.png')
+    if not os.path.isdir('grabs'):
+        os.mkdir('grabs')
+    gl.glPixelTransferf(gl.GL_ALPHA_BIAS, 1.0)  # don't transfer alpha channel
+    gl.glPixelTransferf(gl.GL_ALPHA_SCALE, 0.0)  # don't transfer alpha channel
+    pyglet.image.get_buffer_manager().get_color_buffer().save(path)
+    gl.glPixelTransferf(gl.GL_ALPHA_BIAS, 0.0)  # restore alpha channel transfer
+    gl.glPixelTransferf(gl.GL_ALPHA_SCALE, 1.0)  # don't transfer alpha channel
 
 
 def on_key_press(symbol, mods):
@@ -339,6 +352,8 @@ def on_key_press(symbol, mods):
         ui.rotate('Q')
     elif symbol == pyglet.window.key.E or symbol == pyglet.window.key.RIGHT:
         ui.rotate('E')
+    elif symbol == pyglet.window.key.F12:
+        take_screenshot()
     elif symbol == pyglet.window.key.F9:
         world = tmxmap.world
         camera = tmxmap.camera
