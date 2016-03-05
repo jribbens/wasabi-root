@@ -249,7 +249,7 @@ class Scene:
         c = self.camera.viewport_to_coord(self.mouse_coords)
         self.cursor.pos = self.camera.coord_to_viewport(c)
 
-    def start_credits(self):
+    def start_credits(self, won):
         self.credits = Credits(DIFFICULTIES, self.camera)
 
 
@@ -405,7 +405,7 @@ def on_key_press(symbol, mods):
         take_screenshot()
 
     elif symbol == pyglet.window.key.C:
-        tmxmap.start_credits()
+        tmxmap.start_credits(1)
 
     elif symbol == pyglet.window.key.F9:
         world = tmxmap.world
@@ -460,8 +460,13 @@ def check_triggers(dt):
     for actor in players.actors:
         if actor.position == goals.goal_pos:
             goals.goal_pos = None
-            pyglet.clock.schedule_once(lambda dt: goals.next_goal(), 3.0)
+            pyglet.clock.schedule_once(next_goal, 2.5)
 
+def next_goal(dt):
+    try:
+        goals.next_goal()
+    except IndexError:
+        tmxmap.start_credits(1)
 
 pyglet.clock.schedule(update)
 pyglet.clock.schedule_interval(check_triggers, 0.2)

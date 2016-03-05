@@ -197,7 +197,9 @@ class Credits:
         for t in self._remember_dinos():
             yield t
         yield(12,0.5,"")
+        yield(22, 5, 'If you want to keep playing, try f9')
         yield (36, 20, 'The end')
+        yield (36, 8, 'Seriously, try f9')
 
 
 
