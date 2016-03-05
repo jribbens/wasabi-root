@@ -1,3 +1,4 @@
+from lostcolony import wave
 from lostcolony.tile_outline import SelectionCursor
 
 # Colors
@@ -39,6 +40,18 @@ class UI:
         if self.current_hero is not None:
             c = self.camera.viewport_to_coord(target)
             self.current_hero.walk_to(c)
+            if not wave.current_wave:
+                self.follow_the_leader(c)
+
+    def follow_the_leader(self, co_ord):
+        for co in self.world.grid.neighbours(co_ord):
+            if not self.world.grid.blocks_movement(co):
+                for hero in self.world.factions['Player']:
+                    if hero is not self.current_hero and not hero.walking_to:
+                        hero.walk_to(co)
+                        break
+                else:
+                    break
 
     def rotate(self, symbol):
         """

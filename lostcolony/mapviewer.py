@@ -16,8 +16,6 @@ from lostcolony.maploader import Map
 from lostcolony import wave
 from lostcolony import goals
 
-
-
 logger = logging.getLogger(__name__)
 
 mouse_click_pos = (0, 0)
