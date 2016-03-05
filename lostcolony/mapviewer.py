@@ -1,8 +1,8 @@
-from itertools import chain
 import logging
 from functools import lru_cache
 
 import pyglet
+import pygame
 from pyglet import gl
 from pyglet.window import key
 
@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 mouse_click_pos = (0, 0)
 
+# Setup OpenAL as audio driver. There are problems with pulse
+# https://bitbucket.org/pyglet/pyglet/issues/8/linux-segmentation-fault-in
 pyglet.options['audio'] = ('openal', 'silent')
 
 class Camera:
@@ -113,6 +115,7 @@ class Scene:
         self.objects = map.objects
         self.grid = map.grid
         self.world = World(self.grid, map)
+
 
     floor_batch = None
     floor_batch_pos = None
@@ -452,3 +455,12 @@ def check_triggers(dt):
 pyglet.clock.schedule(update)
 pyglet.clock.schedule_interval(check_triggers, 0.2)
 pyglet.clock.schedule_once(lambda dt: goals.next_goal(), 3.0)
+
+def background_music(t):
+    pygame.mixer.music.load('music/Swamplandia.ogg')
+    pygame.mixer.music.play(loops=-1)
+    pygame.mixer.music.set_volume(0.5)
+
+pyglet.clock.schedule_once(background_music, 0.1)
+
+
