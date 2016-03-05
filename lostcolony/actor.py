@@ -174,6 +174,7 @@ class Actor(object):
     def walk_to(self, target):
         self.walking_to = target
         self.anim.play('walk')
+        audio.stop_walk(self.walking_sound)
         self.walking_sound = audio.start_walk(self.walk_fx)
 
     def get_health(self, x, y):
