@@ -13,6 +13,7 @@ class UI:
         self.camera = camera
         self.selection = SelectionCursor(CURRENT_HERO)
         self.select_next_hero()
+        self.following = True
 
     def select_by_name(self, name):
         f = [self.world.factions[fac] for fac in self.world.factions if fac == "Player"][0]
@@ -40,18 +41,19 @@ class UI:
         if self.current_hero is not None:
             c = self.camera.viewport_to_coord(target)
             self.current_hero.walk_to(c)
-            if not wave.current_wave:
+            if not wave.current_wave and self.following:
                 self.follow_the_leader(c)
 
     def follow_the_leader(self, co_ord):
         for co in self.world.grid.neighbours(co_ord):
             if not self.world.grid.blocks_movement(co):
                 for hero in self.world.factions['Player']:
-                    if hero is not self.current_hero and not hero.walking_to:
+                    if hero is not self.current_hero and \
+                       not hero.walking_to and \
+                       co in self.world.grid.reachable(hero.position, 12):
+
                         hero.walk_to(co)
                         break
-                else:
-                    break
 
     def rotate(self, symbol):
         """
