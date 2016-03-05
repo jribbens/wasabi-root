@@ -177,6 +177,7 @@ class AutoCannon(Weapon):
         self.overheated = False
         self.shot_effect_time = 0 # 0 means not shooting, else the time to display the next one.
         self.shot_coord = None # not shooting
+        self.sound = pyglet.media.load(os.path.join('sounds', 'autocannon.wav'), streaming=False)
 
     @property
     def damage(self):
