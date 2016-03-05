@@ -1,5 +1,12 @@
 # Lost Colony
 
+## To run
+
+Extract the folder
+
+    python3 pip install -r requirements.txt
+    python3 run_game.py
+
 ## Controls
 
 |key|action|
