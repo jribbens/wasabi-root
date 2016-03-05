@@ -203,7 +203,7 @@ class AutoCannon(Weapon):
         :param aggressor: The violent actor, not the victim
         :return: Number of targets engaged
         """
-        max_heat = 8
+        max_heat = 9
         ok_heat = 4
         if self.heat > 0:
             self.heat -= 1

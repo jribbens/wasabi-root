@@ -88,17 +88,26 @@ class NoPath(Exception):
     """There is no route to the goal."""
 
 
+
 class HexGrid:
     def __init__(self):
-        self.cells = {}
+        self.cells = {} # hex coord : val ; bit 0 blocks sight, bit 1 blocks movement so 3 == 1 | 2 which blocks both
         self.layers = []
 
-    def __setitem__(self, coords, value):
-        self.cells[coords] = value
+#    def __setitem__(self, coords, value):
+#        self.cells[coords] = value
 
-    def blocked(self, coords):
+    def blocks_sight(self, coord):
+        return self.cells.get(coord, 1) & 1
+
+    def blocks_movement(self, coord):
         """Return True if the given coordinates are blocked."""
+        return any(layer.get(coord) for layer in self.layers) or self.cells.get(coord, 2) & 2
+
+    """ depreciated
+    def blocked(self, coords):
         return any(layer.get(coords) for layer in self.layers) or self.cells.get(coords, True)
+    """
 
     NEIGHBOURS_EVEN = [
         (0, -1),
@@ -157,7 +166,7 @@ class HexGrid:
 
     def unblocked_neighbours(self, coords):
         """Adjacent cells that are not blocked."""
-        return (c for c in self.neighbours(coords) if not self.blocked(c))
+        return (c for c in self.neighbours(coords) if not self.blocks_movement(c))
 
     def hex_in_front(self, coords, facing):
         """
@@ -188,7 +197,7 @@ class HexGrid:
         This can be quite expensive if goal is unreachable.
 
         """
-        if self.blocked(goal):
+        if self.blocks_movement(goal):
             raise NoPath(start, goal)
         frontier = PriorityQueue()
         frontier.put(start, 0)
@@ -245,7 +254,7 @@ class HexGrid:
             if cost <= dist:
                 found.add(t)
             for t in self.neighbours(t):
-                if self.cells.get(t, True):
+                if self.blocks_movement(t):
                     continue
                 newcost = cost + 1
                 if t in costs:
@@ -288,10 +297,7 @@ class HexGrid:
             checked = (c_start[0] + d_1[0] * i, c_start[1] + d_1[1] * i,)
             for fuzzy_x, fuzzy_y in (-1e-6, -1e-6), (-1e-6, 1e-6), (1e-6, -1e-6), (1e-6, 1e-6):
                 checked_coord = self.world_to_coord((checked[0] + fuzzy_x, checked[1] + fuzzy_y))
-                if checked_coord not in self.cells:
-                    continue # off map
-                object_layer = self.cells
-                if checked_coord != start and object_layer[checked_coord]:
+                if checked_coord != start and self.blocks_sight(checked_coord):
                     obstacles.add(checked_coord)
         return obstacles
 
